@@ -1,0 +1,49 @@
+﻿course_id,course_name,credits,planned_semester,course_type,offered_semesters,group,source_label
+IT101,Toán rời rạc I,3,1,bắt buộc,odd,Cơ sở toán học,SIMULATED
+IT102,Đại số tuyến tính,3,1,bắt buộc,odd,Cơ sở toán học,SIMULATED
+IT103,Nhập môn công nghệ thông tin,3,1,bắt buộc,odd,Đại cương,SIMULATED
+IT104,Kỹ năng học tập đại học,3,1,bắt buộc,odd,Đại cương,SIMULATED
+IT105,Tiếng Anh cơ bản,2,1,bắt buộc,odd,Đại cương,SIMULATED
+EL106,Tự chọn đại cương kỳ 1 (placeholder),2,1,tự chọn,odd,Tự chọn đại cương 1,SIMULATED
+IT201,Lập trình cơ bản,3,2,bắt buộc,even,Lập trình,SIMULATED
+IT202,Toán rời rạc II,3,2,bắt buộc,even,Cơ sở toán học,SIMULATED
+IT203,Cấu trúc dữ liệu,3,3,bắt buộc,odd,Lập trình,SIMULATED
+IT204,Kiến trúc máy tính,3,2,bắt buộc,even,Hệ thống,SIMULATED
+IT205,Xác suất thống kê,2,2,bắt buộc,even,Cơ sở toán học,SIMULATED
+EL206,Tự chọn cơ sở kỳ 2 (placeholder),2,2,tự chọn,even,Tự chọn cơ sở 1,SIMULATED
+IT301,Lập trình hướng đối tượng,3,3,bắt buộc,odd,Lập trình,SIMULATED
+IT302,Cơ sở dữ liệu,3,3,bắt buộc,odd,Dữ liệu,SIMULATED
+IT303,Mạng máy tính,3,3,bắt buộc,odd,Hệ thống,SIMULATED
+IT304,Giải thuật và cấu trúc dữ liệu nâng cao,3,4,bắt buộc,even,Lập trình,SIMULATED
+IT305,Hệ điều hành,2,3,bắt buộc,odd,Hệ thống,SIMULATED
+EL306,Tự chọn cơ sở kỳ 2 (placeholder),2,2,tự chọn,even,Tự chọn cơ sở 2,SIMULATED
+IT401,Công nghệ phần mềm,3,4,bắt buộc,even,Kỹ nghệ phần mềm,SIMULATED
+IT402,Phát triển ứng dụng web,3,4,bắt buộc,even,Phát triển ứng dụng,SIMULATED
+IT403,Phân tích và thiết kế hệ thống,3,4,bắt buộc,even,Kỹ nghệ phần mềm,SIMULATED
+IT404,Nhập môn trí tuệ nhân tạo,3,4,bắt buộc,even,Trí tuệ nhân tạo,SIMULATED
+IT405,An toàn thông tin,2,4,bắt buộc,even,An toàn thông tin,SIMULATED
+EL406,Tự chọn cơ sở kỳ 3 (placeholder),2,3,tự chọn,odd,Tự chọn cơ sở 3,SIMULATED
+IT501,Thiết kế phần mềm,3,5,bắt buộc,odd,Kỹ nghệ phần mềm,SIMULATED
+IT502,Kho dữ liệu,3,5,bắt buộc,odd,Dữ liệu,SIMULATED
+IT503,Điện toán đám mây và DevOps,3,5,bắt buộc,odd,Hệ thống,SIMULATED
+IT504,Lập trình an toàn,3,5,bắt buộc,odd,An toàn thông tin,SIMULATED
+IT505,Thiết kế giao diện người dùng,2,5,bắt buộc,odd,Phát triển ứng dụng,SIMULATED
+EL506,Tự chọn chuyên ngành kỳ 5 (placeholder),2,5,tự chọn,odd,Tự chọn chuyên ngành 1,SIMULATED
+IT601,Kiểm thử phần mềm,3,6,bắt buộc,even,Kỹ nghệ phần mềm,SIMULATED
+IT602,Phát triển ứng dụng di động,3,6,bắt buộc,even,Phát triển ứng dụng,SIMULATED
+IT603,Khai phá dữ liệu,3,6,bắt buộc,even,Dữ liệu,SIMULATED
+IT604,An ninh mạng,3,6,bắt buộc,even,An toàn thông tin,SIMULATED
+IT605,Phân tích hệ thống thông tin,2,6,bắt buộc,even,Kỹ nghệ phần mềm,SIMULATED
+EL606,Tự chọn chuyên ngành kỳ 6 (placeholder),2,6,tự chọn,even,Tự chọn chuyên ngành 2,SIMULATED
+IT701,Đồ án chuẩn bị tốt nghiệp,3,7,bắt buộc,odd,Đồ án,SIMULATED
+IT702,Học máy ứng dụng,3,7,bắt buộc,odd,Trí tuệ nhân tạo,SIMULATED
+IT703,Hệ thống thông tin doanh nghiệp,3,7,bắt buộc,odd,Hệ thống thông tin,SIMULATED
+IT704,Kiến trúc giải pháp đám mây,3,7,bắt buộc,odd,Hệ thống,SIMULATED
+IT705,Chuẩn bị thực tập,2,7,bắt buộc,odd,Thực tập,SIMULATED
+EL706,Tự chọn chuyên ngành kỳ 7 (placeholder),2,7,tự chọn,odd,Tự chọn chuyên ngành 3,SIMULATED
+IT801,Thực tập doanh nghiệp,3,8,bắt buộc,even,Thực tập,SIMULATED
+IT802,Đồ án tốt nghiệp,3,8,bắt buộc,even,Đồ án,SIMULATED
+IT803,Quản lý dự án công nghệ thông tin,3,8,bắt buộc,even,Quản lý,SIMULATED
+IT804,Chuyên đề trí tuệ nhân tạo và dữ liệu,3,8,bắt buộc,even,Trí tuệ nhân tạo,SIMULATED
+IT805,Seminar công nghệ thông tin,2,8,bắt buộc,even,Đại cương,SIMULATED
+EL806,Tự chọn chuyên ngành kỳ 8 (placeholder),2,8,tự chọn,even,Tự chọn chuyên ngành 4,SIMULATED

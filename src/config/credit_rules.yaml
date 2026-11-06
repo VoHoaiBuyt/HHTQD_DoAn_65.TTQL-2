@@ -1,0 +1,199 @@
+source_label: SIMULATED
+
+program:
+  expected_total_credits:
+    min: 120
+    max: 140
+    source: "Khoảng thiết kế giai đoạn 1 theo yêu cầu bài toán; TODO: xác nhận với giảng viên/CTĐT chính thức."
+  expected_course_count:
+    min: 40
+    max: 50
+    source: "Khoảng thiết kế giai đoạn 1; TODO: xác nhận sau khi nhận CTĐT chính thức."
+  expected_semester_count:
+    value: 8
+    source: "Giả định mô phỏng 8 học kỳ chính; TODO: xác nhận với giảng viên/CTĐT chính thức."
+
+semester_credit_limits:
+  minimum:
+    value: 12
+    source: "Giới hạn tạm để kiểm thử; TODO: xác nhận với quy chế đào tạo NTU."
+  maximum:
+    value: 18
+    source: "Giới hạn tạm để kiểm thử; TODO: xác nhận với quy chế đào tạo NTU."
+
+scenario_credit_targets:
+  values: [12, 15, 18]
+  source: "Các kịch bản yêu cầu cho đồ án; TODO: xác nhận tính phù hợp với quy chế đào tạo NTU."
+curricular_unit_mapping:
+  mean_credits_per_course:
+    value_from: "data/simulated/courses.csv"
+    formula: "mean(course.credits)"
+    rounding: "nearest_half_up"
+    source: "Ánh xạ xấp xỉ giữa tín chỉ SIMULATED và curricular units UCI-697; TODO: thay bằng dữ liệu NTU."
+  rounding_definition:
+    value: "floor(units_equivalent + 0.5)"
+    reason: "Làm tròn gần nhất, xử lý 0.5 lên để tránh quy tắc bankers rounding của Python; đơn điệu không giảm."
+    source: "Quy ước số học của giai đoạn 1; không suy ra quan hệ thực nghiệm."
+
+academic_warning:
+  gpa_scale:
+    value: 4.0
+    source: "Giả định tạm về thang GPA; TODO: xác nhận thang điểm/quy chế NTU."
+  gpa_below:
+    value: 2.0
+    source: "Ngưỡng cảnh báo thử nghiệm; TODO: xác nhận với quy chế đào tạo NTU."
+  credits_behind_expected:
+    value: 12
+    source: "Ngưỡng cảnh báo thử nghiệm; TODO: xác nhận với giảng viên."
+
+retake:
+  maximum_attempts:
+    value: 3
+    source: "Giá trị cấu hình tạm; TODO: xác nhận quy định học lại/thi lại của NTU."
+
+risk_to_plan_exploration:
+  base_load_lambda:
+    value: 0.1
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Giá trị minh họa; không có bằng chứng nhân quả từ phân tích REAL. TODO: hiệu chỉnh bằng dữ liệu NTU."
+  load_lambda_sensitivity:
+    values: [0.0, 0.1, 0.3]
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Lưới phân tích độ nhạy quanh hàm giảm đơn điệu; không được ước lượng nhân quả từ UCI-697."
+  difficulty_multiplier_sensitivity:
+    values: [0.8, 1.0, 1.2]
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Phân tích độ nhạy nhân hệ số độ khó SIMULATED suy từ trung vị điểm persona."
+  retake_multiplier_sensitivity:
+    values: [0.9, 1.0, 1.1]
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Phân tích độ nhạy; UCI-697 không có lịch sử học lại theo học phần."
+  m3_prime:
+    minimum_students:
+      value: 30
+      label: "GIẢ ĐỊNH tạm"
+      source: "Ngưỡng cỡ mẫu prototype; TODO: xác nhận tiêu chuẩn với giảng viên/đánh giá NTU."
+
+rule_engine:
+  prerequisite_policy:
+    strict_type:
+      value: "tiên quyết"
+      source: "Mô hình giả định trong giai đoạn 1; TODO: đối chiếu quy chế NTU."
+    prior_study_type:
+      value: "học trước"
+      source: "Cho phép nếu đã học hoặc đang học, không bắt buộc đạt; TODO: xác nhận."
+    concurrent_type:
+      value: "song hành"
+      source: "Nếu có trong CTĐT chính thức, cho phép trong cùng kỳ; dữ liệu SIMULATED hiện chưa dùng."
+  risk_tiers:
+    selection_target_recall:
+      value: 0.90
+      label: "mục tiêu validation exploratory"
+      source: "Mục tiêu recall Dropout; ngưỡng được chọn bằng 5-fold OOF trên train, seed 20261105; TODO: kiểm tra lại trên dữ liệu NTU/giảng viên duyệt."
+    medium_tier_recall_target:
+      value: 0.98
+      label: "mục tiêu validation exploratory"
+      source: "Mục tiêu recall cho nhóm trung bình trở lên; ngưỡng chọn bằng 5-fold OOF trên train, seed 20261105; TODO: giảng viên duyệt."
+    low_max_p_dropout:
+      value: 0.029362255379757403
+      label: "validation-derived exploratory"
+      source: "Ngưỡng OOF lớn nhất đạt recall Dropout >= 0.98 (thấp đến trung bình); dữ liệu REAL UCI-697, seed 20261105; chưa phải ngưỡng triển khai."
+    medium_max_p_dropout:
+      value: 0.1386536269981684
+      label: "validation-derived exploratory"
+      source: "Ngưỡng OOF lớn nhất đạt recall Dropout >= 0.90 (trung bình đến cao); dữ liệu REAL UCI-697, seed 20261105; chưa phải ngưỡng triển khai."
+    credit_caps:
+      low: 18
+      medium: 15
+      high: 12
+      label: "GIẢ ĐỊNH tạm"
+      source: "Các kịch bản yêu cầu 12/15/18; gắn vào risk tier chỉ minh họa, TODO: quy chế NTU/giảng viên."
+    expected_failed_course_caps:
+      low: 2.0
+      medium: 1.5
+      high: 1.0
+      label: "GIẢ ĐỊNH tạm"
+      source: "Trần minh họa cho prototype; TODO: xác định theo đánh giá và duyệt của giảng viên."
+    enforce_cap:
+      value: false
+      label: "GIẢ ĐỊNH mặc định an toàn"
+      source: "Giới hạn tín chỉ/trượt là khuyến nghị mềm; chỉ bật cứng sau khi giảng viên duyệt."
+  risk_restriction:
+    selected_probability_threshold:
+      value: 0.50
+      label: "validation-derived exploratory"
+      source: "Ngưỡng thấp nhất trong lưới đạt PPV OOF >= 0.70 và cỡ mẫu >=30; seed 20261105; chưa phải quy chế."
+    minimum_probability:
+      value: 0.50
+      label: "GIẢ ĐỊNH chính sách"
+      source: "Không hạn chế tải quanh tỷ lệ nền 32%; TODO: thẩm định bằng validation đã hiệu chuẩn."
+    minimum_ppv:
+      value: 0.70
+      label: "GIẢ ĐỊNH chính sách"
+      source: "Mục tiêu precision tối thiểu cho tầng chỉ được khuyến nghị giảm tải; TODO: giảng viên duyệt."
+    minimum_count:
+      value: 30
+      label: "GIẢ ĐỊNH tạm"
+      source: "Cỡ mẫu tối thiểu để báo PPV theo ngưỡng; TODO: xác nhận phương pháp."
+    probability_grid:
+      values: [0.50, 0.55, 0.60, 0.65, 0.70, 0.75]
+      label: "GIẢ ĐỊNH validation grid"
+      source: "Lưới thăm dò ngưỡng restriction theo xác suất isotonic-calibrated OOF."
+  graduation:
+    credits_required:
+      value: 128
+      label: "SIMULATED"
+      source: "Tổng tín chỉ catalogue fixture; TODO: thay bằng CTĐT chính thức NTU."
+
+optimization:
+  beta_unlock_value:
+    value: 0.125
+    label: "GIẢ ĐỊNH theo quy tắc"
+    source: "1 / 8 học kỳ fixture: một tín chỉ mở khóa được quy về 1/8 tín chỉ hiện kỳ; TODO: giảng viên duyệt."
+  gamma_failure_penalty:
+    value: 1.0
+    label: "GIẢ ĐỊNH theo đơn vị"
+    source: "1 tín chỉ kỳ vọng trượt tính bằng 1 tín chỉ chi phí học lại; TODO: thay theo học phí/quy chế."
+  unlock_discount_per_edge:
+    value: 0.5
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Chiết khấu giá trị tín chỉ mở khóa 50% mỗi cạnh tiên quyết; TODO: hiệu chỉnh theo CTĐT chính thức."
+  risk_cap_slack_penalty:
+    value: 1000.0
+    label: "GIẢ ĐỊNH prototype"
+    source: "Phạt lớn theo tín chỉ tương đương cho mỗi expected failure vượt cap; chỉ để solver trả best_effort thay vì infeasible."
+  c_min_relaxed:
+    value: 6
+    label: "GIẢ ĐỊNH/TODO"
+    source: "Mức tải giảm tải thử nghiệm; TODO: đối chiếu quy chế về học kỳ giảm tải/cảnh báo học vụ."
+
+  objective_sensitivity:
+    beta_values: [0.0, 0.125, 0.25, 0.5]
+    gamma_values: [0.5, 1.0, 2.0]
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Lưới độ nhạy prototype, không phải ước lượng thống kê."
+  required_retake_courses:
+    value: true
+    label: "GIẢ ĐỊNH quy tắc"
+    source: "Ưu tiên học lại môn bắt buộc đang chặn chuỗi tiên quyết; TODO: xác nhận với giảng viên."
+  load_lambda_sensitivity:
+    values: [0.0, 0.1, 0.3]
+    label: "GIẢ ĐỊNH kịch bản"
+    source: "Hiển thị song song; không ước lượng nhân quả từ UCI-697."
+  prototype_solver:
+    value: "PuLP with HiGHS"
+    label: "prototype"
+    source: "Bộ giải mã nguồn mở cho kiểm tra công thức; chưa phải triển khai cuối."
+
+monte_carlo:
+  repetitions:
+    value: 1000
+    label: "GIẢ ĐỊNH mô phỏng"
+    source: "Số lượt tối thiểu theo yêu cầu khảo sát; tăng khi đánh giá giai đoạn 2."
+  seed:
+    value: 20261105
+    source: "Seed cố định để tái lập kết quả."
+  completion_deadline_semesters:
+    value: 8
+    label: "SIMULATED"
+    source: "Khung 8 học kỳ của CTĐT fixture; TODO: thay bằng thời hạn quy chế NTU."

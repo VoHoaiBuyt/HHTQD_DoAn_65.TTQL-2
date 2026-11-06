@@ -1,0 +1,14 @@
+Curriculum validation — SIMULATED
+PASS: Mã học phần duy nhất.
+PASS: Số học phần 48 nằm trong khoảng 40–50.
+PASS: Có đủ học kỳ dự kiến 1–8.
+PASS: Mọi học phần được gắn nhãn SIMULATED.
+PASS: Mọi course_id và prerequisite_id trong quan hệ tiên quyết đều tồn tại.
+PASS: Đồ thị tiên quyết là DAG, không có chu trình.
+PASS: Thứ tự học kỳ phù hợp loại quan hệ tiên quyết/học trước/song hành.
+PASS: Loại quan hệ chỉ gồm 'tiên quyết', 'học trước' hoặc 'song hành'.
+PASS: Mỗi học phần có ít nhất một học kỳ mở, gồm học kỳ dự kiến.
+PASS: Tổng tín chỉ catalogue 128 nằm trong khoảng 120–140.
+PASS: Tín chỉ từng học kỳ nằm trong khoảng cấu hình 12–18.
+Tín chỉ theo học kỳ — SIMULATED: HK1=16, HK2=15, HK3=16, HK4=17, HK5=16, HK6=16, HK7=16, HK8=16
+KẾT LUẬN: PASS (128 tín chỉ, 48 học phần)

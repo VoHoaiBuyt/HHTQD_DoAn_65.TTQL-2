@@ -1,0 +1,4 @@
+﻿data_label,hk1_ability,student_count_with_hk2_enrollment,hk2_enrolled_units,hk2_approved_units,m3_prime_pass_rate
+REAL (UCI-697),Thấp,1169,6776,1683,0.2483766233766234
+REAL (UCI-697),Cao,1728,11366,10592,0.9319021643498152
+REAL (UCI-697),Trung bình,1347,9429,7349,0.7794039664863718

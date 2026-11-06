@@ -1,0 +1,4 @@
+﻿data_label,hk1_ability,student_count_with_hk2_enrollment,hk2_enrolled_units,hk2_approved_units,pass_rate_2
+"REAL (UCI-697), Target != Dropout",Cao,1577,10427,9870,0.946580991656277
+"REAL (UCI-697), Target != Dropout",Trung bình,1037,7277,6064,0.8333104301223031
+"REAL (UCI-697), Target != Dropout",Thấp,286,1653,933,0.5644283121597096

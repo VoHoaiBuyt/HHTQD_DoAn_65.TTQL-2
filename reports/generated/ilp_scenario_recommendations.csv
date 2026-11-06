@@ -1,0 +1,13 @@
+﻿data_label,student_id,load_lambda,recommended_credit_scenario,selected_course_ids,selected_credits,expected_failed_courses,meets_soft_risk_and_deadline,action
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S001,0.0,18,"EL506, IT501, IT502, IT503, IT504, IT505, IT705",18,0.20020173832011967,True,Đề xuất kịch bản thỏa tiêu chí mềm.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S001,0.1,18,"EL506, IT501, IT502, IT503, IT504, IT505, IT705",18,0.7946137611002279,True,Đề xuất kịch bản thỏa tiêu chí mềm.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S001,0.3,15,"EL506, IT501, IT502, IT504, IT505, IT705",15,0.08616506358226794,True,Đề xuất kịch bản thỏa tiêu chí mềm.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S002,0.0,15,"EL506, IT501, IT502, IT505, EL706, IT705",14,0.9997393417670088,True,Đề xuất kịch bản thỏa tiêu chí mềm.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S002,0.1,15,"EL506, IT501, IT502, IT505, EL706, IT705",14,0.9997393417670088,True,Đề xuất kịch bản thỏa tiêu chí mềm.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S002,0.3,15,"EL506, IT501, IT502, IT505, EL706, IT705",14,0.9997393417670088,True,Đề xuất kịch bản thỏa tiêu chí mềm.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S003,0.0,12,"IT501, IT502, IT503, IT504",12,2.9802565392354126,False,Không có kịch bản đạt mọi tiêu chí; gặp cố vấn và xem xét giảm tải.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S003,0.1,12,"IT501, IT502, IT503, IT504",12,2.9802565392354126,False,Không có kịch bản đạt mọi tiêu chí; gặp cố vấn và xem xét giảm tải.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S003,0.3,12,"IT501, IT502, IT503, IT504",12,2.9802565392354126,False,Không có kịch bản đạt mọi tiêu chí; gặp cố vấn và xem xét giảm tải.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S005,0.0,15,"EL506, IT502, IT503, IT504, IT505",13,0.9438061180744453,False,Không có kịch bản đạt mọi tiêu chí; gặp cố vấn và xem xét giảm tải.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S005,0.1,15,"EL506, IT502, IT503, IT504, IT505",13,0.9438061180744453,False,Không có kịch bản đạt mọi tiêu chí; gặp cố vấn và xem xét giảm tải.
+SIMULATED + GIẢ ĐỊNH kịch bản; prototype,S005,0.3,15,"EL506, IT502, IT503, IT504, IT505",13,0.9438061180744453,False,Không có kịch bản đạt mọi tiêu chí; gặp cố vấn và xem xét giảm tải.
