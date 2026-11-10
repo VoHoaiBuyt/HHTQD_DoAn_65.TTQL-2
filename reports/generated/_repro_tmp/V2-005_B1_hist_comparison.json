@@ -1,0 +1,13 @@
+[
+  {
+    "outcome": "forced_withdrawal",
+    "semester": "",
+    "stored_count": "1000",
+    "reproduced_count": "1000",
+    "stored_n_total": "1000",
+    "reproduced_n_total": "1000",
+    "status": "MATCH",
+    "source_label_saved": "",
+    "source_label_reproduced": "SCENARIO / GIẢ ĐỊNH (Monte Carlo)"
+  }
+]
