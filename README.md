@@ -64,6 +64,18 @@ submission `dist/` package. The full in-worktree pytest transcript is
 `reports/generated/pytest_summary.txt`; the concise clean-copy record is
 `reports/generated/final_environment_validation.md`.
 
+### Submission package
+
+Build the whitelist package with `python -m scripts.package_dist`. The package
+is assembled under `dist/`; `deliverables.md` lists its contents and exclusions.
+The package intentionally excludes the previous report template, temporary
+Monte Carlo reproductions, raw machine-specific test logs, caches, `.git`, and
+`.github/prompts/`. The final package has 154 files (5.47 MiB). A clean copy
+installed requirements, passed 119 tests (28.30s after final package sync) and
+the report checker (20 source tables; 242 prose numbers; 0 unresolved), and
+returned HTTP 200 from Streamlit. No UI screenshots or demo videos are available
+yet.
+
 ## Curriculum and regulation checks
 
 ```powershell

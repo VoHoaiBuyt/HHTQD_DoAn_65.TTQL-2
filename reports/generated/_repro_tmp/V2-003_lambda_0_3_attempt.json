@@ -1,0 +1,21 @@
+{
+  "group": "V2-003/ILP-matched/lambda=0.3",
+  "seed": 20261108,
+  "n_runs": 1000,
+  "policies": ["ILP-matched"],
+  "status": "chưa hoàn tất trong giới hạn 10 phút",
+  "result_files_written": false,
+  "attempts": [
+    {
+      "policy_scope": "default policies",
+      "status": "stopped after exceeding 10 minutes",
+      "result_files_written": false
+    },
+    {
+      "policy_scope": ["ILP-matched"],
+      "status": "stopped after approximately 10 minutes 13 seconds",
+      "result_files_written": false
+    }
+  ],
+  "note": "No comparison result is available; no match or mismatch is inferred. The permitted lambda=0.1 fallback was attempted separately and also did not complete."
+}

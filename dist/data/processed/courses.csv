@@ -1,0 +1,102 @@
+course_id,course_name,credits,planned_semester,course_type,offered_semesters,group,source_label
+POL307,Triết học Mác – Lênin,3,1,bắt buộc,odd,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP007,Tư duy phản biện,2,1,bắt buộc,odd,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP008,Ngoại ngữ giao tiếp 1,3,1,bắt buộc,odd,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP010,Toán ứng dụng 1,3,1,bắt buộc,odd,Toán Tự nhiên và Công nghệ,PDF 210_CNTT mục 7.1
+HP015,Kỹ năng số,2,1,bắt buộc,odd,Toán Tự nhiên và Công nghệ,PDF 210_CNTT mục 7.1
+HP022,Cơ sở lập trình,4,1,bắt buộc,odd,Cơ sở ngành,PDF 210_CNTT mục 7.1
+POL309,Kinh tế chính trị Mác-Lênin,2,2,bắt buộc,even,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP011,Toán ứng dụng 2,2,2,bắt buộc,even,Toán Tự nhiên và Công nghệ,PDF 210_CNTT mục 7.1
+HP013,Hóa ứng dụng B,2,2,bắt buộc,even,Toán Tự nhiên và Công nghệ,PDF 210_CNTT mục 7.1
+HP023,Cấu trúc dữ liệu và giải thuật,3,2,bắt buộc,even,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP024,Kiến trúc máy tính,3,2,bắt buộc,even,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP026,Hệ điều hành,3,2,bắt buộc,even,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP016-A,Văn hóa Việt Nam,2,2,tự chọn,even,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+HP016-B,Ngôn ngữ học thuật,2,2,tự chọn,even,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+POL308,Chủ nghĩa xã hội khoa học,2,3,bắt buộc,odd,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP012,Xác suất - Thống kê,2,4,bắt buộc,even,Toán Tự nhiên và Công nghệ,PDF 210_CNTT mục 7.1
+HP014,Vật lý ứng dụng 1,3,3,bắt buộc,odd,Toán Tự nhiên và Công nghệ,PDF 210_CNTT mục 7.1
+HP025,Cơ sở dữ liệu,3,3,bắt buộc,odd,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP027,Thiết kế Web,3,3,bắt buộc,odd,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP029,Mạng máy tính,3,3,bắt buộc,odd,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP030,Đồ án cơ sở ngành,4,6,bắt buộc,even,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP032,Phân tích thiết kế hệ thống,3,3,bắt buộc,odd,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP017-A,Nhập môn Kinh tế học,2,3,tự chọn,odd,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+BUA319,Nhập môn Quản trị học,2,3,tự chọn,odd,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+POL333,Tư tưởng Hồ Chí Minh,2,4,bắt buộc,even,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP009,Ngoại ngữ học thuật 1,3,4,bắt buộc,even,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+SSH313,Pháp luật đại cương,2,6,bắt buộc,even,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP028,Lập trình hướng đối tượng,3,4,bắt buộc,even,Cơ sở ngành,PDF 210_CNTT mục 7.1
+HP033,Hệ quản trị cơ sở dữ liệu,3,4,bắt buộc,even,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP018-A,Nhập môn Marketing,2,4,tự chọn,even,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+HP018-B,Thường thức mỹ thuật,2,4,tự chọn,even,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+HP018-C,Vật lý ứng dụng 2,2,4,tự chọn,even,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+HP031-A,Kỹ thuật đồ họa,3,4,tự chọn,even,Tự chọn cơ sở ngành,PDF 210_CNTT mục 7.1
+HP031-B,Xử lý ảnh,3,4,tự chọn,even,Tự chọn cơ sở ngành,PDF 210_CNTT mục 7.1
+HP031-C,Lập trình Python,3,4,tự chọn,even,Tự chọn cơ sở ngành,PDF 210_CNTT mục 7.1
+HP031-D,Lập trình Java,3,4,tự chọn,even,Tự chọn cơ sở ngành,PDF 210_CNTT mục 7.1
+POL310,Lịch sử Đảng Cộng sản VN,2,5,bắt buộc,odd,Xã hội Nhân văn và Nghệ thuật,PDF 210_CNTT mục 7.1
+HP034,Lập trình thiết bị di động,3,5,bắt buộc,odd,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP035,Lập trình hệ thống nhúng,3,6,bắt buộc,even,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP039-SE,Phát triển ứng dụng Web,3,5,bắt buộc,odd,Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP039-IS,Thương mại điện tử,3,5,bắt buộc,odd,Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP039-NW,Máy chủ Linux và quản trị mạng,3,5,bắt buộc,odd,Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP019-A,Đổi mới sáng tạo và Khởi nghiệp,2,5,tự chọn,odd,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+HP019-B,Phát triển bền vững,2,5,tự chọn,odd,Tự chọn giáo dục tổng quát,PDF 210_CNTT mục 7.1
+HP045-SE-A,Thống kê máy tính,3,5,tự chọn,odd,Tự chọn chuyên ngành Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP045-SE-B,Hệ thống thông tin địa lý,3,5,tự chọn,odd,Tự chọn chuyên ngành Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP045-IS-A,Phân tích và trực quan hóa dữ liệu,3,5,tự chọn,odd,Tự chọn chuyên ngành Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP045-IS-B,Hệ thống thông tin địa lý,3,5,tự chọn,odd,Tự chọn chuyên ngành Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP045-NW-A,Xử lý dữ liệu lớn,3,5,tự chọn,odd,Tự chọn chuyên ngành Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP045-NW-B,Quản trị hạ tầng số,3,5,tự chọn,odd,Tự chọn chuyên ngành Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP036,Toán rời rạc,3,5,bắt buộc,odd,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP040-SE,Công nghệ phần mềm,3,6,bắt buộc,even,Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP040-IS,Phân tích dữ liệu và kinh doanh thông minh,3,6,bắt buộc,even,Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP040-NW,Thiết kế và cài đặt mạng,3,6,bắt buộc,even,Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP041-SE,Kiến trúc và thiết kế phần mềm,3,6,bắt buộc,even,Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP041-IS,Quản lý dự án hệ thống thông tin,3,7,bắt buộc,odd,Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP041-NW,Mạng không dây và di động,3,6,bắt buộc,even,Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP046-SE-A,An toàn và bảo mật thông tin,3,6,tự chọn,even,Tự chọn chuyên ngành Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP046-SE-B,IoT và Ứng dụng,3,6,tự chọn,even,Tự chọn chuyên ngành Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP046-IS-A,An toàn và quản trị dữ liệu,3,6,tự chọn,even,Tự chọn chuyên ngành Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP046-IS-B,Xử lý dữ liệu lớn,3,6,tự chọn,even,Tự chọn chuyên ngành Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP046-NW-A,Mạng thế hệ mới,3,6,tự chọn,even,Tự chọn chuyên ngành Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP046-NW-B,IoT và ứng dụng,3,6,tự chọn,even,Tự chọn chuyên ngành Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP037,Học máy,3,7,bắt buộc,odd,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP042-SE,Kiểm thử phần mềm,3,7,bắt buộc,odd,Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP043-SE,Quản lý dự án phần mềm,3,7,bắt buộc,odd,Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP044-SE,Phát triển phần mềm thông minh ứng dụng,3,7,bắt buộc,odd,Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP042-IS,Ứng dụng AI trong kinh doanh và quản lý,3,7,bắt buộc,odd,Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP043-IS,Hệ thống khuyến nghị,3,7,bắt buộc,odd,Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP044-IS,Hệ thống truy xuất nguồn gốc,3,6,bắt buộc,even,Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP042-NW,An toàn mạng,3,7,bắt buộc,odd,Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP043-NW,Phát triển ứng dụng AioT,3,7,bắt buộc,odd,Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP044-NW,Điện toán đám mây,3,7,bắt buộc,odd,Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP047-SE-A,Phát triển phần mềm hướng đối tượng,3,7,tự chọn,odd,Tự chọn chuyên ngành Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP047-SE-B,Phát triển phần mềm mã nguồn mở,3,7,tự chọn,odd,Tự chọn chuyên ngành Công nghệ phần mềm,PDF 210_CNTT mục 7.1
+HP047-IS-A,Hệ thống khuyến nghị,3,7,tự chọn,odd,Tự chọn chuyên ngành Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP047-IS-B,Khai phá dữ liệu ứng dụng,3,7,tự chọn,odd,Tự chọn chuyên ngành Hệ thống thông tin,PDF 210_CNTT mục 7.1
+HP047-NW-A,Kỹ thuật phát hiện và phòng chống tấn công mạng,3,7,tự chọn,odd,Tự chọn chuyên ngành Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP047-NW-B,Truyền thông đa phương tiện,3,7,tự chọn,odd,Tự chọn chuyên ngành Truyền thông và Mạng máy tính,PDF 210_CNTT mục 7.1
+HP038,Đồ án chuyên ngành,5,8,bắt buộc,even,Ngành - bắt buộc chung,PDF 210_CNTT mục 7.1
+HP048-A,Khóa luận tốt nghiệp,5,8,tự chọn,even,Tốt nghiệp - chọn một phương án,PDF 210_CNTT mục 7.1
+HP048-B,Chuyên đề tốt nghiệp,5,8,tự chọn,even,Tốt nghiệp - chọn một phương án,PDF 210_CNTT mục 7.1
+QPAD011,Đường lối QP&AN của ĐCSVN,3,1,bắt buộc,odd,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+QPAD02,Công tác quốc phòng và an ninh,2,1,bắt buộc,odd,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+QPAD033,Quân sự chung,1,1,bắt buộc,odd,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+QPAD044,Kỹ thuật chiến đấu bộ binh và chiến thuật,2,1,bắt buộc,odd,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6000,Giáo dục thể chất chung,1,1,bắt buộc,odd,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6001,Bơi lội 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6002,Bơi lội 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6003,Bóng đá 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6004,Bóng đá 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6005,Bóng chuyền 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6006,Bóng chuyền 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6007,Cầu lông 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6008,Cầu lông 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6009,Taekwondo 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6010,Taekwondo 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6011,Aerobic 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6012,Aerobic 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6013,Pickleball 1,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1
+PHE6014,Pickleball 2,1,2,tự chọn,both,GDTC và QP-AN ngoài 130 tín chỉ,PDF 210_CNTT mục 7.1

@@ -1,0 +1,12 @@
+{
+  "groups": [
+    "V2-001/ILP-matched/lambda=0.1",
+    "V2-001/B1/lambda=0.1"
+  ],
+  "stored_rows": 15,
+  "reproduced_rows": 15,
+  "matched_keys_counts": 15,
+  "mismatches": 0,
+  "metadata_differences": 15,
+  "metadata_note": "source_label blank in saved histogram; reproduced label is present; excluded from gate"
+}

@@ -1,0 +1,133 @@
+{
+  "fixture_label": "TEST_FIXTURE",
+  "target_semester": 3,
+  "previous_main_semester": 2,
+  "student_id": "TEST_FIXTURE",
+  "academic_flags": [
+    {
+      "code": "W1",
+      "active": true,
+      "value": 25,
+      "unit": "credits",
+      "threshold": 24,
+      "comparison": ">",
+      "status": "UNCONFIRMED",
+      "ref": "Đ19",
+      "calculation_status": "computed",
+      "definition_status": "UNCONFIRMED"
+    },
+    {
+      "code": "W2",
+      "active": true,
+      "value": 1.0,
+      "failed_credits": 25,
+      "registered_credits": 25,
+      "threshold": 0.5,
+      "comparison": ">",
+      "status": "CONFIRMED",
+      "ref": "Đ19",
+      "calculation_status": "computed"
+    },
+    {
+      "code": "W3",
+      "active": false,
+      "value": 4.9,
+      "unit": "GPA10",
+      "threshold": 4.5,
+      "comparison": "<",
+      "status": "CONFIRMED",
+      "ref": "Đ19",
+      "calculation_status": "computed",
+      "classification": "YEU_KEM"
+    },
+    {
+      "code": "W4",
+      "active": false,
+      "value": null,
+      "unit": "GPA10",
+      "study_year": 1,
+      "accumulated_credits": 0,
+      "study_year_status": "CONFIRMED",
+      "study_year_label": null,
+      "threshold": 5.2,
+      "comparison": "<",
+      "status": "CONFIRMED",
+      "ref": "Đ19",
+      "calculation_status": "cannot_compute"
+    },
+    {
+      "code": "FORCED_WITHDRAWAL",
+      "active": false,
+      "consecutive_warning_count": 0,
+      "consecutive_warning_threshold": 2,
+      "trigger": "consecutive warnings > 2 or main semesters > 16",
+      "duration_semesters": 2,
+      "maximum_duration_semesters": 16,
+      "status": "CONFIRMED",
+      "ref": "Đ19"
+    }
+  ],
+  "registration_credit_limits": {
+    "cmin": 12,
+    "cmax": 18,
+    "regime": "WEAK_OR_POOR",
+    "previous_semester_gpa": 4.9,
+    "notes": [
+      "Ràng buộc tín chỉ quy chế khác với trần rủi ro mềm; P(Dropout) chỉ là cảnh báo/khuyến nghị.",
+      "Chế độ WEAK_OR_POOR theo TBHK học kỳ chính liền trước 4.90 (ngưỡng 5.00)."
+    ]
+  },
+  "forced_retakes": [
+    {
+      "course_key": "TEST-RET-0",
+      "grade_10": 4.9,
+      "must_register": true,
+      "status": "CONFIRMED",
+      "ref": "Đ11"
+    },
+    {
+      "course_key": "TEST-RET-1",
+      "grade_10": 4.9,
+      "must_register": true,
+      "status": "CONFIRMED",
+      "ref": "Đ11"
+    },
+    {
+      "course_key": "TEST-RET-2",
+      "grade_10": 4.9,
+      "must_register": true,
+      "status": "CONFIRMED",
+      "ref": "Đ11"
+    },
+    {
+      "course_key": "TEST-RET-3",
+      "grade_10": 4.9,
+      "must_register": true,
+      "status": "CONFIRMED",
+      "ref": "Đ11"
+    },
+    {
+      "course_key": "TEST-RET-4",
+      "grade_10": 4.9,
+      "must_register": true,
+      "status": "CONFIRMED",
+      "ref": "Đ11"
+    }
+  ],
+  "retake_credits_total": 0,
+  "honors_downgrade_risk": false,
+  "edge_case_flags": [
+    {
+      "code": "PREREQUISITE_COMPLETENESS_UNCONFIRMED",
+      "severity": "warning",
+      "label": "GIẢ ĐỊNH (chờ đối chiếu quy chế)",
+      "message": "Chưa xác nhận rằng dòng tiên quyết vắng mặt nghĩa là không có tiên quyết."
+    },
+    {
+      "code": "RETAKE_LIMIT_UNKNOWN",
+      "severity": "warning",
+      "source": "NOT_FOUND",
+      "message": "Không áp giới hạn lượt học lại khi chưa có quy chế xác nhận."
+    }
+  ]
+}

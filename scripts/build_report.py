@@ -770,10 +770,20 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     _add_table_by_title(document, tables, "Monte Carlo — Pareto V2-001 và V2-003, λ=0.1")
     _add_table_by_title(document, tables, "Monte Carlo — ghi chú metadata histogram, λ=0.1")
     document.add_paragraph(
-        "Kiểm tái tạo (thay cho code_hash không tồn tại): với seed 20261108, N=1.000 và số ngẫu nhiên "
-        "chung, mã hiện tại cho lại đúng các kết quả đã lưu ở 3 nhóm đã kiểm (109/109 cột, sai số "
-        "≤ 1e-9; khóa dòng và giá trị số histogram khớp). Nhánh soft của optimizer không nằm trong "
-        "đường chạy Monte Carlo (chế độ off), nên không ảnh hưởng đến kết quả đã lưu."
+        "Kiểm tái tạo 3 nhóm (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0,1); "
+        "trong đó 1 nhóm dùng ILP; không có code_hash. Với các nhóm này, 109/109 cột "
+        "kết quả khớp; V2-005 có 101 cột số trong tổng 109 cột. Sai số số học ≤ 1e-9; "
+        "khóa dòng và count/n_total của histogram khớp. Đây không phải kiểm chứng toàn bộ "
+        "tổ hợp hồ sơ/chính sách."
+    )
+    document.add_paragraph(
+        "Riêng V2-005/B1, mô phỏng đã ghi kết quả nhưng hậu xử lý phát sinh KeyError; "
+        "thông báo lỗi nguyên văn không được lưu. Đối chiếu được thực hiện trên "
+        "V2-005_B1_results.csv và V2-005_B1_grad_hist.csv với dòng V2-005/B1 trong "
+        "mc_results.csv và mc_grad_hist.csv; đây là các tệp đã có trước khi hậu xử lý lỗi. "
+        "Tái tạo bổ sung V2-003/ILP-matched, λ=0,3 chưa hoàn tất trong giới hạn 10 phút; "
+        "theo chỉ dẫn đã thử fallback λ=0,1 nhưng lần đó cũng chưa hoàn tất trong giới hạn. "
+        "Không có kết quả đối chiếu cho cả hai lần chạy."
     )
     document.add_paragraph("Diễn giải Monte Carlo nguyên văn từ mc_interpretation.md:")
     for line in mc_interpretation.splitlines():

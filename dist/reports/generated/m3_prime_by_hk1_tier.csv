@@ -1,0 +1,4 @@
+﻿tier,low_max,medium_max,n_students_raw_tier_with_hk2,n_students_pooled,merged_tiers,approved_units_hk2_pooled,enrolled_units_hk2_pooled,pooled_pass_rate,estimable,includes_later_dropout
+Thấp,0.7142857142857143,1.0,822,822,Thấp,1467,4833,0.30353817504655495,True,True
+Trung bình,0.7142857142857143,1.0,657,657,Trung bình,3824,4680,0.8170940170940171,True,True
+Cao,0.7142857142857143,1.0,1067,1067,Cao,6532,7021,0.9303518017376442,True,True

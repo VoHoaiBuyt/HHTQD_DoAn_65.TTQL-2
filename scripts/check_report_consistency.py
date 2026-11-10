@@ -13,6 +13,7 @@ from scripts.build_report import (
     _read_text,
     report_tables,
 )
+from scripts.audit_report_prose import audit as audit_report_prose
 
 
 REQUIRED_HEADINGS = {
@@ -85,8 +86,13 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     if any(row[-1] != MC_HISTOGRAM_SOURCE_LABEL for row in histogram[2:]):
         raise ValueError("Histogram display labels do not use the report generator source label")
     report_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
-    if "Kiểm tái tạo (thay cho code_hash không tồn tại)" not in report_text:
+    if "Kiểm tái tạo 3 nhóm (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0,1)" not in report_text:
         raise ValueError("Report is missing the Monte Carlo reproducibility disclosure")
+    interpretation = _read_text("mc_interpretation.md")
+    if "Kiểm tái tạo 3 nhóm (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0,1)" not in interpretation:
+        raise ValueError("Monte Carlo interpretation is missing the scoped reproduction disclosure")
+    if "optimizer không nằm trong" in report_text or "không ảnh hưởng đến kết quả đã lưu" in report_text:
+        raise ValueError("Report contains an unsupported broad optimizer-impact claim")
     checked.append("Các điểm đã chỉnh so với báo cáo lần trước")
 
     curriculum_table = next(
@@ -99,6 +105,15 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
         next(rows for title, _, rows in report_tables() if title == "CTĐT — kiểm tra")
     ):
         raise ValueError("n_checks is not the number of validation checks")
+    prose_numbers = audit_report_prose()
+    unmatched = [
+        row for row in prose_numbers
+        if row["source_match"] == "KHÔNG KHỚP/CHƯA XÁC ĐỊNH"
+    ]
+    if unmatched:
+        raise ValueError(
+            f"Report prose contains {len(unmatched)} numbers without a generated/config source match"
+        )
     return checked
 
 
@@ -107,6 +122,10 @@ def main() -> None:
     print("PASS: curriculum n_checks sourced from JSON; informational counts are separate.")
     print(f"PASS: {len(checked)} source tables match reports/generated inputs.")
     print(f"PASS: {len(REQUIRED_HEADINGS)} required report sections are present.")
+    prose_numbers = audit_report_prose()
+    print(
+        f"PASS: {len(prose_numbers)} prose-number occurrences matched reports/generated or config; 0 unresolved."
+    )
     print(f"REPORT_CONSISTENCY: PASS ({len(checked)} tables)")
 
 

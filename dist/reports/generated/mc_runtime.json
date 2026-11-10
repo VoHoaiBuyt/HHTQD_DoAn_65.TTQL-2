@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "seed": 20261108,
+  "n_runs": 1000,
+  "n_profiles": 9,
+  "policies": [
+    "ILP-matched",
+    "ILP-fixed",
+    "B1",
+    "B2",
+    "B3"
+  ],
+  "lambdas": [
+    0.0,
+    0.1,
+    0.3
+  ],
+  "n_workers": 8,
+  "elapsed_seconds": 6226.012100699999,
+  "runs_elapsed_seconds_by_lambda": {
+    "0.0": 2218.9328843999992,
+    "0.1": 1869.47073,
+    "0.3": 2137.6084862999996
+  },
+  "mean_seconds_per_profile_policy_lambda": 46.11860815333333,
+  "scope": "SCENARIO only; model probabilities are exploratory and not evidence of NTU effectiveness",
+  "limitations": [
+    "Pass/fail outcomes are independent between courses.",
+    "No explicit dropout hazard; the M3-prime baseline includes later dropout.",
+    "Future term credit regime is recomputed from credit-weighted pass=7.0/fail=4.0 proxy grades (GIẢ ĐỊNH).",
+    "Graduation GPA uses nominal 7.0 for simulated passes; this is a scenario proxy, not observed performance.",
+    "Learning outcomes are assumed achieved (GIẢ ĐỊNH).",
+    "Summer terms and class availability are not modeled."
+  ],
+  "caveat": "?=0.3 was rerun after restoring the five-policy source; the superseded four-policy result is excluded."
+}

@@ -1,0 +1,89 @@
+source_label: "OFFICIAL (NTU)"
+source_document: "210_CNTT.pdf"
+source_section: "7.1"
+program:
+  total_credits: 130
+  specializations:
+    - SE
+    - IS
+    - NW
+  mandatory_by_semester:
+    - 17
+    - 15
+    - 17
+    - 13
+    - 11
+    - 15
+    - 12
+    - 10
+  elective_by_semester:
+    - 0
+    - 2
+    - 2
+    - 5
+    - 5
+    - 3
+    - 3
+    - 0
+  graduation_slot:
+    slot: HP048
+    required_credits: 5
+    semester: 8
+    selection_required: 1
+  required_elective_slots:
+    SE: [HP016, HP017, HP018, HP019, HP031, HP045-SE, HP046-SE, HP047-SE]
+    IS: [HP016, HP017, HP018, HP019, HP031, HP045-IS, HP046-IS, HP047-IS]
+    NW: [HP016, HP017, HP018, HP019, HP031, HP045-NW, HP046-NW, HP047-NW]
+  external_groups:
+    - "GDTC và QP-AN ngoài 130 tín chỉ"
+assumptions:
+  label: "GIẢ ĐỊNH (suy từ CTĐT)"
+  specialization_semantics:
+    value: "Mỗi sinh viên theo một chuyên ngành; mã hậu tố -SE, -IS, -NW xác định nhánh."
+    source: "Suy từ mã học phần và tên nhóm trong bảng mục 7.1."
+  elective_slot_semantics:
+    value: "Các mã cùng tiền tố HPnnn và khác hậu tố lựa chọn thuộc cùng một ô; HP045/046/047 tách theo chuyên ngành."
+    source: "Suy từ nhóm lựa chọn trong bảng mục 7.1."
+  general_elective_slot_hp017:
+    value: ["HP017-A", "BUA319"]
+    slot: HP017
+    reason: "Hai lựa chọn 2 tín chỉ cùng phân bổ vào HK3; giả định cùng một ô."
+  graduation_slot:
+    value: "HP048-A và HP048-B là hai phương án thay thế; chọn đúng một phương án 5 tín chỉ."
+  course_code_origin:
+    pdf_prefixes: [POL, SSH, BUA, MKT, PHE, QPAD]
+    unconfirmed_prefixes: [HP]
+    source: "Mã HP0xx không được in cạnh các học phần tương ứng trong bảng PDF đã trích xuất."
+  offering_rule:
+    value: "Map offered_semesters odd/even/both to academic-semester parity."
+    label: "GIẢ ĐỊNH (suy từ CTĐT)"
+    limitation: "Lịch mở không được xác nhận trong bảng CTĐT; học kỳ phụ chưa mô hình hóa."
+  prerequisite_semantics:
+    strict_type:
+      value: "tiên quyết"
+      meaning: "Phải hoàn thành/đạt trước khi đăng ký."
+      label: "GIẢ ĐỊNH (chờ đối chiếu quy chế)"
+    concurrent_type:
+      value: "song hành"
+      meaning: "Được học cùng kỳ hoặc đã/đang học."
+      label: "GIẢ ĐỊNH (chờ đối chiếu quy chế)"
+  prerequisite_completeness:
+    value: UNCONFIRMED
+    label: "GIẢ ĐỊNH (chờ đối chiếu quy chế)"
+    meaning: "Chưa xác nhận dòng tiên quyết vắng mặt đồng nghĩa với không có tiên quyết."
+unknowns:
+  retake_limit:
+    value: UNKNOWN
+    source: NOT_FOUND
+  academic_warning_thresholds:
+    value: UNKNOWN
+    source: NOT_FOUND
+  max_credits_per_semester:
+    value: UNKNOWN
+    source: NOT_FOUND
+  minimum_credits_per_semester:
+    value: UNKNOWN
+    source: NOT_FOUND
+  summer_term_offerings:
+    value: UNKNOWN
+    source: NOT_FOUND

@@ -21,3 +21,9 @@
 Phân tích quan sát **REAL (UCI-697), C.2** không tìm bằng chứng tải cao làm giảm tỷ lệ đạt: trong tầng Trung bình pass-rate là 0,756 / 0,730 / 0,842 (1–5 / 6–7 / 8+ units), tầng Cao là 0,915 / 0,915 / 0,966; tầng Thấp không đơn điệu. Đây không phải thí nghiệm ngẫu nhiên và không cho phép kết luận nhân quả. Vì vậy không kết luận hệ thống tốt hơn cách đăng ký thông thường; ILP chỉ có thể hữu ích khi người dùng/cố vấn muốn so sánh phương án dưới giả định rủi ro, giới hạn và quy tắc đã xác nhận.
 
 **Hạn chế:** M3' gồm cả sinh viên UCI về sau Dropout và là proxy ngoài NTU; không cộng hazard dropout lần hai. Kết quả từng môn độc lập; kỳ hè không mô phỏng; W3/W4 chưa mô phỏng; điểm đạt/trượt 7,0/4,0 là GIẢ ĐỊNH dùng tính TBHK và tốt nghiệp. λ, hệ số học lại và mô hình xác suất đều là giả định/exploratory. Các trung bình trên không thay thế KTC ghép cặp và kết luận Pareto theo từng hồ sơ.
+
+**Kiểm tái tạo 3 nhóm (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0,1); trong đó 1 nhóm dùng ILP; không có code_hash.** Đây không phải kiểm chứng toàn bộ tổ hợp hồ sơ/chính sách.
+
+Với V2-005/B1, mô phỏng đã ghi kết quả nhưng hậu xử lý phát sinh `KeyError`; thông báo lỗi nguyên văn không được lưu. Đối chiếu được thực hiện trên `V2-005_B1_results.csv` và `V2-005_B1_grad_hist.csv` đã có trước khi hậu xử lý lỗi, so với các dòng tương ứng trong `mc_results.csv` và `mc_grad_hist.csv`: 109/109 cột kết quả (101 cột số trong V2-005) và 1/1 dòng histogram khớp theo tiêu chí đã duyệt; `source_label` là khác biệt metadata.
+
+Tái tạo bổ sung V2-003/ILP-matched, λ=0,3 chưa hoàn tất trong giới hạn 10 phút; theo chỉ dẫn đã thử fallback λ=0,1 nhưng lần đó cũng chưa hoàn tất trong giới hạn. Không có kết quả đối chiếu cho cả hai lần chạy.

@@ -85,8 +85,8 @@ stdout JSON):**
 ```text
 ...............                                                          [100%]
 ============================== warnings summary ===============================
-C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\anyio\pytest_plugin.py:14
-  C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\anyio\pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+site-packages/anyio/pytest_plugin.py:14
+  site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
   The CallSpec2 alias will be removed in pytest 10.
   Update imports to use CallSpec instead.
   See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
@@ -215,13 +215,11 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
 - Trạng thái, cây thư mục, các mục REVIEW và kết quả cổng được ghi trong
   `cleanup_manifest.md`. Step 2C/2D được hoãn; các mục REVIEW chưa có quyết
   định cụ thể vẫn được giữ nguyên.
-- Bản `dist/` hiện chỉ có hai tệp `data/scenarios_v1/` cùng README bằng chứng
-  kiểm định; sẽ hoàn thiện theo whitelist ở Phần 6. `.github/prompts/` được giữ
-  trong repo nhưng loại khỏi `dist/`.
+- `.github/prompts/` được giữ trong repo nhưng loại khỏi `dist/`.
 
 ## Part 6a — report and final checks (2026-11-10)
 
-- Old report found at `E:\HHTQD_DoAn\BaoCao_Nhom1_HTTQD_65.TTQL-2.docx`;
+- Old report found in the repository root as `BaoCao_Nhom1_HTTQD_65.TTQL-2.docx`;
   a byte-identical read-only copy and outline are under `docs/templates/` and
   `reports/generated/old_report_outline.md`. Prior simulated claims and their
   replacements are catalogued in `reports/generated/old_report_replaced_content.md`.
@@ -231,14 +229,18 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
   `reports/generated/final_mismatch_disposition.md`. Raw
   `reports/generated/part4_fix_evidence.md` remains unchanged and is identified
   in `docs/README.md` as a raw record, not a final deliverable.
-- MC recreation replaced the missing `code_hash` validator: all 109 columns
-  and histogram numeric keys/counts matched for V2-001/ILP-matched, V2-001/B1,
-  and V2-005/B1 at λ=0.1, seed 20261108, N=1,000. The saved histogram
-  `source_label` is blank; this metadata difference is excluded from the gate.
-  The soft optimizer branch is off in the MC path. The path-scoped git log
-  showed only snapshot `a261a28`, so the repository history cannot establish
-  whether a later optimizer change occurred after the saved MC artifacts; no
-  commit-specific diff attribution is verifiable.
+- MC recreation replaced the missing `code_hash` validator for three groups
+  (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0.1); one group uses ILP.
+  Result fields and histogram keys/counts match. The two V2-001 groups match
+  15/15 histogram rows. V2-005 has 101 numeric fields among 109 result columns.
+  `source_label` is blank in saved histograms and excluded from the gate.
+  V2-003/ILP-matched at λ=0.3 did not complete within the 10-minute cap; see
+  `_repro_tmp/V2-003_lambda_0_3_attempt.json`.
+  The V2-005 post-processing failure was a `KeyError`; its exact message was
+  not persisted. Raw result files existed before that post-processing error.
+  The path-scoped git log showed only snapshot `a261a28`, so the repository
+  history cannot establish whether optimizer changes postdate the saved MC
+  artifacts. No global optimizer-impact conclusion is claimed.
 - Full pytest: 119 passed, 252 warnings. AppTest: 23 passed, 84 warnings.
   Streamlit health: HTTP 200, body `ok`. The normalized 72-file SHA-256
   baseline has 0 mismatch/missing. A clean project copy installed requirements
@@ -246,6 +248,23 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
   not a `dist/` verification.
 - `reports/generated/final_requirements_matrix.md`,
   `final_questions_for_co.md`, and `final_cover_message.md` contain the
-  requested review artifacts. The cover message and report pages are estimates
-  until the report is rendered in Word.
-- **Chặng 6a complete; 6b has not been started.** `dist/` remains partial.
+  requested review artifacts. The cover message is 186 words. No table of
+  contents is present in the Word file; page count remains unverified because
+  no Word/LibreOffice renderer is available.
+- Prose audit: 222 numeric occurrences, 0 unresolved; 114 restricted-phrase
+  occurrences are recorded with context in `final_phrase_scan.csv`. The
+  checker matches 20 source tables; the three unchecked tables are the
+  histogram metadata note, UI-page mapping, and assumption appendix.
+- **Chặng 6b package/test steps complete; awaiting AQL approval. No tag has been created.**
+
+## Part 6b — packaging status
+
+- `scripts/package_dist.py` builds the whitelist. The final clean copy installed
+  requirements, passed 119 tests in 29.02s; the final package sync rerun passed
+  119 tests in 28.30s. The checker passed 20 tables and
+  242 prose numbers, and Streamlit returned HTTP 200 / `ok`. The first test exposed a
+  missing `reports/data_dictionary.csv`; the packager was corrected and the
+  subsequent clean-copy checks passed. The final package has 154 files (5.47 MiB),
+  no demo media, and no personal absolute paths. See
+  `reports/generated/final_dist_validation.md`.
+- No `submission-v1` tag until AQL approval.

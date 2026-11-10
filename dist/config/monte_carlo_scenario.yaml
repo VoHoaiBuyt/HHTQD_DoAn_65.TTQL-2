@@ -1,0 +1,39 @@
+source_label: "GIẢ ĐỊNH (mô phỏng kịch bản)"
+monte_carlo:
+  seed: 20261108
+  main_semester_horizon: 16
+  minimum_runs_per_profile_policy_lambda: 1000
+  default_lambdas: [0.0, 0.1, 0.3]
+  paired_bootstrap_replicates: 1000
+  confidence_level: 0.95
+  policies: [ILP, B1, B2, B3]
+  ilp_comparison:
+    primary_policy: ILP-matched
+    robustness_policy: ILP-fixed
+    fixed_planner_lambda: 0.1
+    label: "GIẢ ĐỊNH; bộ lập kế hoạch cố định không biết λ của thế giới"
+  probability_model:
+    source: "core.pass_prob.p_student_pass (M3-prime, REAL UCI-697)"
+    dropout_mode: "implicit_in_m3_prime"
+    add_explicit_dropout_hazard: false
+    conditional_pass_independence: true
+    load_factor_threshold_units: 6
+    retake_multiplier_source: "config/optimizer_scenario_v2.yaml"
+  pass_fail_proxy:
+    passed_course_grade_for_graduation_gpa: 7.0
+    failed_course_grade_for_transcript_state: 4.0
+    label: "GIẢ ĐỊNH; proxy only, not a simulated grade distribution"
+    warning_scope: "W1/W2 only; W3/W4 are not evaluated"
+  regulatory:
+    consecutive_warning_limit: 2
+    maximum_main_semesters: 16
+    summer_terms_modeled: false
+    final_semester_detection:
+      label: "GIẢ ĐỊNH"
+      rule: "All outstanding program courses and required slots are jointly eligible and offered"
+  future_credit_regime:
+    label: "GIẢ ĐỊNH (điểm đại diện)"
+    rule: "Recompute each simulated term TBHK with credit-weighted pass=7.0/fail=4.0; use it for the immediately following main term. If no graded attempt occurs, carry forward the latest known TBHK."
+  graduation_outcomes:
+    value: "Assumed achieved"
+    label: "GIẢ ĐỊNH"
