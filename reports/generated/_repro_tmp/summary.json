@@ -1,0 +1,22 @@
+[
+  {
+    "group": "V2-001/ILP-matched/lambda=0.1",
+    "elapsed_seconds": 473.094886,
+    "result_columns": 109,
+    "hist_rows_stored": 6,
+    "hist_rows_reproduced": 6,
+    "result_matches": 109,
+    "result_mismatches": 0,
+    "hist_status": "MISMATCH"
+  },
+  {
+    "group": "V2-001/B1/lambda=0.1",
+    "elapsed_seconds": 473.094886,
+    "result_columns": 109,
+    "hist_rows_stored": 9,
+    "hist_rows_reproduced": 9,
+    "result_matches": 109,
+    "result_mismatches": 0,
+    "hist_status": "MISMATCH"
+  }
+]
