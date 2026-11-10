@@ -219,8 +219,9 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
 
 ## Part 6a — report and final checks (2026-11-10)
 
-- Old report found in the repository root as `BaoCao_Nhom1_HTTQD_65.TTQL-2.docx`;
-  a byte-identical read-only copy and outline are under `docs/templates/` and
+- The legacy report is retained once at
+  `docs/templates/BaoCao_Nhom1_HTTQD_65.TTQL-2.docx`; its duplicate repository
+  root copy was removed after a byte-for-byte hash match. The outline is at
   `reports/generated/old_report_outline.md`. Prior simulated claims and their
   replacements are catalogued in `reports/generated/old_report_replaced_content.md`.
 - `reports/stage2_report.docx` is regenerated from generated sources. The

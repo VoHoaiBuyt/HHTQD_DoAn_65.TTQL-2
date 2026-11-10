@@ -349,6 +349,25 @@ deleted or moved solely because it is marked REVIEW. Specific handling for
 | `.github/prompts/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py` | 5874 | Retained; no deletion/move pending specific decision |
 | `.github/prompts/ui-ux-pro-max/scripts/tests/test_web_stack_freshness.py` | 7699 | Retained; no deletion/move pending specific decision |
 | `.github/prompts/ui-ux-pro-max/scripts/validate_data.py` | 52064 | Retained; no deletion/move pending specific decision |
-| `BaoCao_Nhom1_HTTQD_65.TTQL-2.docx` | 53905 | Retained; no deletion/move pending specific decision |
+| `BaoCao_Nhom1_HTTQD_65.TTQL-2.docx` | 53905 | Removed as a byte-identical duplicate; retained copy is under `docs/templates/` |
 | `data/scenarios_v1/student_profile.csv` | 3462 | Retained; no deletion/move pending specific decision |
 | `data/scenarios_v1/student_progress.csv` | 16014 | Retained; no deletion/move pending specific decision |
+
+## Source handoff cleanup — 2026-11-10
+
+- Removed the root-level `BaoCao_Nhom1_HTTQD_65.TTQL-2.docx` duplicate after
+  confirming its SHA-256 matched the retained copy at
+  `docs/templates/BaoCao_Nhom1_HTTQD_65.TTQL-2.docx`
+  (`ECA5F9D2FF2276ED6ECED698D082AC6E1599A36C97354DFB48EB5A0C58A8119B`).
+- Removed regenerable `.pytest_cache/` and `__pycache__/` directories. They are
+  ignored by `.gitignore` and contain no project source.
+- Kept both `reports/data_dictionary.csv` and `archive/data_dictionary.csv`:
+  the reports copy is a byte-identical compatibility input used by the
+  scenario-v1 consistency reader, while the archive copy is the documented
+  historical source.
+- Kept `dist/` as the separately validated submission package, `.github/` as
+  the retained editor tooling excluded from `dist/`, and `demo_media/` because
+  it contains five project screenshots. These are intentional, not accidental
+  duplicates.
+- No other exact duplicate groups were found among tracked project files after
+  excluding the intentional `dist/` projection and retained `.github/` tooling.
