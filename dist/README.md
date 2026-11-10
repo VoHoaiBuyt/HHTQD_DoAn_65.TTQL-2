@@ -70,11 +70,30 @@ Build the whitelist package with `python -m scripts.package_dist`. The package
 is assembled under `dist/`; `deliverables.md` lists its contents and exclusions.
 The package intentionally excludes the previous report template, temporary
 Monte Carlo reproductions, raw machine-specific test logs, caches, `.git`, and
-`.github/prompts/`. The final package has 154 files (5.47 MiB). A clean copy
-installed requirements, passed 119 tests (28.30s after final package sync) and
-the report checker (20 source tables; 242 prose numbers; 0 unresolved), and
-returned HTTP 200 from Streamlit. No UI screenshots or demo videos are available
-yet.
+`.github/prompts/`. Current clean-dist contents and verification are recorded
+in `reports/generated/final_dist_validation.md`. Existing screenshots are
+included from `demo_media/`; no video is currently included.
+
+### Final report correction and verification
+
+- `reports/stage2_report.docx` now has a cover, an updateable level-1/2 TOC,
+  page-number fields, ordered Heading 1/2 sections, and risk severity in the
+  three-plan table. Its actual rendered page count remains unverified because
+  no Word/PDF renderer is available.
+- The validation comparison in `final_questions_for_co.md` uses the XGBoost
+  three-class and binary validation metrics. The supplied bootstrap artifact
+  has no paired interval for their differences, so the report does not claim
+  statistical separation.
+- Risk thresholds are explicitly labeled `GIẢ ĐỊNH`; high-risk plans carry
+  advisor guidance. The existing app label for `risk_focused` still includes
+  “An toàn”; it was inspected but not changed under the final edit scope.
+- The final claim audit checks each row in `reports/generated/prose_claims.csv`.
+  Full pytest passed 122 tests; focused AppTest passed 23 tests. The final clean
+  dist passed 122 tests, 20 report tables, 259 sourced prose numbers, and HTTP
+  200 health. See `HANDOFF.md` and `reports/generated/final_dist_validation.md`
+  for the recorded results.
+- No model retraining, Monte Carlo run, raw test-set access, or submission tag
+  was performed for these corrections. Raw test records were not inspected.
 
 ## Curriculum and regulation checks
 

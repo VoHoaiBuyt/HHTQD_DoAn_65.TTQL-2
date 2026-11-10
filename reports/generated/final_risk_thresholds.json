@@ -1,0 +1,6 @@
+{
+  "source_label": "GIẢ ĐỊNH",
+  "high_expected_failed_courses_gte": 1.0,
+  "high_warning_probability_gte": 0.5,
+  "medium_expected_failed_courses_gte": 0.5
+}

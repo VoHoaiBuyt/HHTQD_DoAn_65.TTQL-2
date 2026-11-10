@@ -75,6 +75,34 @@ def build_dist() -> list[Path]:
     else:
         (DIST / "demo_media").mkdir()
 
+    media_files = [path for path in (DIST / "demo_media").rglob("*") if path.is_file()]
+    image_count = sum(
+        path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"} for path in media_files
+    )
+    video_count = sum(
+        path.suffix.lower() in {".mp4", ".mov", ".webm"} for path in media_files
+    )
+    deliverables_path = DIST / "deliverables.md"
+    deliverables = deliverables_path.read_text(encoding="utf-8")
+    old_media_note = (
+        "- **No UI screenshots or demo videos are included yet.** "
+        "The group must capture and add them under `demo_media/`."
+    )
+    if image_count and video_count:
+        media_note = f"- UI screenshots and demo videos are included under `demo_media/` ({image_count} images; {video_count} videos)."
+    elif image_count:
+        media_note = f"- UI screenshots are included under `demo_media/` ({image_count} images); no demo videos are included."
+    elif video_count:
+        media_note = f"- Demo videos are included under `demo_media/` ({video_count} videos); no UI screenshots are included."
+    else:
+        media_note = "- **No UI screenshots or demo videos are included yet.** The group must capture and add them under `demo_media/`."
+    if old_media_note not in deliverables:
+        raise ValueError("Expected demo-media note is missing from deliverables.md")
+    deliverables_path.write_text(
+        deliverables.replace(old_media_note, media_note),
+        encoding="utf-8",
+    )
+
     forbidden = []
     for path in DIST.rglob("*"):
         if path.name in {".git", ".venv", "__pycache__", ".pytest_cache", ".ipynb_checkpoints"}:

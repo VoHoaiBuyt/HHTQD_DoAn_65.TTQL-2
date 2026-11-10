@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 from docx import Document
+from docx.oxml.ns import qn
 
 from scripts.build_report import (
     MC_HISTOGRAM_SOURCE_LABEL,
@@ -114,6 +115,44 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
         raise ValueError(
             f"Report prose contains {len(unmatched)} numbers without a generated/config source match"
         )
+    heading_styles = [
+        paragraph.style.name
+        for paragraph in document.paragraphs
+        if paragraph.style.name in {"Heading 1", "Heading 2"}
+    ]
+    if "Heading 1" not in heading_styles or "Heading 2" not in heading_styles:
+        raise ValueError("Report must contain both Heading 1 and Heading 2 styles")
+    field_instructions = [
+        field.get(qn("w:instr"), "")
+        for field in document._element.xpath(".//w:fldSimple")
+    ]
+    if not any(instruction.startswith("TOC ") for instruction in field_instructions):
+        raise ValueError("Report is missing the automatic level 1–2 table-of-contents field")
+    update_fields = document.settings.element.find(qn("w:updateFields"))
+    if update_fields is None or update_fields.get(qn("w:val")) not in {"true", "1"}:
+        raise ValueError("Word updateFields is not enabled")
+    footer_xml = "\n".join(
+        paragraph._p.xml
+        for section in document.sections
+        for paragraph in section.footer.paragraphs
+    )
+    if " PAGE " not in footer_xml:
+        raise ValueError("Report footer is missing its page-number field")
+    plan_table = tables_by_title["ILP — ba phương án cho 9 hồ sơ"]
+    if "Mức cảnh báo rủi ro" not in plan_table[1]:
+        raise ValueError("Plan table is missing the risk-level column")
+    if len(plan_table) != 29:
+        raise ValueError("Plan table must contain all 27 plans and its two header rows")
+    if not any(
+        "khuyến nghị trao đổi với cố vấn học tập" in cell
+        for row in plan_table[2:]
+        for cell in row
+    ):
+        raise ValueError("High-risk plan rows are missing the advisor recommendation")
+    if "XGBoost: PR-AUC Dropout ba lớp=" not in report_text or "recall tại precision ≥ 0,50" not in report_text:
+        raise ValueError("Report is missing the corrected validation comparison")
+    if "chênh=0.0458" in report_text or "recall ba lớp=0.7113, nhị phân=0.6655" in report_text:
+        raise ValueError("Report contains the incorrect validation/test recall comparison")
     return checked
 
 

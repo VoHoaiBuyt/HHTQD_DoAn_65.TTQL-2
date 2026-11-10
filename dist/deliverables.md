@@ -11,6 +11,6 @@
 - `docs/`, `README.md`, `HANDOFF.md`, `requirements.txt` — project documentation and setup instructions.
 - `reports/generated/final_app_test.txt`, `final_health.txt`, and `final_environment_validation.md` — concise test and clean-copy evidence.
 - `reports/generated/final_dist_validation.md` — clean `dist/` install, test, consistency, and health results.
-- **No UI screenshots or demo videos are included yet.** The group must capture and add them under `demo_media/`.
+- UI screenshots are included under `demo_media/` (5 images); no demo videos are included.
 
 The submission package omits `.git`, `.github/prompts/`, `archive/`, the previous Word report template, temporary reproduction files, machine-specific raw test logs, and caches.

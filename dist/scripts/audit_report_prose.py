@@ -11,7 +11,12 @@ from scripts.build_report import REPORT_PATH, ROOT
 
 NUMBER = re.compile(r"(?<![\w])(?:\d{1,3}(?:,\d{3})+|\d+)(?:[.,]\d+)?%?(?![\w])")
 TEXT_SUFFIXES = {".csv", ".json", ".md", ".txt", ".yaml", ".yml"}
-AUDIT_OUTPUTS = {"final_prose_numbers.csv", "final_phrase_scan.csv"}
+AUDIT_OUTPUTS = {
+    "final_prose_numbers.csv",
+    "final_phrase_scan.csv",
+    "prose_claims.csv",
+    "final_heading_outline.md",
+}
 PHRASES = (
     "tốt hơn",
     "vượt trội",

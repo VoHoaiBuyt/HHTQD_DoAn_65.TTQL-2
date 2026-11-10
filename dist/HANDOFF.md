@@ -259,12 +259,40 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
 
 ## Part 6b — packaging status
 
-- `scripts/package_dist.py` builds the whitelist. The final clean copy installed
-  requirements, passed 119 tests in 29.02s; the final package sync rerun passed
-  119 tests in 28.30s. The checker passed 20 tables and
-  242 prose numbers, and Streamlit returned HTTP 200 / `ok`. The first test exposed a
-  missing `reports/data_dictionary.csv`; the packager was corrected and the
-  subsequent clean-copy checks passed. The final package has 154 files (5.47 MiB),
-  no demo media, and no personal absolute paths. See
-  `reports/generated/final_dist_validation.md`.
+- `scripts/package_dist.py` builds the whitelist. The earlier package check
+  passed 119 tests and was 154 files (5.47 MiB); those counts are superseded by
+  the final correction/rebuild recorded below. Five existing PNGs are now
+  included from `demo_media/`, with no demo video.
 - No `submission-v1` tag until AQL approval.
+
+## Final urgent corrections (2026-11-10)
+
+- Regenerated `reports/stage2_report.docx` after updating the source-driven
+  validation comparison, dynamic 9-profile/7-pattern summary, risk column,
+  advisor language for CAO rows, cover, updateable TOC, page fields, and
+  Heading 1/2 outline. Actual rendered page count remains unverified.
+- `reports/generated/prose_claims.csv`: 178 rows; all source checks pass.
+  `final_prose_numbers.csv`: 259 prose-number occurrences, 0 unresolved.
+  Phrase scan: 121 hits, classified in `final_phrase_scan.csv`; the app's
+  `risk_focused` display still says “An toàn” for V2-005 despite CAO risk.
+  This UI text was inspected and reported, not edited under the restricted
+  final write scope.
+- Full pytest: 122 passed, 252 warnings. AppTest: 23 passed, 84 warnings.
+  Report consistency: 20 tables; 11 required sections; 259 prose numbers; 0
+  unresolved. Streamlit health: HTTP 200, body `ok`.
+- Hash audit: 69/72 recorded historical hashes match; the other 3 differences
+  predate this change. All 72 working files are unchanged from `HEAD`.
+- The provided ML bootstrap file has no paired 95% interval comparing the
+  three-class and binary validation tasks; the report states that limitation
+  rather than inventing an interval. No training or Monte Carlo rerun was done;
+  no submission tag was created.
+- The latest clean-dist build, dependency install, test/checker/health results,
+  file count, size, and path scan are recorded in
+  `reports/generated/final_dist_validation.md`.
+- Final package verification: fresh `pip install -r requirements.txt` exit 0;
+  pytest `122 passed in 45.07s`; report checker `20` source tables, `11`
+  sections, `259` prose numbers, `0` unresolved; Streamlit health
+  `HTTP/1.1 200 OK`, body `ok`. Package size is `167` files /
+  `6,648,237` bytes (`6.34 MiB`), including `5` PNGs and no videos; absolute
+  personal/workspace path scan had `0` hits. Package is below the 25 MiB split
+  threshold.

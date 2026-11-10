@@ -9,7 +9,19 @@ from typing import Any
 import yaml
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
+
+from scripts.final_claims import (
+    HIGH_RISK_ADVICE,
+    RISK_THRESHOLDS,
+    build_risk_rows,
+    load_validation_claims,
+    plan_signatures,
+    write_final_artifacts,
+    write_risk_levels,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -133,6 +145,10 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
 
     plans = _read_csv("plans_by_student.csv")
     plans.sort(key=lambda row: (row["student_id"], row["plan_type"]))
+    risk_by_plan = {
+        (row["student_id"], row["plan_type"]): row
+        for row in build_risk_rows(plans)
+    }
 
     mc = _read_csv("mc_results.csv")
     mc_rows = [row for row in mc if float(row["lambda"]) == 0.1]
@@ -268,15 +284,25 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
         ),
         (
             "ILP — ba phương án cho 9 hồ sơ",
-            ["Hồ sơ", "Persona", "Phương án", "Trạng thái", "Tín chỉ chọn", "Tín chỉ đạt kỳ vọng", "Môn trượt kỳ vọng", "P(W1)", "P(W2)", "Cảnh báo"],
-            selected(
-                plans,
+            [
+                "Hồ sơ", "Persona", "Phương án", "Trạng thái", "Tín chỉ chọn",
+                "Tín chỉ đạt kỳ vọng", "Môn trượt kỳ vọng", "P(W1)", "P(W2)",
+                "Mức cảnh báo rủi ro", "Cảnh báo",
+            ],
+            [
                 [
-                    "student_id", "persona", "plan_type", "status", "selected_credits",
-                    "expected_credits_passed", "expected_failed_courses", "p_warning_W1",
-                    "p_warning_W2", "warnings",
-                ],
-            ),
+                    row["student_id"], row["persona"], row["plan_type"], row["status"],
+                    row["selected_credits"], row["expected_credits_passed"],
+                    row["expected_failed_courses"], row["p_warning_W1"], row["p_warning_W2"],
+                    risk_by_plan[(row["student_id"], row["plan_type"])]["risk_level"],
+                    (
+                        f"{row['warnings']} {HIGH_RISK_ADVICE}".strip()
+                        if risk_by_plan[(row["student_id"], row["plan_type"])]["risk_level"] == "CAO"
+                        else row["warnings"]
+                    ),
+                ]
+                for row in plans
+            ],
         ),
         (
             "ILP — độ nhạy scenario V2-002",
@@ -421,6 +447,71 @@ def _add_section(document: Document, title: str, level: int = 1) -> None:
     document.add_heading(display_title, level=level)
 
 
+def _add_subsection(document: Document, title: str) -> None:
+    document.add_heading(title, level=2)
+
+
+def _add_word_field(paragraph, instruction: str, placeholder: str = "1") -> None:
+    run = OxmlElement("w:r")
+    begin = OxmlElement("w:fldChar")
+    begin.set(qn("w:fldCharType"), "begin")
+    code = OxmlElement("w:instrText")
+    code.set(qn("xml:space"), "preserve")
+    code.text = f" {instruction} "
+    separate = OxmlElement("w:fldChar")
+    separate.set(qn("w:fldCharType"), "separate")
+    text = OxmlElement("w:t")
+    text.text = placeholder
+    end = OxmlElement("w:fldChar")
+    end.set(qn("w:fldCharType"), "end")
+    for element in (begin, code, separate, text, end):
+        run.append(element)
+    paragraph._p.append(run)
+
+
+def _add_toc(document: Document) -> None:
+    title = document.add_paragraph()
+    title.style = document.styles["Title"]
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title.add_run("MỤC LỤC")
+    paragraph = document.add_paragraph()
+    field = OxmlElement("w:fldSimple")
+    field.set(qn("w:instr"), 'TOC \\o "1-2" \\h \\z \\u')
+    field.set(qn("w:dirty"), "true")
+    field_run = OxmlElement("w:r")
+    field_text = OxmlElement("w:t")
+    field_text.text = "Mở tài liệu trong Word và cập nhật trường để hiện mục lục, số trang."
+    field_run.append(field_text)
+    field.append(field_run)
+    paragraph._p.append(field)
+    document.add_page_break()
+
+
+def _configure_document_fields(document: Document) -> None:
+    update_fields = OxmlElement("w:updateFields")
+    update_fields.set(qn("w:val"), "true")
+    document.settings.element.append(update_fields)
+    for section in document.sections:
+        footer = section.footer.paragraphs[0]
+        footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        footer.add_run("Trang ")
+        _add_word_field(footer, "PAGE")
+
+
+def _write_heading_outline(document: Document) -> None:
+    headings = [
+        (paragraph.style.name, paragraph.text.strip())
+        for paragraph in document.paragraphs
+        if paragraph.style.name in {"Heading 1", "Heading 2"} and paragraph.text.strip()
+    ]
+    lines = ["# Thứ tự Heading 1/2 trong báo cáo", ""]
+    for style, text in headings:
+        prefix = "- " if style == "Heading 1" else "  - "
+        lines.append(f"{prefix}{style}: {text}")
+    lines.extend(["", "Số trang thật: chưa kiểm chứng (không render Word/PDF trong môi trường tạo báo cáo)."])
+    (GENERATED / "final_heading_outline.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _add_table_by_title(document: Document, tables: list[tuple[str, list[str], list[list[str]]]], title: str) -> None:
     match = next(item for item in tables if item[0] == title)
     _add_table(document, *match)
@@ -472,10 +563,13 @@ def _build_mc_distribution_figure(histogram: list[dict[str, str]]) -> Path:
 
 
 def build_report(output_path: Path = REPORT_PATH) -> Path:
+    write_final_artifacts()
+    risk_rows = write_risk_levels()
     tables = report_tables()
     curriculum = _read_json("curriculum_validation.json")
     test_metrics = _read_json("test_evaluation.json")
     metrics = _read_json("metrics.json")
+    validation_claims = load_validation_claims()
     bootstrap = _read_json("ml_validation_bootstrap_ci.json")
     model_comparison = _read_csv("model_comparison.csv")
     mc = _read_csv("mc_results.csv")
@@ -499,6 +593,8 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     objective_config = optimizer_config["optimizer"]["objective"]
     load_config = optimizer_config["optimizer"]["load"]
     simulation_config = mc_config["monte_carlo"]
+    identical_profile_count, distinct_plan_signatures, repeated_profiles = plan_signatures(plans)
+    profile_count = len({row["student_id"] for row in plans})
     screens_path = ROOT / "docs" / "screens_to_capture.md"
     pytest_path = GENERATED / "pytest_summary.txt"
 
@@ -515,6 +611,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     normal.font.size = Pt(13)
     for style_name in ("Title", "Heading 1", "Heading 2", "Heading 3"):
         document.styles[style_name].font.name = "Times New Roman"
+        document.styles[style_name].font.size = Pt(16 if style_name == "Heading 1" else 14)
 
     title = document.add_heading("BÁO CÁO GIAI ĐOẠN 2", level=0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -526,9 +623,14 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "Báo cáo được tổng hợp từ artifact hiện có trong reports/generated/. "
         "Kết quả mô phỏng và ML trên UCI-697 không phải bằng chứng hiệu quả tại NTU."
     )
+    document.add_paragraph("Họ tên: ______________________________________________")
+    document.add_paragraph("MSSV: _________________________________________________")
     document.add_page_break()
+    _add_toc(document)
+    _configure_document_fields(document)
 
     _add_section(document, "TÓM TẮT ĐIỀU HÀNH")
+    _add_subsection(document, "Tóm tắt và phạm vi")
     document.add_paragraph(
         "Bản mẫu đã kết nối dự báo ML tại T1 trên REAL (UCI-697), quy tắc đào tạo, tối ưu ILP, "
         "Monte Carlo và giao diện Streamlit. CTĐT được nhóm cung cấp mang nhãn OFFICIAL (NTU); "
@@ -543,6 +645,20 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "học cải thiện còn hạn chế hoặc chưa xác nhận. Đây là prototype hỗ trợ thảo luận, không phải "
         "dự báo đã kiểm định tại NTU hay khuyến nghị đăng ký an toàn."
     )
+    repeated_text = ", ".join(repeated_profiles) if repeated_profiles else "không có"
+    document.add_paragraph(
+        f"Từ {profile_count} hồ sơ SCENARIO, {identical_profile_count} hồ sơ có bộ kết quả "
+        f"ba phương án giống hệt ({repeated_text}), nên có {distinct_plan_signatures} kiểu "
+        "kết quả khác nhau."
+    )
+    high_risk_count = sum(row["risk_level"] == "CAO" for row in risk_rows)
+    v2005 = next(row for row in risk_rows if row["student_id"] == "V2-005" and row["plan_type"] == "risk_focused")
+    document.add_paragraph(
+        f"Mức cảnh báo rủi ro là GIẢ ĐỊNH theo ngưỡng đã mô tả; có {high_risk_count} phương án "
+        f"mức CAO. Riêng V2-005 risk_focused: P(W1)={float(v2005['p_warning_W1']):.3f}, "
+        f"kỳ vọng trượt {float(v2005['expected_failed_courses']):.2f} môn."
+    )
+    _add_subsection(document, "Các điểm đã chỉnh so với báo cáo lần trước")
     matrix_headers, matrix_rows = _markdown_table(
         _read_text("final_requirements_matrix.md")
     )
@@ -554,6 +670,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     )
 
     _add_section(document, "DỮ LIỆU OFFICIAL (NTU)")
+    _add_subsection(document, "Nguồn và phạm vi dữ liệu")
     course_summary = curriculum["summary"]["course_counts"]
     prerequisite_summary = curriculum["summary"]["prerequisite_graph"]
     document.add_paragraph(
@@ -589,6 +706,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     )
 
     _add_section(document, "QUY CHẾ QĐ 753/2021 VÀ CÁCH MÔ HÌNH HÓA")
+    _add_subsection(document, "Quy tắc và trạng thái xác nhận")
     document.add_paragraph(
         "Nguồn quy chế được ghi là QĐ 753/QĐ-ĐHNT ngày 13/08/2021, áp dụng khóa 60 trở đi. "
         "Các giá trị, điều khoản, trạng thái CONFIRMED/UNCONFIRMED/UNKNOWN và ghi chú mô hình "
@@ -598,6 +716,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     _add_table_by_title(document, tables, "Quy chế — bảng giả định và trạng thái")
 
     _add_section(document, "MÔ HÌNH ML — MỐC T1")
+    _add_subsection(document, "Giao thức, validation và so sánh")
     document.add_paragraph(
         "Mốc hợp lệ: sau HK1, trước đăng ký HK2. Ba thuật toán được so sánh: Logistic Regression, "
         "Random Forest và XGBoost. Quy trình tách train/validation/test là 60/20/20 có phân tầng; "
@@ -606,29 +725,27 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         f"{test_metrics['evaluation_count']}; test không dùng để chọn mô hình."
     )
     document.add_paragraph(
-        "Validation có thể lạc quan vì dùng để chọn mô hình/ngưỡng và hiệu chuẩn; holdout là kết quả "
-        "chính. Enrolled là lớp bị kiểm duyệt phải. Trên holdout, confusion matrix theo thứ tự "
-        "Dropout/Enrolled/Graduate cho hàng Enrolled là "
-        f"{test_metrics['confusion_matrix'][1]}, tức {test_metrics['per_class']['Enrolled']['recall']:.4f} "
-        f"recall ({test_metrics['confusion_matrix'][1][1]}/{test_metrics['per_class']['Enrolled']['support']}); "
-        "các lỗi dự đoán còn lại phân sang Dropout hoặc Graduate. Ba lớp và nhị phân không có "
-        "KTC bootstrap ghép cặp giữa hai bài toán; vì vậy chênh lệch recall validation không được "
-        "kết luận là nằm trong hay ngoài sai số."
+        "Validation có thể lạc quan vì được dùng để chọn mô hình, ngưỡng và hiệu chuẩn. "
+        "Enrolled là lớp bị kiểm duyệt phải. Các số sau đây chỉ so sánh XGBoost trên validation."
     )
-    xgb_three = next(
-        row for row in model_comparison
-        if row["model"] == "XGBoost" and row["task"] == "three_class"
-    )
-    xgb_binary = next(
-        row for row in model_comparison
-        if row["model"] == "XGBoost" and row["task"] == "binary_dropout"
+    xgb_three = validation_claims["models"]["three_class"]
+    xgb_binary = validation_claims["models"]["binary_dropout"]
+    three_metrics = validation_claims["three_metrics"]
+    binary_metrics = validation_claims["binary_metrics"]
+    document.add_paragraph(
+        f"Validation XGBoost: PR-AUC Dropout ba lớp={float(xgb_three['dropout_pr_auc']):.4f}, "
+        f"nhị phân={float(xgb_binary['dropout_pr_auc']):.4f}; recall tại precision ≥ 0,50 "
+        f"ba lớp={float(three_metrics['dropout_recall_at_precision_0.50']['recall']):.4f}, "
+        f"nhị phân={float(binary_metrics['dropout_recall_at_precision_0.50']['recall']):.4f}; "
+        f"Brier ba lớp={float(xgb_three['dropout_brier']):.4f}, "
+        f"nhị phân={float(xgb_binary['dropout_brier']):.4f}."
     )
     document.add_paragraph(
-        f"Validation XGBoost: Dropout recall ba lớp={float(xgb_three['dropout_recall']):.4f}, "
-        f"nhị phân={float(xgb_binary['dropout_recall']):.4f}, chênh="
-        f"{abs(float(xgb_three['dropout_recall']) - float(xgb_binary['dropout_recall'])):.4f}. "
-        "Không có CI cho chênh lệch hai bài toán nên kết luận “nằm trong sai số” là chưa kiểm chứng."
+        "ml_validation_bootstrap_ci.json lưu KTC 95% validation riêng cho XGBoost ba lớp; "
+        "không có KTC ghép cặp 95% cho chênh lệch ba lớp so với nhị phân. Vì vậy chưa đủ "
+        "cơ sở để kết luận hai cách tiếp cận phân biệt được về mặt thống kê."
     )
+    _add_subsection(document, "KTC validation và kiểm định Enrolled")
     _add_table_by_title(document, tables, "ML — validation ba lớp")
     _add_table_by_title(document, tables, "ML — validation nhị phân")
     _add_table_by_title(document, tables, "ML — đánh giá holdout một lần")
@@ -663,6 +780,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     )
 
     _add_section(document, "RULE ENGINE VÀ KẾT QUẢ KIỂM THỬ")
+    _add_subsection(document, "Bao phủ kiểm thử")
     document.add_paragraph(
         "Kiểm tra CTĐT và số đếm được tách thành bảng riêng. Pytest bao gồm kiểm tra prerequisite/"
         "corequisite, ràng buộc tín chỉ, học lại, các trường hợp infeasible/best_effort, dữ liệu, "
@@ -692,6 +810,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     )
 
     _add_section(document, "ILP — HÀM MỤC TIÊU VÀ CÁC PHƯƠNG ÁN")
+    _add_subsection(document, "Phương án và mức cảnh báo rủi ro")
     document.add_paragraph(
         "Công thức, định nghĩa p*, β, γ, xác suất môn đạt, unlock value, ràng buộc và cách chọn "
         "ba chiến lược được lấy từ reports/generated/optimization_spec.md. Ngân sách đăng ký là "
@@ -718,8 +837,17 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     _add_table_by_title(document, tables, "ILP — ba phương án cho 9 hồ sơ")
     _add_table_by_title(document, tables, "ILP — độ nhạy scenario V2-002")
     document.add_paragraph(
+        f"Mức cảnh báo là GIẢ ĐỊNH: CAO nếu số môn trượt kỳ vọng ≥ {RISK_THRESHOLDS['high_failed_courses']:.1f} "
+        f"hoặc P(W1) ≥ {RISK_THRESHOLDS['high_warning_probability']:.1f} hoặc "
+        f"P(W2) ≥ {RISK_THRESHOLDS['high_warning_probability']:.1f}; TRUNG BÌNH nếu số môn "
+        f"trượt kỳ vọng ≥ {RISK_THRESHOLDS['medium_failed_courses']:.1f}; nếu không thì THẤP. "
+        f"Với mọi mức CAO: {HIGH_RISK_ADVICE}. "
+        f"Riêng V2-005 risk_focused là CAO (P(W1)={float(v2005['p_warning_W1']):.3f}; "
+        f"kỳ vọng trượt {float(v2005['expected_failed_courses']):.2f} môn). "
+        "Trong app, nhãn risk_focused hiển thị “An toàn” ngay cả với hồ sơ CAO này; "
+        "đây là nhãn gây hiểu nhầm, cần AQL xem xét riêng. "
         "Các dòng best_effort luôn phải giữ cảnh báo rủi ro và khuyến nghị gặp cố vấn học tập; "
-        "không được gọi là an toàn. Bảng kế hoạch chỉ trình bày dữ liệu từ plans_by_student.csv; "
+        "không được gọi là an toàn. Bảng kế hoạch lấy dữ liệu từ plans_by_student.csv; "
         "chi tiết warnings/status đầy đủ vẫn nằm trong artifact nguồn."
     )
     document.add_paragraph(
@@ -729,6 +857,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     )
 
     _add_section(document, "MONTE CARLO — MÔ PHỎNG, KHÔNG PHẢI BẰNG CHỨNG THỰC TẾ")
+    _add_subsection(document, "Thiết kế, kết quả và giới hạn")
     mc_seed = metrics.get("monte_carlo", {}).get("seed", "UNKNOWN")
     mc_runs = sorted({int(row["n_runs"]) for row in mc})
     policies = sorted({row["policy"] for row in mc})
@@ -791,6 +920,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
             document.add_paragraph(line)
 
     _add_section(document, "GIAO DIỆN STREAMLIT")
+    _add_subsection(document, "Trang giao diện và ảnh minh họa")
     document.add_paragraph(
         "Ứng dụng: app/main.py. Hồ sơ là SCENARIO; ML chỉ hiển thị trong phạm vi T1 hợp lệ; "
         "kết quả mô phỏng được gắn nhãn giả định. Bảng đối chiếu dưới đây theo docs/screens_to_capture.md; "
@@ -819,6 +949,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         paragraph.paragraph_format.space_after = Pt(12)
 
     _add_section(document, "CÀI ĐẶT VÀ CHẠY")
+    _add_subsection(document, "Cài đặt và kiểm tra")
     document.add_paragraph(
         "Windows PowerShell — chạy từ thư mục gốc repo trong môi trường Python mới:"
     )
@@ -853,6 +984,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     document.add_paragraph(environment_validation)
 
     _add_section(document, "HẠN CHẾ VÀ PHẦN CHƯA HOÀN THÀNH")
+    _add_subsection(document, "Giới hạn và việc cần xác nhận")
     for limitation in (
         "Chưa ghi nhận ngày truy cập/phiên bản PDF CTĐT trong artifact; mã HP và tính đầy đủ ngữ nghĩa tiên quyết còn UNCONFIRMED.",
         "Chưa xác nhận một số quy tắc suy từ CTĐT, bao gồm nhóm tự chọn, mở môn theo chẵn/lẻ và ngữ nghĩa môn song hành.",
@@ -868,6 +1000,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         document.add_paragraph(limitation, style="List Bullet")
 
     _add_section(document, "PHỤ LỤC — CÂY THƯ MỤC, FILE VÀ GIẢ ĐỊNH")
+    _add_subsection(document, "Tham số giả định")
     document.add_paragraph(
         "Cây thư mục rút gọn: app/ (giao diện); core/ (logic không phụ thuộc Streamlit); "
         "config/ (quy chế và giả định); data/official/, data/scenarios/, data/processed/; "
@@ -951,6 +1084,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(output_path)
+    _write_heading_outline(document)
     return output_path
 
 
