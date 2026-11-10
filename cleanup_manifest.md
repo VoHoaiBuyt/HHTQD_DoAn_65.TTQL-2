@@ -22,6 +22,30 @@
   `reports/generated/restructure_baseline.txt`, and
   `reports/generated/restructure_hashes.csv`.
 
+## Step 1 — report and Monte Carlo consistency
+
+- Ran `python -m scripts.check_report_consistency` on `pre-restructure` and on
+  the current branch. Both stop at the existing V2-001 Monte Carlo table:
+  `ValueError: Report table does not match generated source: Monte Carlo —
+  scenario V2-001, λ=0.1; expected 7 rows, got 6`. Full outputs are preserved
+  in `reports/generated/report_consistency_pre_restructure.txt` and
+  `reports/generated/report_consistency_current.txt`.
+- The Word-vs-generated mismatch set is 31 rows on both tag and current branch
+  (no regression). Exact document positions and both values are in
+  `reports/generated/report_vs_mc_mismatches.csv`: 28 are predicted as report
+  predating the 4-fix, and 3 as policy row-count changes. No report or generated
+  result values were edited in this step.
+- MC metadata review: the main MC outputs and four `mc_runtime*.json` snapshots
+  report seed 20261108 and N=1000; `mc_benchmark.json` is a distinct 200-run
+  benchmark with the same seed. `metrics.json` agrees. Across 135 result
+  groups and 701 histogram rows, no N or P(graduation <= 8 terms) mismatch was
+  found. The MC result and histogram CSVs contain no `code_hash` field.
+- Searched the repository using `git grep -n "code_hash"` and a scan of
+  `*.py`, `*.ipynb`, `*.md`, `*.json`, `*.yaml`, and `*.ps1`. No code-hash
+  stamping function, validator, or saved hash value was found. Hash validation
+  is therefore **chưa kiểm chứng**; no hash algorithm was invented and no MC
+  simulation was rerun.
+
 ## Step 2A — completed
 
 - Removed the inventoried cache/bytecode group; the 56 inventory rows occupy
