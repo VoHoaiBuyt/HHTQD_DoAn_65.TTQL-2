@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from docx import Document
 
-from scripts.build_report import REPORT_PATH, ROOT, report_tables
+from scripts.build_report import (
+    MC_HISTOGRAM_SOURCE_LABEL,
+    REPORT_PATH,
+    ROOT,
+    _markdown_table,
+    _read_text,
+    report_tables,
+)
 
 
 REQUIRED_HEADINGS = {
@@ -16,10 +24,9 @@ REQUIRED_HEADINGS = {
     "ILP — HÀM MỤC TIÊU VÀ CÁC PHƯƠNG ÁN",
     "MONTE CARLO — MÔ PHỎNG, KHÔNG PHẢI BẰNG CHỨNG THỰC TẾ",
     "GIAO DIỆN STREAMLIT",
+    "CÀI ĐẶT VÀ CHẠY",
     "HẠN CHẾ VÀ PHẦN CHƯA HOÀN THÀNH",
-    "ĐỐI CHIẾU YÊU CẦU CỦA GIẢNG VIÊN (MỤC 1–6)",
-    "CÂU HỎI XIN CÔ XÁC NHẬN (TỐI ĐA 6)",
-    "PHỤ LỤC — DANH SÁCH FILE GIAO",
+    "PHỤ LỤC — CÂY THƯ MỤC, FILE VÀ GIẢ ĐỊNH",
 }
 
 
@@ -31,7 +38,10 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     if not report_path.is_file():
         raise FileNotFoundError(f"Word report not found: {report_path}")
     document = Document(report_path)
-    paragraphs = [paragraph.text.strip() for paragraph in document.paragraphs]
+    paragraphs = [
+        re.sub(r"^\d+\.\s*", "", paragraph.text.strip())
+        for paragraph in document.paragraphs
+    ]
     missing_headings = sorted(REQUIRED_HEADINGS - set(paragraphs))
     if missing_headings:
         raise ValueError(f"Report is missing required headings: {missing_headings}")
@@ -58,6 +68,26 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
                 f"expected {len(expected)} rows, got {len(actual)}"
             )
         checked.append(title)
+
+    matrix_headers, matrix_rows = _markdown_table(
+        _read_text("final_requirements_matrix.md")
+    )
+    matrix = tables_by_title.get("Các điểm đã chỉnh so với báo cáo lần trước")
+    expected_matrix = [
+        ["Các điểm đã chỉnh so với báo cáo lần trước"]
+        + [""] * (len(matrix_headers) - 1),
+        matrix_headers,
+        *matrix_rows,
+    ]
+    if matrix != expected_matrix:
+        raise ValueError("The report's comparison matrix differs from final_requirements_matrix.md")
+    histogram = tables_by_title["Monte Carlo — histogram từng hồ sơ, λ=0.1"]
+    if any(row[-1] != MC_HISTOGRAM_SOURCE_LABEL for row in histogram[2:]):
+        raise ValueError("Histogram display labels do not use the report generator source label")
+    report_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+    if "Kiểm tái tạo (thay cho code_hash không tồn tại)" not in report_text:
+        raise ValueError("Report is missing the Monte Carlo reproducibility disclosure")
+    checked.append("Các điểm đã chỉnh so với báo cáo lần trước")
 
     curriculum_table = next(
         rows for title, _, rows in report_tables()

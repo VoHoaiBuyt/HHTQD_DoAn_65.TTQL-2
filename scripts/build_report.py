@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import yaml
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt
@@ -14,6 +15,7 @@ from docx.shared import Inches, Pt
 ROOT = Path(__file__).resolve().parents[1]
 GENERATED = ROOT / "reports" / "generated"
 REPORT_PATH = ROOT / "reports" / "stage2_report.docx"
+MC_HISTOGRAM_SOURCE_LABEL = "SCENARIO / GIẢ ĐỊNH (Monte Carlo)"
 
 
 def _read_json(name: str) -> dict[str, Any]:
@@ -35,7 +37,18 @@ def _read_text(name: str) -> str:
     path = GENERATED / name
     if not path.is_file():
         raise FileNotFoundError(f"Required report input not found: {path}")
-    return path.read_text(encoding="utf-8-sig")
+    content = path.read_bytes()
+    encoding = "utf-16" if content.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig"
+    return content.decode(encoding)
+
+
+def _read_yaml(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        raise FileNotFoundError(f"Required report input not found: {path}")
+    value = yaml.safe_load(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(value, dict):
+        raise ValueError(f"Expected a YAML mapping in {path}")
+    return value
 
 
 def _fmt(value: Any, decimals: int = 3) -> str:
@@ -119,34 +132,32 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
         raise ValueError("shap_global.csv must have at least five ranked features")
 
     plans = _read_csv("plans_by_student.csv")
-    plan_rows = [row for row in plans if row["student_id"] == "V2-001"]
-    plan_rows.sort(key=lambda row: row["plan_type"])
-    if len(plan_rows) != 3:
-        raise ValueError("Expected three registered plan variants for scenario V2-001")
+    plans.sort(key=lambda row: (row["student_id"], row["plan_type"]))
 
     mc = _read_csv("mc_results.csv")
-    mc_rows = [
-        row for row in mc
-        if row["student_id"] == "V2-001" and float(row["lambda"]) == 0.1
-    ]
-    if not mc_rows:
-        raise ValueError("No Monte Carlo result exists for V2-001 at lambda=0.1")
-    mc_rows.sort(key=lambda row: row["policy"])
-
+    mc_rows = [row for row in mc if float(row["lambda"]) == 0.1]
+    mc_rows.sort(key=lambda row: (row["student_id"], row["policy"]))
     pairwise = _read_csv("mc_pairwise.csv")
-    pairwise_rows = [
-        row for row in pairwise
-        if row["student_id"] == "V2-001" and float(row["lambda"]) == 0.1
-    ]
+    pairwise_rows = [row for row in pairwise if float(row["lambda"]) == 0.1]
+    pairwise_rows.sort(key=lambda row: (row["student_id"], row["comparison"]))
     pareto = _read_csv("mc_pareto.csv")
-    pareto_rows = [
-        row for row in pareto
-        if row["student_id"] == "V2-001" and float(row["lambda"]) == 0.1
+    pareto_rows = [row for row in pareto if float(row["lambda"]) == 0.1]
+    pareto_rows.sort(key=lambda row: (row["student_id"], row["policy_a"], row["policy_b"]))
+    selected_scenarios = {"V2-001", "V2-003"}
+    mc_focus_rows = [row for row in mc_rows if row["student_id"] in selected_scenarios]
+    pareto_focus_rows = [row for row in pareto_rows if row["student_id"] in selected_scenarios]
+    histogram = [
+        row for row in _read_csv("mc_grad_hist.csv")
+        if float(row["lambda"]) == 0.1
     ]
-    if not pairwise_rows or not pareto_rows:
-        raise ValueError("Monte Carlo paired-comparison and Pareto rows are required")
-    pairwise_rows.sort(key=lambda row: row["comparison"])
-    pareto_rows.sort(key=lambda row: (row["policy_a"], row["policy_b"]))
+    histogram.sort(
+        key=lambda row: (
+            row["student_id"], row["policy"], row["outcome"],
+            float(row["semester"]) if row["semester"] else -1,
+        )
+    )
+    if not mc_rows or not pairwise_rows or not pareto_rows or not histogram:
+        raise ValueError("Per-profile Monte Carlo result, histogram, paired, and Pareto rows are required")
 
     sensitivity = _read_csv("ilp_sensitivity.csv")
     sensitivity_rows = [
@@ -256,13 +267,14 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
             [[row["feature"], _fmt(float(row["mean_abs_shap"]))] for row in shap_rows],
         ),
         (
-            "ILP — ba phương án scenario V2-001",
-            ["Loại", "Trạng thái", "Tín chỉ chọn", "Môn chọn (mã)", "Môn trượt kỳ vọng", "Graduation kỳ ước tính"],
+            "ILP — ba phương án cho 9 hồ sơ",
+            ["Hồ sơ", "Persona", "Phương án", "Trạng thái", "Tín chỉ chọn", "Tín chỉ đạt kỳ vọng", "Môn trượt kỳ vọng", "P(W1)", "P(W2)", "Cảnh báo"],
             selected(
-                plan_rows,
+                plans,
                 [
-                    "plan_type", "status", "selected_credits", "selected_course_ids",
-                    "expected_failed_courses", "estimated_graduation_semester",
+                    "student_id", "persona", "plan_type", "status", "selected_credits",
+                    "expected_credits_passed", "expected_failed_courses", "p_warning_W1",
+                    "p_warning_W2", "warnings",
                 ],
             ),
         ),
@@ -279,26 +291,40 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
             ),
         ),
         (
-            "Monte Carlo — scenario V2-001, λ=0.1",
-            ["Chính sách", "Số lượt", "P tốt nghiệp đúng hạn", "KTC 95%", "Kỳ tốt nghiệp TB", "Môn trượt kỳ vọng", "Best-effort quyết định"],
+            "Monte Carlo — kết quả từng hồ sơ, λ=0.1",
+            ["Hồ sơ", "Chính sách", "N", "P tốt nghiệp ≤8 kỳ", "KTC 95%", "P tốt nghiệp ≤16 kỳ", "Kỳ tốt nghiệp TB", "Môn trượt kỳ vọng", "P buộc thôi học W1/W2"],
             [
                 [
+                    row["student_id"],
                     row["policy"],
                     row["n_runs"],
                     _fmt(float(row["p_graduated_on_time"])),
                     f"[{_fmt(float(row['ci_p_graduated_on_time_lower']))}, {_fmt(float(row['ci_p_graduated_on_time_upper']))}]",
+                    _fmt(float(row["p_graduated_16"])),
                     _fmt(float(row["mean_graduation_semester"])),
                     _fmt(float(row["expected_failed_courses"])),
-                    row["best_effort_decisions"],
+                    _fmt(float(row["p_expelled_regulatory"])),
                 ]
                 for row in mc_rows
             ],
         ),
         (
-            "Monte Carlo — so sánh cặp V2-001, λ=0.1",
-            ["So sánh", "Lượt", "Chênh lệch P đúng hạn", "KTC 95% chênh lệch", "Chênh lệch môn trượt", "KTC 95% chênh lệch môn trượt"],
+            "Monte Carlo — histogram từng hồ sơ, λ=0.1",
+            ["Hồ sơ", "Chính sách", "Kết quả", "Kỳ", "Số lượt", "N", "Nhãn nguồn hiển thị"],
             [
                 [
+                    row["student_id"], row["policy"], row["outcome"], row["semester"],
+                    row["count"], row["n_total"], MC_HISTOGRAM_SOURCE_LABEL,
+                ]
+                for row in histogram
+            ],
+        ),
+        (
+            "Monte Carlo — so sánh cặp từng hồ sơ, λ=0.1",
+            ["Hồ sơ", "So sánh", "N", "Chênh lệch P đúng hạn", "KTC 95% chênh lệch", "Chênh lệch môn trượt", "KTC 95% chênh lệch môn trượt"],
+            [
+                [
+                    row["student_id"],
                     row["comparison"],
                     row["n_runs"],
                     _fmt(float(row["diff_p_graduated_on_time"])),
@@ -310,9 +336,45 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
             ],
         ),
         (
-            "Monte Carlo — Pareto V2-001, λ=0.1",
-            ["Chính sách A", "Chính sách B", "Kết luận", "Diễn giải nguồn"],
-            selected(pareto_rows, ["policy_a", "policy_b", "dominance", "interpretation"]),
+            "Monte Carlo — Pareto từng hồ sơ, λ=0.1",
+            ["Hồ sơ", "Chính sách A", "Chính sách B", "Kết luận", "Diễn giải nguồn"],
+            [
+                [
+                    row["student_id"], row["policy_a"], row["policy_b"],
+                    row["dominance"], row["interpretation"],
+                ]
+                for row in pareto_rows
+            ],
+        ),
+        (
+            "Monte Carlo — KTC V2-001 và V2-003, λ=0.1",
+            ["Hồ sơ", "Chính sách", "P tốt nghiệp ≤8 kỳ", "KTC 95%", "P buộc thôi học W1/W2", "KTC 95% W1/W2"],
+            [
+                [
+                    row["student_id"], row["policy"],
+                    _fmt(float(row["p_graduated_on_time"])),
+                    f"[{_fmt(float(row['ci_p_graduated_on_time_lower']))}, {_fmt(float(row['ci_p_graduated_on_time_upper']))}]",
+                    _fmt(float(row["p_expelled_regulatory"])),
+                    f"[{_fmt(float(row['ci_p_expelled_regulatory_lower']))}, {_fmt(float(row['ci_p_expelled_regulatory_upper']))}]",
+                ]
+                for row in mc_focus_rows
+            ],
+        ),
+        (
+            "Monte Carlo — Pareto V2-001 và V2-003, λ=0.1",
+            ["Hồ sơ", "Chính sách A", "Chính sách B", "Nhãn Pareto"],
+            selected(pareto_focus_rows, ["student_id", "policy_a", "policy_b", "dominance"]),
+        ),
+        (
+            "Monte Carlo — ghi chú metadata histogram, λ=0.1",
+            ["Trường", "Giá trị nguồn", "Giá trị báo cáo"],
+            [
+                [
+                    "source_label",
+                    "trống trong mc_grad_hist.csv",
+                    MC_HISTOGRAM_SOURCE_LABEL,
+                ],
+            ],
         ),
         (
             "Quy chế — bảng giả định và trạng thái",
@@ -341,12 +403,72 @@ def _add_table(document: Document, title: str, headers: list[str], rows: list[li
 
 
 def _add_section(document: Document, title: str, level: int = 1) -> None:
-    document.add_heading(title, level=level)
+    section_numbers = {
+        "TÓM TẮT ĐIỀU HÀNH": 1,
+        "DỮ LIỆU OFFICIAL (NTU)": 2,
+        "QUY CHẾ QĐ 753/2021 VÀ CÁCH MÔ HÌNH HÓA": 3,
+        "MÔ HÌNH ML — MỐC T1": 4,
+        "RULE ENGINE VÀ KẾT QUẢ KIỂM THỬ": 5,
+        "ILP — HÀM MỤC TIÊU VÀ CÁC PHƯƠNG ÁN": 6,
+        "MONTE CARLO — MÔ PHỎNG, KHÔNG PHẢI BẰNG CHỨNG THỰC TẾ": 7,
+        "GIAO DIỆN STREAMLIT": 8,
+        "CÀI ĐẶT VÀ CHẠY": 9,
+        "HẠN CHẾ VÀ PHẦN CHƯA HOÀN THÀNH": 10,
+        "PHỤ LỤC — CÂY THƯ MỤC, FILE VÀ GIẢ ĐỊNH": 11,
+    }
+    number = section_numbers.get(title)
+    display_title = f"{number}. {title}" if number is not None else title
+    document.add_heading(display_title, level=level)
 
 
 def _add_table_by_title(document: Document, tables: list[tuple[str, list[str], list[list[str]]]], title: str) -> None:
     match = next(item for item in tables if item[0] == title)
     _add_table(document, *match)
+
+
+def _build_mc_distribution_figure(histogram: list[dict[str, str]]) -> Path:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    output = GENERATED / "final_mc_graduation_distribution.png"
+    policies = sorted({row["policy"] for row in histogram})
+    figure, axes = plt.subplots(1, 2, figsize=(11, 4.5), sharey=True)
+    for axis, student_id in zip(axes, ("V2-001", "V2-003")):
+        rows = [
+            row for row in histogram
+            if row["student_id"] == student_id
+            and row["outcome"] == "graduated"
+            and row["semester"]
+        ]
+        for policy in policies:
+            policy_rows = [row for row in rows if row["policy"] == policy]
+            if not policy_rows:
+                continue
+            total = int(policy_rows[0]["n_total"])
+            by_semester: dict[int, int] = {}
+            for row in policy_rows:
+                semester = int(float(row["semester"]))
+                by_semester[semester] = by_semester.get(semester, 0) + int(row["count"])
+            semesters = sorted(by_semester)
+            axis.plot(
+                semesters,
+                [by_semester[semester] / total for semester in semesters],
+                marker="o",
+                label=policy,
+            )
+        axis.set_title(student_id)
+        axis.set_xlabel("Kỳ chính tốt nghiệp")
+        axis.set_xlim(1, 16)
+        axis.grid(alpha=0.25)
+    axes[0].set_ylabel("Tỷ lệ trên N lượt mô phỏng")
+    axes[-1].legend(fontsize=8)
+    figure.suptitle("Monte Carlo, λ=0,1 — phân phối kỳ tốt nghiệp theo hồ sơ")
+    figure.tight_layout()
+    figure.savefig(output, dpi=160)
+    plt.close(figure)
+    return output
 
 
 def build_report(output_path: Path = REPORT_PATH) -> Path:
@@ -355,23 +477,44 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     test_metrics = _read_json("test_evaluation.json")
     metrics = _read_json("metrics.json")
     bootstrap = _read_json("ml_validation_bootstrap_ci.json")
+    model_comparison = _read_csv("model_comparison.csv")
     mc = _read_csv("mc_results.csv")
+    mc_histogram = [
+        row for row in _read_csv("mc_grad_hist.csv")
+        if float(row["lambda"]) == 0.1
+    ]
     plans = _read_csv("plans_by_student.csv")
     sensitivity = _read_csv("ilp_sensitivity.csv")
     regulation_text = _read_text("regulation_assumptions.md")
     optimization_text = _read_text("optimization_spec.md")
+    mc_interpretation = _read_text("mc_interpretation.md")
+    enrolled_analysis = _read_text("enrolled_analysis.md")
+    environment_validation = _read_text("final_environment_validation.md")
+    pytest_summary = _read_text("pytest_summary.txt")
+    app_test_summary = _read_text("final_app_test.txt")
+    health_summary = _read_text("final_health.txt")
+    hash_rows = _read_csv("restructure_hashes.csv")
+    optimizer_config = _read_yaml(ROOT / "config" / "optimizer_scenario_v2.yaml")
+    mc_config = _read_yaml(ROOT / "config" / "monte_carlo_scenario.yaml")
+    objective_config = optimizer_config["optimizer"]["objective"]
+    load_config = optimizer_config["optimizer"]["load"]
+    simulation_config = mc_config["monte_carlo"]
     screens_path = ROOT / "docs" / "screens_to_capture.md"
     pytest_path = GENERATED / "pytest_summary.txt"
 
     document = Document()
     section = document.sections[0]
-    section.top_margin = Inches(0.65)
-    section.bottom_margin = Inches(0.65)
-    section.left_margin = Inches(0.65)
-    section.right_margin = Inches(0.65)
+    section.page_width = Inches(8.5)
+    section.page_height = Inches(11)
+    section.top_margin = Inches(0.75)
+    section.bottom_margin = Inches(0.75)
+    section.left_margin = Inches(0.75)
+    section.right_margin = Inches(0.75)
     normal = document.styles["Normal"]
-    normal.font.name = "Arial"
-    normal.font.size = Pt(9)
+    normal.font.name = "Times New Roman"
+    normal.font.size = Pt(13)
+    for style_name in ("Title", "Heading 1", "Heading 2", "Heading 3"):
+        document.styles[style_name].font.name = "Times New Roman"
 
     title = document.add_heading("BÁO CÁO GIAI ĐOẠN 2", level=0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -383,27 +526,48 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "Báo cáo được tổng hợp từ artifact hiện có trong reports/generated/. "
         "Kết quả mô phỏng và ML trên UCI-697 không phải bằng chứng hiệu quả tại NTU."
     )
+    document.add_page_break()
 
     _add_section(document, "TÓM TẮT ĐIỀU HÀNH")
     document.add_paragraph(
-        "Đã triển khai pipeline ML tại T1 trên REAL (UCI-697), rule engine/kiểm tra CTĐT, "
-        "bộ tối ưu ILP, mô phỏng Monte Carlo và giao diện Streamlit. Kiểm tra CTĐT đọc "
-        "n_checks từ JSON; pytest bao phủ core, optimizer, dữ liệu, mô phỏng và smoke test giao diện. "
-        "Báo cáo này lấy bảng và chỉ số từ artifact sinh tự động, không bổ sung kết quả thủ công."
+        "Bản mẫu đã kết nối dự báo ML tại T1 trên REAL (UCI-697), quy tắc đào tạo, tối ưu ILP, "
+        "Monte Carlo và giao diện Streamlit. CTĐT được nhóm cung cấp mang nhãn OFFICIAL (NTU); "
+        "hồ sơ là SCENARIO. Các bảng và số liệu trong báo cáo được lấy từ artifact đã sinh, "
+        "không nhập số kết quả bằng tay."
     )
     document.add_paragraph(
-        "Hạn chế trọng yếu: CTĐT được nhóm cung cấp nhưng mã HP/prerequisite và một số diễn giải "
-        "quy chế vẫn chưa xác nhận; UCI-697 là dữ liệu ngoài NTU; tải, pass/fail tương lai và "
-        "Monte Carlo là giả định; ảnh chụp UI chưa được đính kèm. Do đó đây là prototype hỗ trợ "
-        "thảo luận, không phải dự báo đã kiểm định cho sinh viên NTU hay khuyến nghị đăng ký an toàn."
+        f"Holdout ML có {test_metrics['test_rows']} dòng và chỉ được đánh giá một lần; "
+        f"Enrolled recall là {test_metrics['per_class']['Enrolled']['recall']:.4f}. Monte Carlo "
+        "là mô phỏng trên hồ sơ kịch bản với các giả định; khác biệt trong mô phỏng không phải bằng "
+        "chứng hiệu quả với sinh viên NTU. Mã HP, một số ngữ nghĩa quy chế, học kỳ hè, mở lớp và "
+        "học cải thiện còn hạn chế hoặc chưa xác nhận. Đây là prototype hỗ trợ thảo luận, không phải "
+        "dự báo đã kiểm định tại NTU hay khuyến nghị đăng ký an toàn."
+    )
+    matrix_headers, matrix_rows = _markdown_table(
+        _read_text("final_requirements_matrix.md")
+    )
+    _add_table(
+        document,
+        "Các điểm đã chỉnh so với báo cáo lần trước",
+        matrix_headers,
+        matrix_rows,
     )
 
     _add_section(document, "DỮ LIỆU OFFICIAL (NTU)")
+    course_summary = curriculum["summary"]["course_counts"]
+    prerequisite_summary = curriculum["summary"]["prerequisite_graph"]
     document.add_paragraph(
         f"Nhãn: {curriculum['source_label']}; tài liệu nhóm cung cấp: "
         f"{curriculum['source_document']}, mục {curriculum['source_section']}. "
+        f"Artifact hiện ghi {course_summary['total_rows']} dòng CTĐT và "
+        f"{prerequisite_summary['edge_count']} quan hệ tiên quyết/song hành. "
         "Ngày truy cập/phiên bản tài liệu không có trong artifact: UNKNOWN, source=NOT_FOUND. "
         "Không tự bổ sung học phần, tín chỉ hoặc điều kiện ngoài nguồn."
+    )
+    document.add_paragraph(
+        f"REAL (UCI-697) chỉ cung cấp vector/đặc trưng cho ML; số hồ sơ minh họa SCENARIO là "
+        f"{len({row['student_id'] for row in plans})}. Tham số mô phỏng và kế hoạch được gắn "
+        "GIẢ ĐỊNH khi không phải dữ liệu CTĐT/quy chế đã xác nhận."
     )
     document.add_paragraph(
         "Các mã học phần được validator liệt kê là chưa xác minh được đưa vào bảng riêng; "
@@ -418,6 +582,11 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "n_checks là số kiểm tra trong mảng checks của JSON. course_rows và prerequisite_edges "
         "là thông tin mô tả riêng, không cộng vào n_checks."
     )
+    document.add_paragraph(
+        f"Kiểm định hiện hành: n_checks={curriculum['n_checks']} "
+        f"(PASS={curriculum['n_pass']}, WARN={curriculum['n_warn']}, FAIL={curriculum['n_fail']}). "
+        "Mã học phần trùng hoặc chưa xác minh được không được tự chuẩn hóa."
+    )
 
     _add_section(document, "QUY CHẾ QĐ 753/2021 VÀ CÁCH MÔ HÌNH HÓA")
     document.add_paragraph(
@@ -430,9 +599,35 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
 
     _add_section(document, "MÔ HÌNH ML — MỐC T1")
     document.add_paragraph(
-        "Mốc hợp lệ: sau HK1, trước đăng ký HK2. Các mô hình được so sánh trên validation; "
-        "bảng ba lớp và nhị phân giữ riêng. Holdout được đánh giá một lần theo artifact hiện có; "
-        f"evaluation_count={test_metrics['evaluation_count']}. Test không dùng để chọn mô hình."
+        "Mốc hợp lệ: sau HK1, trước đăng ký HK2. Ba thuật toán được so sánh: Logistic Regression, "
+        "Random Forest và XGBoost. Quy trình tách train/validation/test là 60/20/20 có phân tầng; "
+        "train dùng cho fit và tuning, validation cho lựa chọn mô hình/ngưỡng/hiệu chuẩn. "
+        f"Holdout test có {test_metrics['test_rows']} dòng, evaluation_count="
+        f"{test_metrics['evaluation_count']}; test không dùng để chọn mô hình."
+    )
+    document.add_paragraph(
+        "Validation có thể lạc quan vì dùng để chọn mô hình/ngưỡng và hiệu chuẩn; holdout là kết quả "
+        "chính. Enrolled là lớp bị kiểm duyệt phải. Trên holdout, confusion matrix theo thứ tự "
+        "Dropout/Enrolled/Graduate cho hàng Enrolled là "
+        f"{test_metrics['confusion_matrix'][1]}, tức {test_metrics['per_class']['Enrolled']['recall']:.4f} "
+        f"recall ({test_metrics['confusion_matrix'][1][1]}/{test_metrics['per_class']['Enrolled']['support']}); "
+        "các lỗi dự đoán còn lại phân sang Dropout hoặc Graduate. Ba lớp và nhị phân không có "
+        "KTC bootstrap ghép cặp giữa hai bài toán; vì vậy chênh lệch recall validation không được "
+        "kết luận là nằm trong hay ngoài sai số."
+    )
+    xgb_three = next(
+        row for row in model_comparison
+        if row["model"] == "XGBoost" and row["task"] == "three_class"
+    )
+    xgb_binary = next(
+        row for row in model_comparison
+        if row["model"] == "XGBoost" and row["task"] == "binary_dropout"
+    )
+    document.add_paragraph(
+        f"Validation XGBoost: Dropout recall ba lớp={float(xgb_three['dropout_recall']):.4f}, "
+        f"nhị phân={float(xgb_binary['dropout_recall']):.4f}, chênh="
+        f"{abs(float(xgb_three['dropout_recall']) - float(xgb_binary['dropout_recall'])):.4f}. "
+        "Không có CI cho chênh lệch hai bài toán nên kết luận “nằm trong sai số” là chưa kiểm chứng."
     )
     _add_table_by_title(document, tables, "ML — validation ba lớp")
     _add_table_by_title(document, tables, "ML — validation nhị phân")
@@ -446,9 +641,21 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "độ tin cậy xác suất được phản ánh bằng Brier score và các giá trị calibration; "
         f"trạng thái holdout calibration={test_metrics.get('calibration', 'không có trường trong artifact')}. "
         "Enrolled là lớp bị kiểm duyệt phải (right-censored); không diễn giải là nhãn hoàn tất "
-        "tương lai đã biết. SHAP giải thích mô hình, không hàm ý quan hệ nhân quả."
+        "tương lai đã biết. SHAP giải thích mô hình, không phải nhân quả."
     )
     _add_table_by_title(document, tables, "ML — SHAP toàn cục, năm đặc trưng đầu")
+    document.add_paragraph(
+        "Phân tích Enrolled (REAL UCI-697, validation): "
+        + next(
+            (line.strip() for line in enrolled_analysis.splitlines()
+             if "XGBoost" in line and "|" in line),
+            "chi tiết được lưu trong reports/generated/enrolled_analysis.md.",
+        )
+    )
+    document.add_paragraph(
+        "Giao thức, đặc trưng T1 và one-shot test: docs/ml_protocol.md. "
+        "Test chỉ chạy một lần; validation được dùng để chọn nên có thể lạc quan."
+    )
     document.add_paragraph(
         "Chi tiết phân tích Enrolled, calibration, test và SHAP: "
         "reports/generated/enrolled_analysis.md, metrics.json, test_evaluation.json, "
@@ -462,6 +669,26 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "mô phỏng và smoke test giao diện. Lỗi môn song hành được kiểm tra bằng các ca regression "
         "trong tests/test_core_rules.py; kết quả chạy toàn bộ được lưu nguyên văn tại "
         f"{pytest_path.relative_to(ROOT)}."
+    )
+    rule_test_groups = [
+        ["(a)", "Nguồn CTĐT và kiểm tra dữ liệu", "tests/test_curriculum_validation.py; tests/test_data_consistency.py", "Đã chạy cùng full pytest"],
+        ["(b)", "Tiên quyết và điều kiện học phần", "tests/test_core_rules.py; tests/test_official_rules.py", "Đã chạy cùng full pytest"],
+        ["(c)", "Song hành hai chiều, chuỗi và lan truyền đến điểm ổn định", "tests/test_core_rules.py", "Đã chạy regression tests"],
+        ["(d)", "Giới hạn tín chỉ và GPA theo QĐ 753", "tests/test_official_rules.py", "Đã chạy cùng full pytest"],
+        ["(e)", "Học lại/cải thiện và trạng thái tiến độ", "tests/test_official_rules.py; tests/test_core_rules.py", "Đã chạy cùng full pytest"],
+        ["(f)", "best_effort, xung đột quy chế và cảnh báo cố vấn", "tests/test_optimizer_v2.py; tests/test_app_smoke.py", "Đã chạy cùng full pytest"],
+        ["(g)", "Seed, common random numbers, histogram và kết quả MC", "tests/test_dss_simulation.py", "Đã chạy cùng full pytest"],
+        ["(h)", "Cô lập hồ sơ và các trang Streamlit", "tests/test_data_consistency.py; tests/test_app_smoke.py", "Đã chạy cùng full pytest"],
+    ]
+    _add_table(
+        document,
+        "Rule engine — tám nhóm kiểm tra (a)–(h)",
+        ["Nhóm", "Phạm vi", "Bằng chứng kiểm thử", "Kết quả"],
+        rule_test_groups,
+    )
+    document.add_paragraph(
+        "Lỗi song hành trước đây được xử lý bằng cách lặp việc loại học phần không đủ điều kiện "
+        "đến khi tập đủ điều kiện ổn định. Ý nghĩa học thuật của quan hệ song hành vẫn cần xác nhận."
     )
 
     _add_section(document, "ILP — HÀM MỤC TIÊU VÀ CÁC PHƯƠNG ÁN")
@@ -477,7 +704,18 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     ]
     for line in formula_lines:
         document.add_paragraph(line.replace("`", ""), style="List Bullet")
-    _add_table_by_title(document, tables, "ILP — ba phương án scenario V2-001")
+    strict_edges_line = next(
+        (line.strip() for line in optimization_text.splitlines()
+         if line.strip().startswith("Official strict prerequisite edges:")),
+        "Số cạnh tiên quyết nghiêm ngặt được ghi trong optimization_spec.md.",
+    )
+    document.add_paragraph(
+        f"p*=γ/(1+γ); với γ={objective_config['gamma']} thì p*="
+        f"{objective_config['p_break_even']}. {strict_edges_line} "
+        "u_i khác 0 và giá trị từng học phần được liệt kê trong optimization_spec.md. "
+        "g_load dùng L là tổng tín chỉ thực chọn và units(L), không lấy số môn thay cho tín chỉ."
+    )
+    _add_table_by_title(document, tables, "ILP — ba phương án cho 9 hồ sơ")
     _add_table_by_title(document, tables, "ILP — độ nhạy scenario V2-002")
     document.add_paragraph(
         "Các dòng best_effort luôn phải giữ cảnh báo rủi ro và khuyến nghị gặp cố vấn học tập; "
@@ -491,28 +729,81 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     )
 
     _add_section(document, "MONTE CARLO — MÔ PHỎNG, KHÔNG PHẢI BẰNG CHỨNG THỰC TẾ")
+    mc_seed = metrics.get("monte_carlo", {}).get("seed", "UNKNOWN")
+    mc_runs = sorted({int(row["n_runs"]) for row in mc})
+    policies = sorted({row["policy"] for row in mc})
+    lambdas = sorted({float(row["lambda"]) for row in mc})
+    high_risk_rows = [
+        row for row in mc
+        if row["student_id"] == "V2-005" and float(row["lambda"]) == 0.1
+    ]
+    high_risk_probabilities = [
+        float(row["p_expelled_regulatory"]) for row in high_risk_rows
+    ]
+    pareto_labels = sorted({row["dominance"] for row in _read_csv("mc_pareto.csv")})
     document.add_paragraph(
-        f"mc_results.csv có {len(mc)} dòng. Bảng dưới đây là lát cắt scenario V2-001, λ=0.1; "
-        "KTC lấy từ kết quả mô phỏng. So sánh cặp dùng bootstrap paired và Pareto theo artifact; "
-        "không suy rộng từ một kịch bản sang sinh viên NTU. Các giả định gồm pass/fail độc lập, "
-        "điểm đại diện và cấu hình tải; W3/W4 không được đánh giá trong mô phỏng do thiếu điểm. "
-        "Không có mc_grad_hist.csv trong artifact hiện tại nên không thể dựng phân phối kỳ tốt nghiệp; "
-        "không nội suy hoặc suy diễn phân phối này."
+        f"Thiết kế: chính sách {', '.join(policies)}; số ngẫu nhiên chung dùng cùng seed/run_index; "
+        f"N={', '.join(map(str, mc_runs))}; seed={mc_seed}; λ={', '.join(_fmt(v, 1) for v in lambdas)}. "
+        "Bảng chính báo cáo từng hồ sơ, các trung bình gộp chỉ để mô tả. KTC, paired comparison và "
+        "bốn nhãn Pareto lấy từ artifact; giả định pass/fail độc lập, điểm đại diện 7,0/4,0, không "
+        "mô phỏng hè và chưa mô phỏng W3/W4."
     )
-    _add_table_by_title(document, tables, "Monte Carlo — scenario V2-001, λ=0.1")
-    _add_table_by_title(document, tables, "Monte Carlo — so sánh cặp V2-001, λ=0.1")
-    _add_table_by_title(document, tables, "Monte Carlo — Pareto V2-001, λ=0.1")
+    document.add_paragraph(
+        "Khác biệt trong mô phỏng không phải bằng chứng hiệu quả với sinh viên NTU. V2-005 là hồ sơ "
+        "SCENARIO nợ đọng sát W1; P(buộc thôi học theo phạm vi W1/W2) tại λ=0,1 nằm trong khoảng "
+        f"{min(high_risk_probabilities):.3f}–{max(high_risk_probabilities):.3f} theo các chính sách. "
+        f"Nhãn Pareto trong artifact: {', '.join(pareto_labels)}. Đây không phải xác suất thực tế "
+        "của sinh viên NTU."
+    )
+    _add_table_by_title(document, tables, "Monte Carlo — kết quả từng hồ sơ, λ=0.1")
+    _add_table_by_title(document, tables, "Monte Carlo — so sánh cặp từng hồ sơ, λ=0.1")
+    _add_table_by_title(document, tables, "Monte Carlo — Pareto từng hồ sơ, λ=0.1")
+    _add_table_by_title(document, tables, "Monte Carlo — histogram từng hồ sơ, λ=0.1")
+    figure_path = _build_mc_distribution_figure(mc_histogram)
+    document.add_picture(str(figure_path), width=Inches(6.6))
+    document.add_paragraph(
+        "Biểu đồ phân phối kỳ tốt nghiệp lấy trực tiếp từ mc_grad_hist.csv cho V2-001 và V2-003; "
+        "kỳ không có quan sát không được nội suy. source_label trống trong CSV đã lưu; báo cáo dùng "
+        f"nhãn hiển thị {MC_HISTOGRAM_SOURCE_LABEL} từ hằng số script. Đây là khác biệt metadata."
+    )
+    _add_table_by_title(document, tables, "Monte Carlo — KTC V2-001 và V2-003, λ=0.1")
+    _add_table_by_title(document, tables, "Monte Carlo — Pareto V2-001 và V2-003, λ=0.1")
+    _add_table_by_title(document, tables, "Monte Carlo — ghi chú metadata histogram, λ=0.1")
+    document.add_paragraph(
+        "Kiểm tái tạo (thay cho code_hash không tồn tại): với seed 20261108, N=1.000 và số ngẫu nhiên "
+        "chung, mã hiện tại cho lại đúng các kết quả đã lưu ở 3 nhóm đã kiểm (109/109 cột, sai số "
+        "≤ 1e-9; khóa dòng và giá trị số histogram khớp). Nhánh soft của optimizer không nằm trong "
+        "đường chạy Monte Carlo (chế độ off), nên không ảnh hưởng đến kết quả đã lưu."
+    )
+    document.add_paragraph("Diễn giải Monte Carlo nguyên văn từ mc_interpretation.md:")
+    for line in mc_interpretation.splitlines():
+        if line.strip():
+            document.add_paragraph(line)
 
     _add_section(document, "GIAO DIỆN STREAMLIT")
     document.add_paragraph(
         "Ứng dụng: app/main.py. Hồ sơ là SCENARIO; ML chỉ hiển thị trong phạm vi T1 hợp lệ; "
-        "kết quả mô phỏng được gắn nhãn giả định. Không có ảnh chụp được đính kèm trong artifact "
-        "hiện tại. Chụp theo docs/screens_to_capture.md và chỉ dùng hồ sơ SCENARIO."
+        "kết quả mô phỏng được gắn nhãn giả định. Bảng đối chiếu dưới đây theo docs/screens_to_capture.md; "
+        "chụp đủ 7 trang cho 9 hồ sơ SCENARIO, không dùng dữ liệu cá nhân."
+    )
+    _add_table(
+        document,
+        "Đối chiếu chức năng giao diện và trang",
+        ["Yêu cầu", "Trang Streamlit", "Điều cần kiểm tra/chụp"],
+        [
+            ["Hồ sơ và tiến độ", "Hồ sơ & tiến độ", "Chỉ hồ sơ SCENARIO; trạng thái/điểm nhất quán."],
+            ["Cảnh báo rủi ro tại T1", "Nguy cơ & cảnh báo", "ML chỉ tại T1; P(Dropout) là khuyến nghị mềm."],
+            ["Đủ điều kiện học phần", "Học phần", "Hiển thị tiên quyết/song hành và lý do chặn."],
+            ["Nhiều phương án đăng ký", "Phương án đăng ký", "Ba phương án; best_effort kèm cảnh báo và cố vấn."],
+            ["Tham số giả định", "What-if", "λ/Fmax gắn nhãn GIẢ ĐỊNH."],
+            ["Kết quả mô phỏng", "Mô phỏng", "N, CI ghép cặp, Pareto, histogram và chính sách."],
+            ["Nguồn dữ liệu và hạn chế", "Dữ liệu & giả định", "Nhãn OFFICIAL/REAL/SCENARIO/GIẢ ĐỊNH."],
+        ],
     )
     for caption in (
-        "Ảnh 1 — Hồ sơ & tiến độ: [CHƯA CHỤP — bổ sung ảnh tại đây]",
-        "Ảnh 2 — Nguy cơ & cảnh báo: [CHƯA CHỤP — bổ sung ảnh tại đây]",
-        "Ảnh 3 — Phương án đăng ký và trang mô phỏng: [CHƯA CHỤP — bổ sung ảnh tại đây]",
+        "[ẢNH 1: V2-001 – Phương án đăng ký – ba phương án, trạng thái và cảnh báo]",
+        "[ẢNH 2: V2-002 – Mô phỏng – CI ghép cặp và nhãn Pareto tại λ=0,1]",
+        "[ẢNH 3: V2-003 – Nguy cơ & cảnh báo – T1 và thông điệp cố vấn]",
     ):
         paragraph = document.add_paragraph(caption)
         paragraph.paragraph_format.space_after = Pt(12)
@@ -536,61 +827,95 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "python -m scripts.check_report_consistency",
     ):
         document.add_paragraph(command, style="List Bullet")
+    full_test_line = next(
+        (line.strip() for line in reversed(pytest_summary.splitlines()) if " passed" in line),
+        "chưa kiểm chứng",
+    )
+    app_test_line = next(
+        (line.strip() for line in reversed(app_test_summary.splitlines()) if " passed" in line),
+        "chưa kiểm chứng",
+    )
+    hash_matches = sum(row["status"] == "MATCH" for row in hash_rows)
+    document.add_paragraph(
+        f"Kết quả tại repo: full pytest `{full_test_line}`; AppTest `{app_test_line}`; "
+        f"Streamlit health `{health_summary.strip()}`; baseline hash {hash_matches}/{len(hash_rows)} MATCH."
+    )
+    document.add_paragraph(environment_validation)
 
     _add_section(document, "HẠN CHẾ VÀ PHẦN CHƯA HOÀN THÀNH")
     for limitation in (
         "Chưa ghi nhận ngày truy cập/phiên bản PDF CTĐT trong artifact; mã HP và tính đầy đủ ngữ nghĩa tiên quyết còn UNCONFIRMED.",
         "Chưa xác nhận một số quy tắc suy từ CTĐT, bao gồm nhóm tự chọn, mở môn theo chẵn/lẻ và ngữ nghĩa môn song hành.",
-        "REAL (UCI-697) khác miền NTU; không có đánh giá hiệu quả dự báo trên sinh viên NTU.",
+        "UCI-697 là dữ liệu Bồ Đào Nha; hồ sơ SCENARIO minh họa, không phải dữ liệu sinh viên NTU.",
         "Kết quả dự báo xác suất đạt môn, tải, điểm đại diện, tính độc lập môn học và Monte Carlo có giả định; không phải kết quả thực tế.",
-        "Không mô phỏng học kỳ hè và một số đầu ra/điểm cần cho W3/W4; kết quả tốt nghiệp phụ thuộc điều kiện mô phỏng.",
-        "Chưa chụp ảnh giao diện; chưa kiểm chứng cài đặt từ một máy/môi trường sạch mới.",
-        "Phân phối kỳ tốt nghiệp chỉ có thể báo cáo khi artifact tương ứng chứa dữ liệu; không nội suy khi thiếu dữ liệu.",
+        "Môn học được mô phỏng độc lập; chưa mô hình hóa học kỳ hè, điều kiện mở lớp và học cải thiện.",
+        "W3/W4 chưa có trong Monte Carlo do thiếu chuỗi điểm; phạm vi cảnh báo thôi học trong mô phỏng là W1/W2.",
+        "Điểm đại diện 7,0/4,0 là GIẢ ĐỊNH. LightGBM chưa cài; OULAD không sử dụng.",
+        "Ảnh/video giao diện do nhóm bổ sung; cài đặt từ môi trường sạch chưa được kiểm chứng trong chặng 6a.",
+        "Không tìm thấy validator code_hash; kiểm tái tạo thay thế. source_label của histogram lưu trống, báo cáo gắn nhãn bằng hằng số script.",
+        "Không kết luận mô phỏng tốt hơn cách đăng ký thông thường; các khác biệt chỉ thuộc kịch bản và giả định đã nêu.",
     ):
         document.add_paragraph(limitation, style="List Bullet")
 
-    _add_section(document, "ĐỐI CHIẾU YÊU CẦU CỦA GIẢNG VIÊN (MỤC 1–6)")
+    _add_section(document, "PHỤ LỤC — CÂY THƯ MỤC, FILE VÀ GIẢ ĐỊNH")
     document.add_paragraph(
-        "Rubric gốc riêng của giảng viên không có trong workspace. Bảng dưới đây đối chiếu sáu "
-        "phần dự án/mốc triển khai hiện có; cần xác nhận lại nếu thứ tự mục 1–6 của cô khác."
+        "Cây thư mục rút gọn: app/ (giao diện); core/ (logic không phụ thuộc Streamlit); "
+        "config/ (quy chế và giả định); data/official/, data/scenarios/, data/processed/; "
+        "models/; notebooks/; scripts/; tests/; docs/; reports/generated/; archive/ (chỉ lưu trữ, "
+        "không dùng trong kết quả cuối). Gói dist/ sẽ được dựng riêng ở chặng 6b."
     )
-    crosswalk = [
-        ["1", "Dữ liệu CTĐT và nguồn", "Làm một phần", "data/official/; config/program_official.yaml; curriculum_validation.json — mã HP/prerequisite còn xác minh."],
-        ["2", "Quy chế và rule engine", "Làm một phần", "config/credit_rules_official.yaml; regulation_assumptions.md; tests/test_official_rules.py — còn UNCONFIRMED/UNKNOWN."],
-        ["3", "ML cảnh báo tại T1", "Làm một phần", "model_comparison.csv; test_evaluation.json; ml_validation_bootstrap_ci.json — chỉ UCI-697, chưa kiểm định NTU."],
-        ["4", "ILP và phương án đăng ký", "Làm một phần", "plans_by_student.csv; ilp_sensitivity.csv; optimization_spec.md — các tham số/nhánh quy chế còn giả định."],
-        ["5", "Monte Carlo và giao diện", "Làm một phần", "mc_results.csv; mc_pairwise.csv; mc_pareto.csv; app/main.py; docs/screens_to_capture.md — chưa có ảnh, mô phỏng không phải bằng chứng."],
-        ["6", "Kiểm thử, báo cáo, đóng gói", "Làm một phần", "pytest_summary.txt; stage2_report.docx; HANDOFF.md — cần xác nhận cài đặt sạch và rubric gốc."],
+    document.add_paragraph("Câu hỏi xin cô xác nhận (có phương án mặc định) được gửi riêng tại reports/generated/final_questions_for_co.md.")
+    document.add_paragraph("Tham số GIẢ ĐỊNH chính:")
+    assumptions = [
+        [
+            "β, γ và điểm hòa vốn p*",
+            f"{objective_config['beta']}; {objective_config['gamma']}; {objective_config['p_break_even']}",
+            "config/optimizer_scenario_v2.yaml",
+        ],
+        [
+            "λ mặc định và ngưỡng tải",
+            f"{load_config['lambda']}; {load_config['threshold_units']} units",
+            "config/optimizer_scenario_v2.yaml",
+        ],
+        [
+            "Multiplier học lại",
+            " / ".join(str(value) for value in load_config["retake_multipliers"]),
+            "config/optimizer_scenario_v2.yaml",
+        ],
+        [
+            "N, seed, λ mô phỏng",
+            f"{simulation_config['minimum_runs_per_profile_policy_lambda']}; "
+            f"{simulation_config['seed']}; {simulation_config['default_lambdas']}",
+            "config/monte_carlo_scenario.yaml",
+        ],
+        [
+            "Điểm đại diện đạt/trượt",
+            f"{simulation_config['pass_fail_proxy']['passed_course_grade_for_graduation_gpa']} / "
+            f"{simulation_config['pass_fail_proxy']['failed_course_grade_for_transcript_state']}",
+            "config/monte_carlo_scenario.yaml",
+        ],
+        [
+            "Hè, mở lớp, học cải thiện",
+            "chưa mô hình hóa/UNCONFIRMED",
+            "reports/generated/regulation_assumptions.md",
+        ],
     ]
     _add_table(
         document,
-        "Đối chiếu sáu phần dự án — trạng thái và bằng chứng",
-        ["Mục", "Yêu cầu", "Trạng thái", "Bằng chứng"],
-        crosswalk,
+        "Phụ lục — tham số GIẢ ĐỊNH",
+        ["Tham số", "Giá trị/phạm vi", "Nguồn"],
+        assumptions,
     )
-
-    _add_section(document, "CÂU HỎI XIN CÔ XÁC NHẬN (TỐI ĐA 6)")
-    questions = [
-        "Cảnh báo dùng ba lớp Dropout/Enrolled/Graduate hay nhị phân Dropout/non-Dropout? Mặc định: ba lớp; chênh lệch hiện nằm trong sai số và Enrolled được giữ riêng.",
-        "P(Dropout) có được dùng như khuyến nghị mềm, không áp trần đăng ký? Mặc định: chỉ cảnh báo/khuyến nghị gặp cố vấn, không ràng buộc quyền đăng ký.",
-        "Ngân sách kịch bản đã đúng chưa? Mặc định: nhóm yếu/kém có thể xét 12; sinh viên thường dùng {15, 18, 21}; không đổi giới hạn chính thức.",
-        "Đầu ra buộc thôi học trong mô phỏng có giới hạn W1/W2 khi không có điểm HK để tính W3/W4? Mặc định: chỉ W1/W2 trong mô phỏng; rule engine vẫn giữ đầy đủ quy tắc có dữ liệu.",
-        "Cô duyệt tiêu chí Pareto hiện tại và KTC 95% paired bootstrap? Mặc định: chỉ kết luận trội khi tiêu chí và KTC cùng ủng hộ; còn chồng lấp thì chưa phân biệt.",
-        "Có cần bổ sung OULAD hoặc mô hình hóa học kỳ hè? Mặc định: chưa thêm nguồn/giả định mới khi chưa được duyệt và chưa có dữ liệu chính thức phù hợp.",
-    ]
-    for question in questions:
-        document.add_paragraph(question, style="List Number")
-
-    _add_section(document, "PHỤ LỤC — DANH SÁCH FILE GIAO")
     deliverables = [
         "Mã nguồn: core/, app/, scripts/, tests/.",
-        "Notebook hoạt động: notebooks/01_eda_uci697.ipynb. Notebook Stage 1 cũ: archive/02_risk_to_plan_exploration.ipynb và archive/03_ilp_formulation_check.ipynb.",
+        "Notebook: notebooks/01_eda_uci697.ipynb (chạy với REAL UCI-697); notebook cũ trong archive/ không dùng làm kết quả.",
         "Dữ liệu và cấu hình: data/official/, data/scenarios/, data/processed/, config/; dữ liệu scenario mang nhãn SCENARIO.",
         "ML: models/early_warning.joblib; reports/generated/model_comparison.csv, test_evaluation.json, ml_validation_bootstrap_ci.json, shap_global.csv.",
         "Rule/ILP: reports/generated/curriculum_validation.json, regulation_assumptions.md, plans_by_student.csv, ilp_sensitivity.csv.",
-        "Monte Carlo: reports/generated/mc_results.csv, mc_pairwise.csv, mc_pareto.csv và các artifact liên quan.",
+        "Monte Carlo: reports/generated/mc_results.csv, mc_grad_hist.csv, mc_pairwise.csv, mc_pareto.csv và diễn giải.",
         "Tài liệu chạy: README.md, HANDOFF.md, docs/screens_to_capture.md.",
-        "Báo cáo: reports/stage2_report.docx; kết quả test: reports/generated/pytest_summary.txt.",
+        "Báo cáo: reports/stage2_report.docx; transcript: reports/generated/pytest_summary.txt.",
+        "Ảnh/video demo: chưa có; nhóm bổ sung.",
     ]
     for item in deliverables:
         document.add_paragraph(item, style="List Bullet")
@@ -599,10 +924,15 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
             name for name in (
                 "curriculum_validation.json", "metrics.json", "model_comparison.csv",
                 "test_evaluation.json", "ml_validation_bootstrap_ci.json", "mc_results.csv",
-                "mc_pairwise.csv", "mc_pareto.csv", "plans_by_student.csv",
+                "mc_grad_hist.csv", "mc_pairwise.csv", "mc_pareto.csv", "plans_by_student.csv",
                 "ilp_sensitivity.csv", "regulation_assumptions.md",
             )
         )
+    )
+    document.add_paragraph(
+        "Ghi chú: ml_summary.json không có trong workspace tại thời điểm sinh báo cáo; "
+        "nội dung ML lấy từ model_comparison.csv, test_evaluation.json, metrics.json và "
+        "ml_validation_bootstrap_ci.json."
     )
     if not screens_path.is_file():
         raise FileNotFoundError(f"Screenshot instructions not found: {screens_path}")

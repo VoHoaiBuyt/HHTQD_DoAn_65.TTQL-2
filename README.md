@@ -45,6 +45,25 @@ venv. If SHAP is unavailable, the documented alternatives are XGBoost
 `pred_contribs=True` or, for Logistic Regression, coefficient times
 `(feature - training_mean)`.
 
+### Clean-copy verification (2026-11-10)
+
+A clean copy excluding `.git`, `.venv`, `__pycache__`, `.pytest_cache`,
+notebook checkpoints, `dist/`, and `_repro_tmp/` was verified with a new venv.
+PowerShell commands run inside that copy:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pytest -v
+.\.venv\Scripts\python.exe -m streamlit run app/main.py --server.headless true --server.port 8766
+```
+
+Observed results: `pip install` exit 0; `119 passed in 29.19s`; Streamlit health
+`HTTP 200; body=ok`. This verifies a clean project copy, not the filtered
+submission `dist/` package. The full in-worktree pytest transcript is
+`reports/generated/pytest_summary.txt`; the concise clean-copy record is
+`reports/generated/final_environment_validation.md`.
+
 ## Curriculum and regulation checks
 
 ```powershell

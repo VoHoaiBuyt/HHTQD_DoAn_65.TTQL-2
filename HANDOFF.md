@@ -190,14 +190,16 @@ quyết định và log riêng.
   `reports/generated/plans_by_student.csv`,
   `reports/generated/ilp_sensitivity.csv`.
 - Monte Carlo: `reports/generated/mc_results.csv`,
-  `reports/generated/mc_pairwise.csv`, `reports/generated/mc_pareto.csv`.
+  `reports/generated/mc_grad_hist.csv`, `reports/generated/mc_pairwise.csv`,
+  `reports/generated/mc_pareto.csv`.
 - Kiểm thử/báo cáo/hướng dẫn: `reports/generated/pytest_summary.txt`,
   `reports/stage2_report.docx`, `docs/screens_to_capture.md`, `README.md`,
   `HANDOFF.md`.
 
 Ảnh giao diện chưa có trong gói; dùng `docs/screens_to_capture.md` và chỉ chụp
-hồ sơ SCENARIO. Không có `mc_grad_hist.csv` trong artifact hiện tại, vì vậy không
-báo cáo phân phối kỳ tốt nghiệp suy ra.
+hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.csv`;
+`source_label` trong các dòng lưu bị trống, nên báo cáo hiển thị nhãn
+`SCENARIO / GIẢ ĐỊNH (Monte Carlo)` từ hằng số script và ghi rõ khác biệt metadata.
 
 ## Trạng thái dọn cấu trúc Phần 5.5
 
@@ -216,3 +218,34 @@ báo cáo phân phối kỳ tốt nghiệp suy ra.
 - Bản `dist/` hiện chỉ có hai tệp `data/scenarios_v1/` cùng README bằng chứng
   kiểm định; sẽ hoàn thiện theo whitelist ở Phần 6. `.github/prompts/` được giữ
   trong repo nhưng loại khỏi `dist/`.
+
+## Part 6a — report and final checks (2026-11-10)
+
+- Old report found at `E:\HHTQD_DoAn\BaoCao_Nhom1_HTTQD_65.TTQL-2.docx`;
+  a byte-identical read-only copy and outline are under `docs/templates/` and
+  `reports/generated/old_report_outline.md`. Prior simulated claims and their
+  replacements are catalogued in `reports/generated/old_report_replaced_content.md`.
+- `reports/stage2_report.docx` is regenerated from generated sources. The
+  report consistency checker passes all 20 source tables; the historical 31
+  mismatches and their per-row disposition are recorded in
+  `reports/generated/final_mismatch_disposition.md`. Raw
+  `reports/generated/part4_fix_evidence.md` remains unchanged and is identified
+  in `docs/README.md` as a raw record, not a final deliverable.
+- MC recreation replaced the missing `code_hash` validator: all 109 columns
+  and histogram numeric keys/counts matched for V2-001/ILP-matched, V2-001/B1,
+  and V2-005/B1 at λ=0.1, seed 20261108, N=1,000. The saved histogram
+  `source_label` is blank; this metadata difference is excluded from the gate.
+  The soft optimizer branch is off in the MC path. The path-scoped git log
+  showed only snapshot `a261a28`, so the repository history cannot establish
+  whether a later optimizer change occurred after the saved MC artifacts; no
+  commit-specific diff attribution is verifiable.
+- Full pytest: 119 passed, 252 warnings. AppTest: 23 passed, 84 warnings.
+  Streamlit health: HTTP 200, body `ok`. The normalized 72-file SHA-256
+  baseline has 0 mismatch/missing. A clean project copy installed requirements
+  successfully, ran 119 tests, and returned HTTP 200 from Streamlit. This is
+  not a `dist/` verification.
+- `reports/generated/final_requirements_matrix.md`,
+  `final_questions_for_co.md`, and `final_cover_message.md` contain the
+  requested review artifacts. The cover message and report pages are estimates
+  until the report is rendered in Word.
+- **Chặng 6a complete; 6b has not been started.** `dist/` remains partial.
