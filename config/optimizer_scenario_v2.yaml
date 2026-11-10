@@ -1,0 +1,52 @@
+source_label: "GIẢ ĐỊNH (kịch bản và mô hình)"
+scenario:
+  default_specialization: NW
+  specialization_label: "GIẢ ĐỊNH (Truyền thông và Mạng máy tính; chờ nhóm xác nhận)"
+optimizer:
+  backend: "PuLP/HiGHS"
+  objective:
+    beta: 0.125
+    gamma: 1.0
+    description: "maximize sum(c_i*p_i - gamma*c_i*(1-p_i) + beta*u_i)"
+    p_break_even: 0.5
+    p_break_even_formula: "gamma/(1+gamma)"
+  load:
+    lambda: 0.1
+    threshold_units: 6
+    retake_multipliers: [0.9, 1.0, 1.1]
+    retake_multiplier_policy:
+      first_retake: 0.9
+      repeated_attempt: 1.1
+      non_retake: 1.0
+      label: "GIẢ ĐỊNH; mapping attempt count to multiplier is not estimated from NTU data"
+    rounding: "floor(L / mean_credits + 0.5)"
+    mean_credits_scope: "courses in the specialization's 130-credit program"
+  unlock:
+    discount_per_prerequisite_edge: 0.5
+    description: "uncompleted transitive dependent credits, discounted by path length, plus missing slot credits"
+  risk_cap:
+    modes: ["off", "soft", "hard"]
+    default: "off"
+    fmax_grid: [0.5, 1.0, 1.5, 2.0, 3.0, null]
+    soft_slack_penalty: 100.0
+    description: "system recommendation only; never limits the student's regulatory registration rights"
+  scenario_budgets:
+    NORMAL: [15, 18, 21]
+    WEAK_OR_POOR: [12, 15, 18]
+  plan_selection:
+    safe_ratio: 0.75
+    fast_fmax: 2.0
+    pareto_axes: [expected_credits_passed, expected_failed_courses]
+    labels:
+      risk_focused: "Mục tiêu giảm trượt; không bảo đảm an toàn"
+      balanced: "Cân bằng theo hàm mục tiêu"
+      acceleration: "Tăng tốc dưới Fmax"
+  probabilities:
+    student_api: "core.pass_prob.p_student_pass"
+    failure_independence: true
+    course_difficulty_factor: false
+    warning_probabilities: "exact dynamic programming over integer credits"
+limitations:
+  - "P(Dropout) is a soft warning and recommendation, not an enrollment constraint."
+  - "Course outcomes are modeled as independent pass/fail events."
+  - "Offering parity and semester projections are assumptions pending confirmation."

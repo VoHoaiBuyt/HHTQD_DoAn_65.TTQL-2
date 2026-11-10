@@ -46,10 +46,10 @@ from src.optimize.plan_risk import (  # noqa: E402
 SEED = 20261105
 DATA_PATH = ROOT / "data" / "raw" / "uci_697" / "data.csv"
 DICTIONARY_PATH = ROOT / "reports" / "data_dictionary.csv"
-COURSES_PATH = ROOT / "data" / "simulated" / "courses.csv"
-PREREQUISITES_PATH = ROOT / "data" / "simulated" / "prerequisites.csv"
-PROGRESS_PATH = ROOT / "data" / "simulated" / "student_progress.csv"
-PROFILE_PATH = ROOT / "data" / "simulated" / "student_profile.csv"
+COURSES_PATH = ROOT / "data" / "processed" / "courses.csv"
+PREREQUISITES_PATH = ROOT / "data" / "processed" / "prerequisites.csv"
+PROGRESS_PATH = ROOT / "data" / "processed" / "student_progress.csv"
+PROFILE_PATH = ROOT / "data" / "processed" / "student_profile.csv"
 CONFIG_PATH = ROOT / "src" / "config" / "credit_rules.yaml"
 
 CATEGORICAL_FEATURES = {

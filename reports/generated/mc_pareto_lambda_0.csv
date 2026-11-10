@@ -1,0 +1,37 @@
+﻿student_id,persona,policy_a,policy_b,lambda,source_label,dominance,interpretation
+V2-001,Giỏi,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-001,Giỏi,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-001,Giỏi,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-001,Giỏi,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-002,Trung bình,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-002,Trung bình,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-002,Trung bình,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-002,Trung bình,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-003,Yếu kém,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-003,Yếu kém,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-003,Yếu kém,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-003,Yếu kém,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-004,"Sát ngưỡng 5,00",ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-004,"Sát ngưỡng 5,00",ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-004,"Sát ngưỡng 5,00",ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-004,"Sát ngưỡng 5,00",ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-005,Nợ đọng sát W1,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),đánh đổi,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-005,Nợ đọng sát W1,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),đánh đổi,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-005,Nợ đọng sát W1,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),đánh đổi,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-005,Nợ đọng sát W1,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-006,Trượt môn chặn chuỗi,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-006,Trượt môn chặn chuỗi,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-006,Trượt môn chặn chuỗi,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-006,Trượt môn chặn chuỗi,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-007,Gần tốt nghiệp,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-007,Gần tốt nghiệp,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-007,Gần tốt nghiệp,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-007,Gần tốt nghiệp,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-008,Đã đủ điều kiện tốt nghiệp,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-008,Đã đủ điều kiện tốt nghiệp,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-008,Đã đủ điều kiện tốt nghiệp,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-008,Đã đủ điều kiện tốt nghiệp,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),chưa phân biệt,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-009,Mở lại ô tự chọn,ILP-matched,B1,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-009,Mở lại ô tự chọn,ILP-matched,B2,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP bị vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-009,Mở lại ô tự chọn,ILP-matched,B3,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.
+V2-009,Mở lại ô tự chọn,ILP-matched,ILP-fixed,0.0,SCENARIO / GIẢ ĐỊNH (Monte Carlo),ILP vượt trội,Chỉ tiêu chính nào tệ hơn có ý nghĩa thì không kết luận vượt trội; cần ít nhất một chỉ tiêu tốt hơn có ý nghĩa.

@@ -6,8 +6,8 @@
 
 - UCI-697: https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success (truy cập 2026-11-05). Tài liệu UCI nói dữ liệu chứa thông tin đầu vào và kết quả học thuật cuối học kỳ 1/2; bảng biến không cung cấp mã học phần/tín chỉ/tiên quyết.
 - Bài báo UCI trích dẫn: M. V. Martins, D. Tolledo, J. Machado, L. M. T. Baptista, V. Realinho, “Early prediction of student's performance in higher education: a case study” (2021), https://doi.org/10.1007/978-3-030-72657-7_16. Metadata được kiểm tra qua UCI API/Crossref; toàn văn nhà xuất bản không truy cập được để xác minh thêm timestamp theo từng trường.
-- Cổng CTĐT chính thức NTU: https://ctdt.ntu.edu.vn (truy cập 2026-11-05). Trang là ứng dụng web; các API ngành/chương trình yêu cầu xác thực (401). Không thu được bảng CTĐT CNTT công khai có thể đọc được trong khảo sát này.
-- Vì vậy, tất cả nội dung trong `data/simulated/` là **SIMULATED**, dựng theo cấu trúc phổ biến để thử schema/thuật toán, **không phải CTĐT chính thức của Trường ĐH Nha Trang**. Cần thay/duyệt theo CTĐT và quy chế thật trước triển khai.
+- Cổng CTĐT chính thức NTU: https://ctdt.ntu.edu.vn (khảo sát 2026-11-05). Sau khảo sát, PDF `210_CNTT.pdf` được cung cấp; catalogue trong `data/processed/courses.csv` lấy theo mục 7.1 của tài liệu này.
+- `student_progress.csv` và `student_profile.csv` trong `data/processed/` vẫn là fixture **SIMULATED**, không phải dữ liệu sinh viên NTU. Tiến độ được dựng lại trên học phần bắt buộc chung; không suy đoán chuyên ngành hoặc xem điểm mô phỏng là dữ liệu thật.
 
 ## Giả định nối số học phần
 
@@ -16,7 +16,7 @@ UCI dùng số `curricular units` theo học kỳ, không định danh từng un
 1. Tạm coi **1 curricular unit ≈ 1 học phần** khi tính số học phần đã đăng ký/đạt trong hồ sơ **SIMULATED**.
 2. Không suy ra số tín chỉ UCI từ số unit. Tín chỉ của fixture lấy trực tiếp từ từng dòng `courses.csv`.
 3. Không thể nối một unit UCI cụ thể với `course_id` mô phỏng; chỉ so sánh ở mức số lượng/tổng hợp.
-4. CTĐT nháp có 8 kỳ, 40 học phần bắt buộc và 8 dòng tự chọn placeholder; tổng tín chỉ kiểm tra là tổng của 48 dòng. Mỗi placeholder đại diện một học phần tự chọn giả định được chọn, không phải tên môn thật; phân bổ placeholder theo kỳ chỉ là dữ liệu mẫu.
+4. Catalogue mục 7.1 có 101 dòng với lựa chọn tự chọn, ba chuyên ngành và hai phương án tốt nghiệp. Mỗi lộ trình chọn đúng một chuyên ngành, một phương án tốt nghiệp và một lựa chọn cho mỗi ô tự chọn để đạt 130 tín chỉ; không cộng tất cả dòng thay thế thành tín chỉ của một sinh viên.
 
 Các quy ước trên là **giả định mô phỏng**, không phải kết quả thực nghiệm hay dữ liệu đào tạo NTU.
 

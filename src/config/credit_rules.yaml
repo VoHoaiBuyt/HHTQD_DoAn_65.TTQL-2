@@ -1,32 +1,32 @@
-source_label: SIMULATED
+source_label: "PDF 210_CNTT mục 7.1; student fixtures SIMULATED"
 
 program:
   expected_total_credits:
-    min: 120
-    max: 140
-    source: "Khoảng thiết kế giai đoạn 1 theo yêu cầu bài toán; TODO: xác nhận với giảng viên/CTĐT chính thức."
+    min: 130
+    max: 130
+    source: "Tổng tín chỉ chương trình CNTT chuẩn theo mục 7.1, gồm tín chỉ tự chọn."
   expected_course_count:
-    min: 40
-    max: 50
-    source: "Khoảng thiết kế giai đoạn 1; TODO: xác nhận sau khi nhận CTĐT chính thức."
+    min: 101
+    max: 101
+    source: "Số dòng catalogue mục 7.1, gồm các phương án tự chọn và chuyên ngành."
   expected_semester_count:
     value: 8
     source: "Giả định mô phỏng 8 học kỳ chính; TODO: xác nhận với giảng viên/CTĐT chính thức."
 
 semester_credit_limits:
   minimum:
-    value: 12
-    source: "Giới hạn tạm để kiểm thử; TODO: xác nhận với quy chế đào tạo NTU."
+    value: 10
+    source: "Tải học kỳ theo sơ đồ chương trình CNTT chuẩn mục 7.1."
   maximum:
-    value: 18
-    source: "Giới hạn tạm để kiểm thử; TODO: xác nhận với quy chế đào tạo NTU."
+    value: 19
+    source: "Tải học kỳ theo sơ đồ chương trình CNTT chuẩn mục 7.1."
 
 scenario_credit_targets:
   values: [12, 15, 18]
   source: "Các kịch bản yêu cầu cho đồ án; TODO: xác nhận tính phù hợp với quy chế đào tạo NTU."
 curricular_unit_mapping:
   mean_credits_per_course:
-    value_from: "data/simulated/courses.csv"
+    value_from: "data/processed/courses.csv"
     formula: "mean(course.credits)"
     rounding: "nearest_half_up"
     source: "Ánh xạ xấp xỉ giữa tín chỉ SIMULATED và curricular units UCI-697; TODO: thay bằng dữ liệu NTU."
@@ -141,9 +141,9 @@ rule_engine:
       source: "Lưới thăm dò ngưỡng restriction theo xác suất isotonic-calibrated OOF."
   graduation:
     credits_required:
-      value: 128
-      label: "SIMULATED"
-      source: "Tổng tín chỉ catalogue fixture; TODO: thay bằng CTĐT chính thức NTU."
+      value: 130
+      label: "PDF 210_CNTT mục 7.1"
+      source: "Tổng tín chỉ chương trình CNTT chuẩn, gồm các học phần tự chọn."
 
 optimization:
   beta_unlock_value:

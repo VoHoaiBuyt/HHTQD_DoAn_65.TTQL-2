@@ -36,6 +36,8 @@ def _course_prerequisites_met(
     status_by_course: Mapping[str, str],
     candidate_ids: set[str],
     rules: Mapping[str, Any],
+    *,
+    eligible_ids: set[str] | None = None,
 ) -> bool:
     policy = rules["rule_engine"]["prerequisite_policy"]
     for relation in prerequisite_rows:
@@ -51,11 +53,60 @@ def _course_prerequisites_met(
             if status not in {"completed", "failed", "in_progress"}:
                 return False
         elif relation_type == policy["concurrent_type"]["value"]:
-            if status not in {"completed", "in_progress"} and prerequisite_id not in candidate_ids:
+            if status in {"completed", "in_progress"}:
+                continue
+            if prerequisite_id not in candidate_ids:
+                return False
+            if eligible_ids is not None and prerequisite_id not in eligible_ids:
                 return False
         else:
             raise ValueError(f"Unknown prerequisite relation type: {relation_type}")
     return True
+
+
+def _resolve_concurrent_eligibility(
+    base_candidates: Sequence[Mapping[str, Any]],
+    prerequisite_rows: Sequence[Mapping[str, Any]],
+    status_by_course: Mapping[str, str],
+    rules: Mapping[str, Any],
+) -> set[str]:
+    candidate_ids = {str(course["course_id"]) for course in base_candidates}
+    eligible_ids = {
+        str(course["course_id"])
+        for course in base_candidates
+        if _course_prerequisites_met(
+            str(course["course_id"]),
+            prerequisite_rows,
+            status_by_course,
+            candidate_ids,
+            rules,
+        )
+    }
+
+    concurrent_type = rules["rule_engine"]["prerequisite_policy"]["concurrent_type"]["value"]
+    while True:
+        changed = False
+        for course in base_candidates:
+            course_id = str(course["course_id"])
+            if course_id not in eligible_ids:
+                continue
+            for relation in prerequisite_rows:
+                if str(relation["course_id"]) != course_id:
+                    continue
+                if str(relation["type"]) != concurrent_type:
+                    continue
+                prerequisite_id = str(relation["prerequisite_id"])
+                status = status_by_course.get(prerequisite_id, "not_taken")
+                if status in {"completed", "in_progress"}:
+                    continue
+                if prerequisite_id not in eligible_ids:
+                    eligible_ids.remove(course_id)
+                    changed = True
+                    break
+            if changed:
+                break
+        if not changed:
+            return eligible_ids
 
 
 def _longest_strict_prerequisite_chain(
@@ -171,17 +222,17 @@ def evaluate_student(
             }
         )
 
-    candidate_ids = {item["course_id"] for item in base_candidates}
+    candidate_ids = {str(item["course_id"]) for item in base_candidates}
+    eligible_ids = _resolve_concurrent_eligibility(
+        base_candidates,
+        prerequisites,
+        status_by_course,
+        active_rules,
+    )
     eligible_courses = [
         course
         for course in base_candidates
-        if _course_prerequisites_met(
-            course["course_id"],
-            prerequisites,
-            status_by_course,
-            candidate_ids,
-            active_rules,
-        )
+        if str(course["course_id"]) in eligible_ids
     ]
     eligible_courses.sort(
         key=lambda item: (
@@ -274,6 +325,7 @@ def evaluate_student(
             status_by_course,
             candidate_ids,
             active_rules,
+            eligible_ids=eligible_ids,
         ):
             blocked_required_courses.append(course_id)
             continue

@@ -1,0 +1,107 @@
+{
+  "accuracy": 0.7028248587570621,
+  "macro_f1": 0.6039133502486588,
+  "per_class": {
+    "Dropout": {
+      "precision": 0.6897810218978102,
+      "recall": 0.6654929577464789,
+      "f1": 0.6774193548387096,
+      "support": 284
+    },
+    "Enrolled": {
+      "precision": 0.40816326530612246,
+      "recall": 0.25157232704402516,
+      "f1": 0.311284046692607,
+      "support": 159
+    },
+    "Graduate": {
+      "precision": 0.7660818713450293,
+      "recall": 0.8891402714932126,
+      "f1": 0.8230366492146597,
+      "support": 442
+    }
+  },
+  "pr_auc_one_vs_rest": {
+    "Dropout": 0.78762185988692,
+    "Enrolled": 0.37053331804152956,
+    "Graduate": 0.8554787878070822
+  },
+  "roc_auc_one_vs_rest": {
+    "Dropout": 0.8605434604298001,
+    "Enrolled": 0.7511998198104545,
+    "Graduate": 0.8862956191332237
+  },
+  "pr_auc_macro": 0.671211321911844,
+  "roc_auc_ovr_macro": 0.8326796331244929,
+  "brier_dropout": 0.13467973470687866,
+  "confusion_matrix": [
+    [
+      189,
+      37,
+      58
+    ],
+    [
+      57,
+      40,
+      62
+    ],
+    [
+      28,
+      21,
+      393
+    ]
+  ],
+  "threshold": null,
+  "model_name": "XGBoost",
+  "task": "three_class",
+  "calibration": "uncalibrated",
+  "test_rows": 885,
+  "evaluation_count": 1,
+  "test_access_log": "reports/generated/test_evaluation_log.jsonl",
+  "dropout_alert": {
+    "threshold": 0.12359887361526489,
+    "precision": 0.5038910505836576,
+    "recall": 0.9119718309859155,
+    "f1": 0.6491228070175439,
+    "n_alerted": 514,
+    "confusion_matrix": [
+      [
+        346,
+        255
+      ],
+      [
+        25,
+        259
+      ]
+    ]
+  },
+  "warning_tiers": [
+    {
+      "tier": "low",
+      "lower_threshold_inclusive": null,
+      "upper_threshold_exclusive": 0.12359887361526489,
+      "n_students": 371,
+      "dropout_count": 25,
+      "dropout_share_in_tier": 0.0673854447439353,
+      "interpretation": "Group dropout rate; low tier is not a positive alert."
+    },
+    {
+      "tier": "medium",
+      "lower_threshold_inclusive": 0.12359887361526489,
+      "upper_threshold_exclusive": 0.4676576554775238,
+      "n_students": 249,
+      "dropout_count": 74,
+      "dropout_share_in_tier": 0.2971887550200803,
+      "interpretation": "Validation positive predictive value for this alert tier."
+    },
+    {
+      "tier": "high",
+      "lower_threshold_inclusive": 0.4676576554775238,
+      "upper_threshold_exclusive": null,
+      "n_students": 265,
+      "dropout_count": 185,
+      "dropout_share_in_tier": 0.6981132075471698,
+      "interpretation": "Validation positive predictive value for this alert tier."
+    }
+  ]
+}

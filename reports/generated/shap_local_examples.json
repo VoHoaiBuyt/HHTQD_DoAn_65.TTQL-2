@@ -1,0 +1,237 @@
+[
+  {
+    "row_id": "uci697_row_01702",
+    "actual": "Dropout",
+    "p_dropout": 0.992875337600708,
+    "top_shap": [
+      {
+        "feature": "numeric__Curricular units 1st sem (approved)",
+        "shap_value": 0.20459079786669462
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (grade)",
+        "shap_value": 0.18879030789248646
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (enrolled)",
+        "shap_value": 0.15457300573354588
+      },
+      {
+        "feature": "numeric__Admission grade",
+        "shap_value": 0.07204456072533504
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (evaluations)",
+        "shap_value": 0.05618445992760826
+      },
+      {
+        "feature": "numeric__Previous qualification (grade)",
+        "shap_value": 0.03613678303023335
+      },
+      {
+        "feature": "numeric__Age at enrollment",
+        "shap_value": 0.028258943118853495
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (credited)",
+        "shap_value": -0.0058244718646164985
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (without evaluations)",
+        "shap_value": 0.0017120061838068069
+      },
+      {
+        "feature": "categorical__Previous qualification_43",
+        "shap_value": 0.0
+      }
+    ]
+  },
+  {
+    "row_id": "uci697_row_01052",
+    "actual": "Dropout",
+    "p_dropout": 0.03661602362990379,
+    "top_shap": [
+      {
+        "feature": "numeric__Curricular units 1st sem (grade)",
+        "shap_value": -0.2710125061002327
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (evaluations)",
+        "shap_value": 0.1436841865745373
+      },
+      {
+        "feature": "numeric__Age at enrollment",
+        "shap_value": 0.06779054020182229
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (approved)",
+        "shap_value": -0.0629651152365841
+      },
+      {
+        "feature": "numeric__Admission grade",
+        "shap_value": 0.05840129804812023
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (enrolled)",
+        "shap_value": 0.036970679559744896
+      },
+      {
+        "feature": "numeric__Previous qualification (grade)",
+        "shap_value": -0.01849695281183813
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (credited)",
+        "shap_value": -0.01760139118297957
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (without evaluations)",
+        "shap_value": -0.004969220426864922
+      },
+      {
+        "feature": "categorical__Previous qualification_43",
+        "shap_value": 0.0
+      }
+    ]
+  },
+  {
+    "row_id": "uci697_row_04011",
+    "actual": "Enrolled",
+    "p_dropout": 0.13773873448371887,
+    "top_shap": [
+      {
+        "feature": "numeric__Admission grade",
+        "shap_value": -0.2078300970174314
+      },
+      {
+        "feature": "numeric__Age at enrollment",
+        "shap_value": 0.12372549280029489
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (approved)",
+        "shap_value": -0.1098664964165073
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (evaluations)",
+        "shap_value": 0.06463222419610247
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (grade)",
+        "shap_value": -0.022392761649680324
+      },
+      {
+        "feature": "numeric__Previous qualification (grade)",
+        "shap_value": 0.01691874608688522
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (credited)",
+        "shap_value": -0.009955154082272202
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (enrolled)",
+        "shap_value": 0.0032962167059304194
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (without evaluations)",
+        "shap_value": 0.002362150300759822
+      },
+      {
+        "feature": "categorical__Previous qualification_43",
+        "shap_value": 0.0
+      }
+    ]
+  },
+  {
+    "row_id": "uci697_row_04095",
+    "actual": "Graduate",
+    "p_dropout": 0.025372248142957687,
+    "top_shap": [
+      {
+        "feature": "numeric__Curricular units 1st sem (grade)",
+        "shap_value": -0.25381911284697706
+      },
+      {
+        "feature": "numeric__Age at enrollment",
+        "shap_value": 0.1829065220069606
+      },
+      {
+        "feature": "numeric__Admission grade",
+        "shap_value": -0.14514622451315518
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (evaluations)",
+        "shap_value": -0.07673569438426057
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (enrolled)",
+        "shap_value": 0.05551054726820439
+      },
+      {
+        "feature": "numeric__Previous qualification (grade)",
+        "shap_value": -0.030095774509827606
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (approved)",
+        "shap_value": -0.027136028474196792
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (credited)",
+        "shap_value": -0.01124023259151727
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (without evaluations)",
+        "shap_value": -0.007940224141348153
+      },
+      {
+        "feature": "categorical__Previous qualification_43",
+        "shap_value": 0.0
+      }
+    ]
+  },
+  {
+    "row_id": "uci697_row_01763",
+    "actual": "Graduate",
+    "p_dropout": 0.2638727128505707,
+    "top_shap": [
+      {
+        "feature": "numeric__Curricular units 1st sem (approved)",
+        "shap_value": -0.11065996680641547
+      },
+      {
+        "feature": "numeric__Age at enrollment",
+        "shap_value": 0.0969597549806349
+      },
+      {
+        "feature": "numeric__Previous qualification (grade)",
+        "shap_value": -0.0485121113806963
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (enrolled)",
+        "shap_value": 0.0353069991897064
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (grade)",
+        "shap_value": -0.032714823919232
+      },
+      {
+        "feature": "numeric__Admission grade",
+        "shap_value": 0.02815225855621975
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (credited)",
+        "shap_value": -0.0077607005299068985
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (evaluations)",
+        "shap_value": -0.004035764604341238
+      },
+      {
+        "feature": "numeric__Curricular units 1st sem (without evaluations)",
+        "shap_value": 0.0009778148750774563
+      },
+      {
+        "feature": "categorical__Previous qualification_43",
+        "shap_value": 0.0
+      }
+    ]
+  }
+]

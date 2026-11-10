@@ -1,4 +1,4 @@
-﻿data_label,hk1_ability,student_count_with_hk2_enrollment,hk2_enrolled_units,hk2_approved_units,pass_rate_2
-"REAL (UCI-697), Target != Dropout",Cao,1577,10427,9870,0.946580991656277
-"REAL (UCI-697), Target != Dropout",Trung bình,1037,7277,6064,0.8333104301223031
-"REAL (UCI-697), Target != Dropout",Thấp,286,1653,933,0.5644283121597096
+﻿tier,n_students_with_hk2,approved_units_hk2,enrolled_units_hk2,pooled_pass_rate,warning
+Thấp,535,2392,3242,0.7378161628624306,P1 sensitivity only; survivorship bias because later Dropout students are removed.
+Trung bình,238,1732,1965,0.8814249363867684,P1 sensitivity only; survivorship bias because later Dropout students are removed.
+Cao,970,6078,6424,0.9461394769613948,P1 sensitivity only; survivorship bias because later Dropout students are removed.

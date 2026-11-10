@@ -1,0 +1,575 @@
+{
+  "status": "PASS",
+  "seed": 20261105,
+  "source_label": "SCENARIO",
+  "feature_source_label": "REAL (UCI-697)",
+  "specialization_default": "NW",
+  "n_profiles": 9,
+  "n_progress_rows": 909,
+  "expected_course_rows_per_profile": 101,
+  "program_total_credits": 130,
+  "n_errors": 0,
+  "errors": [],
+  "students": [
+    {
+      "student_id": "V2-001",
+      "persona": "Giỏi",
+      "credits_earned": 17,
+      "credits_remaining": 113,
+      "credits_total": 130,
+      "TBHK_previous_semester": 9.21,
+      "TBTCL": 9.21,
+      "ml_scope": "T1_valid",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 0,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-002",
+      "persona": "Trung bình",
+      "credits_earned": 17,
+      "credits_remaining": 113,
+      "credits_total": 130,
+      "TBHK_previous_semester": 6.9,
+      "TBTCL": 6.9,
+      "ml_scope": "T1_valid",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 0,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-003",
+      "persona": "Yếu kém",
+      "credits_earned": 14,
+      "credits_remaining": 116,
+      "credits_total": 130,
+      "TBHK_previous_semester": 4.79,
+      "TBTCL": 5.17,
+      "ml_scope": "T1_valid",
+      "p_student_pass": 0.8170940170940171,
+      "current_debt_credits": 3,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-004",
+      "persona": "Sát ngưỡng 5,00",
+      "credits_earned": 17,
+      "credits_remaining": 113,
+      "credits_total": 130,
+      "TBHK_previous_semester": 5.0,
+      "TBTCL": 5.0,
+      "ml_scope": "T1_valid",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 0,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-005",
+      "persona": "Nợ đọng sát W1",
+      "credits_earned": 63,
+      "credits_remaining": 67,
+      "credits_total": 130,
+      "TBHK_previous_semester": 6.01,
+      "TBTCL": 5.88,
+      "ml_scope": "extension_assumption",
+      "p_student_pass": 0.30353817504655495,
+      "current_debt_credits": 24,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-006",
+      "persona": "Trượt môn chặn chuỗi",
+      "credits_earned": 31,
+      "credits_remaining": 99,
+      "credits_total": 130,
+      "TBHK_previous_semester": 6.36,
+      "TBTCL": 6.4,
+      "ml_scope": "extension_assumption",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 3,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-007",
+      "persona": "Gần tốt nghiệp",
+      "credits_earned": 127,
+      "credits_remaining": 3,
+      "credits_total": 130,
+      "TBHK_previous_semester": 6.85,
+      "TBTCL": 6.36,
+      "ml_scope": "extension_assumption",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 3,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-008",
+      "persona": "Đã đủ điều kiện tốt nghiệp",
+      "credits_earned": 130,
+      "credits_remaining": 0,
+      "credits_total": 130,
+      "TBHK_previous_semester": 7.55,
+      "TBTCL": 7.04,
+      "ml_scope": "extension_assumption",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 0,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    },
+    {
+      "student_id": "V2-009",
+      "persona": "Mở lại ô tự chọn",
+      "credits_earned": 69,
+      "credits_remaining": 61,
+      "credits_total": 130,
+      "TBHK_previous_semester": 6.23,
+      "TBTCL": 6.4,
+      "ml_scope": "extension_assumption",
+      "p_student_pass": 0.9303518017376442,
+      "current_debt_credits": 2,
+      "selected_slots": {
+        "HP016": 1,
+        "HP017": 1,
+        "HP018": 1,
+        "HP031": 1,
+        "HP019": 1,
+        "HP045-NW": 1,
+        "HP046-NW": 1,
+        "HP047-NW": 1,
+        "HP048": 1
+      },
+      "errors": []
+    }
+  ],
+  "credit_limit_regimes": {
+    "V2-001": "NORMAL",
+    "V2-002": "NORMAL",
+    "V2-003": "WEAK_OR_POOR",
+    "V2-004": "NORMAL",
+    "V2-005": "NORMAL",
+    "V2-006": "NORMAL",
+    "V2-007": "NORMAL",
+    "V2-008": "NORMAL",
+    "V2-009": "NORMAL"
+  },
+  "unknowns": [
+    "Corequisite semantics remain UNCONFIRMED per regulation configuration.",
+    "Offering parity and extension_assumption ML scope are GIẢ ĐỊNH.",
+    "No course-difficulty probability factor is modeled."
+  ],
+  "output_files": {
+    "profiles": "data\\scenarios\\student_profile_v2.csv",
+    "progress": "data\\scenarios\\student_progress_v2.csv",
+    "plans": "reports\\generated\\plans_by_student.csv",
+    "sensitivity": "reports\\generated\\ilp_sensitivity.csv",
+    "unlock_summary": "reports\\generated\\unlock_value_summary.json",
+    "optimization_spec": "reports\\generated\\optimization_spec.md"
+  },
+  "plans_count": 27,
+  "plans_by_student": {
+    "V2-001": 3,
+    "V2-002": 3,
+    "V2-003": 3,
+    "V2-004": 3,
+    "V2-005": 3,
+    "V2-006": 3,
+    "V2-007": 3,
+    "V2-008": 3,
+    "V2-009": 3
+  },
+  "sensitivity_rows": 81,
+  "course_rows": 101,
+  "scenario_program_courses": 46,
+  "program_credit_total_verified": 130,
+  "unlock_summary": {
+    "source_label": "OFFICIAL (NTU)",
+    "specialization": "NW",
+    "strict_prerequisite_edge_count": 14,
+    "delta": 0.5,
+    "prerequisite_only_u_distribution": {
+      "0.0": 40,
+      "1.5": 1,
+      "2.0": 2,
+      "3.0": 1,
+      "5.25": 1,
+      "7.5": 1
+    },
+    "nonzero_prerequisite_unlocks": {
+      "HP024": 5.25,
+      "HP028": 1.5,
+      "HP029": 7.5,
+      "POL307": 3.0,
+      "POL308": 2.0,
+      "POL309": 2.0
+    },
+    "interpretation": "Giá trị u_i từ tiên quyết bắc cầu tập trung ở một số nút; không suy diễn rằng mọi học phần đều mở khóa chuỗi.",
+    "slot_completion_value_added_at_plan_time": true
+  },
+  "rule_examples": {
+    "registration_limits": {
+      "V2-003": {
+        "cmin": 12,
+        "cmax": 18,
+        "regime": "WEAK_OR_POOR",
+        "previous_semester_gpa": 4.79,
+        "notes": [
+          "Ràng buộc tín chỉ quy chế khác với trần rủi ro mềm; P(Dropout) chỉ là cảnh báo/khuyến nghị.",
+          "Chế độ WEAK_OR_POOR theo TBHK học kỳ chính liền trước 4.79 (ngưỡng 5.00)."
+        ]
+      },
+      "V2-004": {
+        "cmin": 15,
+        "cmax": 27,
+        "regime": "NORMAL",
+        "previous_semester_gpa": 5.0,
+        "notes": [
+          "Ràng buộc tín chỉ quy chế khác với trần rủi ro mềm; P(Dropout) chỉ là cảnh báo/khuyến nghị.",
+          "Chế độ NORMAL theo TBHK học kỳ chính liền trước 5.00 (ngưỡng 5.00)."
+        ]
+      }
+    },
+    "w1_boundary_scenario": {
+      "current_debt_credits": 24,
+      "active": false,
+      "threshold": 24,
+      "comparison": ">"
+    },
+    "hp024_blocked_chain": {
+      "failed_course": "HP024",
+      "blocked_course_ids": [
+        "HP029",
+        "HP039-NW",
+        "HP040-NW",
+        "HP041-NW",
+        "HP042-NW",
+        "HP044-NW"
+      ],
+      "reasons": {
+        "HP029": [
+          {
+            "code": "PREREQUISITE_NOT_COMPLETED",
+            "course_id": "HP024",
+            "root_causes": [
+              "HP024"
+            ]
+          }
+        ],
+        "HP039-NW": [
+          {
+            "code": "PREREQUISITE_NOT_COMPLETED",
+            "course_id": "HP029",
+            "root_causes": [
+              "HP024"
+            ]
+          }
+        ],
+        "HP040-NW": [
+          {
+            "code": "PREREQUISITE_NOT_COMPLETED",
+            "course_id": "HP029",
+            "root_causes": [
+              "HP024"
+            ]
+          },
+          {
+            "code": "NOT_OFFERED",
+            "target_semester": 3,
+            "label": "GIẢ ĐỊNH (suy từ CTĐT)"
+          }
+        ],
+        "HP041-NW": [
+          {
+            "code": "PREREQUISITE_NOT_COMPLETED",
+            "course_id": "HP029",
+            "root_causes": [
+              "HP024"
+            ]
+          },
+          {
+            "code": "NOT_OFFERED",
+            "target_semester": 3,
+            "label": "GIẢ ĐỊNH (suy từ CTĐT)"
+          }
+        ],
+        "HP042-NW": [
+          {
+            "code": "PREREQUISITE_NOT_COMPLETED",
+            "course_id": "HP029",
+            "root_causes": [
+              "HP024"
+            ]
+          }
+        ],
+        "HP044-NW": [
+          {
+            "code": "PREREQUISITE_NOT_COMPLETED",
+            "course_id": "HP029",
+            "root_causes": [
+              "HP024"
+            ]
+          }
+        ]
+      }
+    },
+    "failed_elective_slot_reopened": {
+      "failed_course_id": "HP016-A",
+      "slot": "HP016",
+      "eligible_alternatives": [
+        "HP016-A",
+        "HP016-B"
+      ]
+    },
+    "final_semester_cases": {
+      "A_regulation_limited": {
+        "solver": "PuLP/HiGHS",
+        "solver_status": "Optimal",
+        "status": "best_effort",
+        "selected_course_ids": [
+          "HP037"
+        ],
+        "selected_courses": [
+          {
+            "course_id": "HP037",
+            "course_name": "Học máy",
+            "credits": "3",
+            "planned_semester": "7",
+            "course_type": "bắt buộc",
+            "offered_semesters": "odd",
+            "group": "Ngành - bắt buộc chung",
+            "source_label": "OFFICIAL (NTU)",
+            "specialization": "common",
+            "counts_toward_total": true,
+            "elective_slot": null,
+            "slot_required_credits": null,
+            "graduation_slot": false,
+            "code_source": "TEAM_ASSIGNED_OR_UNVERIFIED",
+            "offering_rule": [
+              "odd"
+            ],
+            "enrichment_label": "GIẢ ĐỊNH (suy từ CTĐT)",
+            "status": "failed",
+            "attempt_count": 1,
+            "must_register": true,
+            "retake_multiplier": 0.9,
+            "current_debt": true
+          }
+        ],
+        "selected_credits": 3,
+        "selected_load": 3,
+        "load_units": 1,
+        "mean_credits": 2.8260869565217392,
+        "load_factor": 1.0,
+        "pass_probabilities": {
+          "HP037": 0.8373166215638798
+        },
+        "expected_credits_passed": 2.511949864691639,
+        "expected_failed_courses": 0.16268337843612024,
+        "objective_value": 2.0238997293832783,
+        "expected_fail_cap": null,
+        "risk_cap_exceeded": false,
+        "risk_cap_mode": "off",
+        "p_warning_W1": 0.0,
+        "p_warning_W2": 0.16268337843612024,
+        "p_at_least_one_failure": 0.16268337843612024,
+        "retake_credits_total": 3,
+        "honors_downgrade_risk": false,
+        "forced_retake_conflict": false,
+        "risk_cap_slack": 0.0,
+        "regulatory_conflict": false,
+        "warnings": [
+          "Không có tổ hợp khả thi đạt cận dưới tín chỉ; đã nới cận dưới.",
+          "Phương án có rủi ro và không phải phương án an toàn; khuyến nghị trao đổi với cố vấn học tập."
+        ]
+      },
+      "B_completion_plan": {
+        "solver": "PuLP/HiGHS",
+        "solver_status": "Optimal",
+        "status": "final_semester_plan",
+        "selected_course_ids": [
+          "HP037"
+        ],
+        "selected_courses": [
+          {
+            "course_id": "HP037",
+            "course_name": "Học máy",
+            "credits": "3",
+            "planned_semester": "7",
+            "course_type": "bắt buộc",
+            "offered_semesters": "odd",
+            "group": "Ngành - bắt buộc chung",
+            "source_label": "OFFICIAL (NTU)",
+            "specialization": "common",
+            "counts_toward_total": true,
+            "elective_slot": null,
+            "slot_required_credits": null,
+            "graduation_slot": false,
+            "code_source": "TEAM_ASSIGNED_OR_UNVERIFIED",
+            "offering_rule": [
+              "odd"
+            ],
+            "enrichment_label": "GIẢ ĐỊNH (suy từ CTĐT)",
+            "status": "failed",
+            "attempt_count": 1,
+            "must_register": true,
+            "retake_multiplier": 0.9,
+            "current_debt": true
+          }
+        ],
+        "selected_credits": 3,
+        "selected_load": 3,
+        "load_units": 1,
+        "mean_credits": 2.8260869565217392,
+        "load_factor": 1.0,
+        "pass_probabilities": {
+          "HP037": 0.8373166215638798
+        },
+        "expected_credits_passed": 2.511949864691639,
+        "expected_failed_courses": 0.16268337843612024,
+        "objective_value": 2.0238997293832783,
+        "expected_fail_cap": null,
+        "risk_cap_exceeded": false,
+        "risk_cap_mode": "off",
+        "p_warning_W1": 0.0,
+        "p_warning_W2": 0.16268337843612024,
+        "p_at_least_one_failure": 0.16268337843612024,
+        "retake_credits_total": 3,
+        "honors_downgrade_risk": false,
+        "forced_retake_conflict": false,
+        "risk_cap_slack": 0.0,
+        "regulatory_conflict": false,
+        "warnings": []
+      },
+      "outstanding_course_ids": [
+        "HP037"
+      ]
+    },
+    "credit_regime_comparison_same_profile": {
+      "WEAK_OR_POOR": {
+        "cmin": 12,
+        "cmax": 18,
+        "selected_credits": 18,
+        "selected_course_ids": [
+          "HP009",
+          "HP028",
+          "HP031-A",
+          "HP033",
+          "HP035",
+          "HP046-NW-A"
+        ],
+        "expected_failed_courses": 1.0974358974358975,
+        "status": "optimal"
+      },
+      "NORMAL": {
+        "cmin": 15,
+        "cmax": 27,
+        "selected_credits": 18,
+        "selected_course_ids": [
+          "HP009",
+          "HP028",
+          "HP031-A",
+          "HP033",
+          "HP035",
+          "HP046-NW-A"
+        ],
+        "expected_failed_courses": 1.0974358974358975,
+        "status": "optimal"
+      }
+    },
+    "forced_retakes_near_graduation": [
+      {
+        "course_key": "HP037",
+        "grade_10": 4.1,
+        "must_register": true,
+        "status": "CONFIRMED",
+        "ref": "Đ11.1"
+      }
+    ]
+  }
+}

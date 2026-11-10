@@ -1,0 +1,125 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.6, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\python.exe
+cachedir: .pytest_cache
+rootdir: E:\HHTQD_DoAn
+plugins: anyio-4.14.2
+collecting ... collected 100 items
+
+tests/test_app_smoke.py::test_all_page_data_builders_smoke_for_nine_scenarios PASSED [  1%]
+tests/test_app_smoke.py::test_app_cache_key_normalizes_options_without_sharing_profiles PASSED [  2%]
+tests/test_app_smoke.py::test_progress_editor_rejects_inconsistent_status_and_grade PASSED [  3%]
+tests/test_app_smoke.py::test_problem_plan_status_is_red_flagged_without_safe_label PASSED [  4%]
+tests/test_app_smoke.py::test_simulation_data_filters_all_mc_tables_to_requested_lambda PASSED [  5%]
+tests/test_core_rules.py::test_coreq_a_b_c_removes_a_when_b_has_unmet_prerequisite PASSED [  6%]
+tests/test_core_rules.py::test_two_way_coreq_keeps_both_when_both_are_eligible PASSED [  7%]
+tests/test_core_rules.py::test_two_way_coreq_removes_peer_when_one_side_has_unmet_prerequisite PASSED [  8%]
+tests/test_core_rules.py::test_coreq_in_progress_is_satisfied_without_reselecting_peer PASSED [  9%]
+tests/test_core_rules.py::test_coreq_peer_not_offered_blocks_dependent_course PASSED [ 10%]
+tests/test_core_rules.py::test_coreq_chain_propagates_removal_to_fixed_point PASSED [ 11%]
+tests/test_core_rules.py::test_all_ilp_selection_sets_obey_coreq_inequalities PASSED [ 12%]
+tests/test_core_rules.py::test_ilp_solution_obeys_coreq_constraint PASSED [ 13%]
+tests/test_core_rules.py::test_official_hp043_nw_coreq_with_hp037_eligible_or_blocked PASSED [ 14%]
+tests/test_core_rules.py::test_outside_program_courses_do_not_change_credit_totals PASSED [ 15%]
+tests/test_curriculum_validation.py::test_official_course_ids_and_program_credit_paths PASSED [ 16%]
+tests/test_curriculum_validation.py::test_unconfirmed_assumptions_are_explicit PASSED [ 17%]
+tests/test_data_consistency.py::test_progress_queries_are_isolated_by_student PASSED [ 18%]
+tests/test_data_consistency.py::test_scenario_audit_recomputes_per_student_without_cross_contamination PASSED [ 19%]
+tests/test_dss_simulation.py::test_run_dss_returns_schema_and_isolates_sequential_profiles PASSED [ 20%]
+tests/test_dss_simulation.py::test_run_dss_full_three_plan_schema_and_cache_options PASSED [ 21%]
+tests/test_dss_simulation.py::test_run_dss_handles_all_scenario_v2_profiles PASSED [ 22%]
+tests/test_dss_simulation.py::test_common_random_numbers_and_probability_are_seeded PASSED [ 23%]
+tests/test_dss_simulation.py::test_warning_streak_forces_withdrawal_only_on_third_consecutive_warning PASSED [ 24%]
+tests/test_dss_simulation.py::test_wilson_interval_has_exact_probability_boundaries PASSED [ 25%]
+tests/test_dss_simulation.py::test_pareto_labels_distinguish_tradeoffs_and_dominance PASSED [ 26%]
+tests/test_dss_simulation.py::test_same_policy_input_produces_same_selection_and_status PASSED [ 27%]
+tests/test_dss_simulation.py::test_ilp_planner_uses_requested_lambda_and_is_load_sensitive PASSED [ 28%]
+tests/test_dss_simulation.py::test_baseline_policies_obey_caps_corequisites_and_forced_retake PASSED [ 29%]
+tests/test_dss_simulation.py::test_forced_retake_capacity_conflict_is_reported PASSED [ 30%]
+tests/test_dss_simulation.py::test_simulation_is_deterministic_and_third_warning_stops_trajectory PASSED [ 31%]
+tests/test_dss_simulation.py::test_graduation_ready_profile_has_explicit_zero_decisions_and_stable_status PASSED [ 32%]
+tests/test_evaluate_student_demo.py::test_nw_example_blocks_hp029_and_transitive_dependents PASSED [ 33%]
+tests/test_mc_grad_hist.py::test_histogram_counts_partition_all_runs_and_match_on_time_probability PASSED [ 34%]
+tests/test_mc_grad_hist.py::test_histogram_validation_rejects_nonmatching_on_time_probability PASSED [ 35%]
+tests/test_metrics.py::test_metrics_json_round_trip PASSED               [ 36%]
+tests/test_ml_pipeline.py::test_feature_set_is_exact_t0_t1_known_without_forbidden_fields PASSED [ 37%]
+tests/test_ml_pipeline.py::test_manifest_splits_are_disjoint_stratified_and_cover_source PASSED [ 38%]
+tests/test_ml_pipeline.py::test_test_split_requires_explicit_opt_in_and_does_not_log_rejection PASSED [ 39%]
+tests/test_ml_pipeline.py::test_m3_prime_fit_is_training_input_only_and_reproducible PASSED [ 40%]
+tests/test_ml_pipeline.py::test_predict_risk_schema_and_serialized_model_are_stable PASSED [ 41%]
+tests/test_official_rules.py::test_official_configuration_references_and_statuses PASSED [ 42%]
+tests/test_official_rules.py::test_credit_limits_follow_previous_semester_average[5.0-NORMAL-15-27] PASSED [ 43%]
+tests/test_official_rules.py::test_credit_limits_follow_previous_semester_average[4.99-WEAK_OR_POOR-12-18] PASSED [ 44%]
+tests/test_official_rules.py::test_credit_limits_do_not_use_warning_flag_or_guess_unknown_gpa PASSED [ 45%]
+tests/test_official_rules.py::test_credit_limits_summer_and_first_semester_exceptions PASSED [ 46%]
+tests/test_official_rules.py::test_w1_debt_credit_boundary[24-False] PASSED [ 47%]
+tests/test_official_rules.py::test_w1_debt_credit_boundary[25-True] PASSED [ 48%]
+tests/test_official_rules.py::test_w2_credit_ratio_boundary[3-6-False] PASSED [ 49%]
+tests/test_official_rules.py::test_w2_credit_ratio_boundary[4-7-True] PASSED [ 50%]
+tests/test_official_rules.py::test_w2_uses_officially_rounded_course_grade PASSED [ 51%]
+tests/test_official_rules.py::test_w3_grade_thresholds[1-4.0-False] PASSED [ 52%]
+tests/test_official_rules.py::test_w3_grade_thresholds[1-3.99-True] PASSED [ 53%]
+tests/test_official_rules.py::test_w3_grade_thresholds[2-4.5-False] PASSED [ 54%]
+tests/test_official_rules.py::test_w3_grade_thresholds[2-4.49-True] PASSED [ 55%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[34-5.2-5.19-True] PASSED [ 56%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[34-5.2-5.2-False] PASSED [ 57%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[35-5.3-5.29-True] PASSED [ 58%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[35-5.3-5.3-False] PASSED [ 59%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[70-5.4-5.39-True] PASSED [ 60%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[70-5.4-5.4-False] PASSED [ 61%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[105-5.5-5.49-True] PASSED [ 62%]
+tests/test_official_rules.py::test_w4_study_year_and_threshold_boundaries[105-5.5-5.5-False] PASSED [ 63%]
+tests/test_official_rules.py::test_study_year_credit_boundaries[34-1-CONFIRMED] PASSED [ 64%]
+tests/test_official_rules.py::test_study_year_credit_boundaries[35-2-CONFIRMED] PASSED [ 65%]
+tests/test_official_rules.py::test_study_year_credit_boundaries[69-2-CONFIRMED] PASSED [ 66%]
+tests/test_official_rules.py::test_study_year_credit_boundaries[70-3-CONFIRMED] PASSED [ 67%]
+tests/test_official_rules.py::test_study_year_credit_boundaries[104-3-CONFIRMED] PASSED [ 68%]
+tests/test_official_rules.py::test_study_year_credit_boundaries[105-4-UNCONFIRMED] PASSED [ 69%]
+tests/test_official_rules.py::test_forced_withdrawal_boundaries[1-8-False] PASSED [ 70%]
+tests/test_official_rules.py::test_forced_withdrawal_boundaries[2-8-False] PASSED [ 71%]
+tests/test_official_rules.py::test_forced_withdrawal_boundaries[3-8-True] PASSED [ 72%]
+tests/test_official_rules.py::test_forced_withdrawal_boundaries[0-16-False] PASSED [ 73%]
+tests/test_official_rules.py::test_forced_withdrawal_boundaries[0-17-True] PASSED [ 74%]
+tests/test_official_rules.py::test_pass_fail_monte_carlo_only_reports_w1_w2_scope PASSED [ 75%]
+tests/test_official_rules.py::test_gpa_uses_highest_passed_grade_and_excludes_codes_and_external_courses PASSED [ 76%]
+tests/test_official_rules.py::test_course_grades_are_rounded_to_one_decimal_before_gpa PASSED [ 77%]
+tests/test_official_rules.py::test_summer_term_does_not_trigger_academic_flags PASSED [ 78%]
+tests/test_official_rules.py::test_mandatory_retake_is_forced_only_when_offered_and_optimizer_hard_constraint PASSED [ 79%]
+tests/test_official_rules.py::test_mandatory_retake_threshold_uses_rounded_official_grade PASSED [ 80%]
+tests/test_official_rules.py::test_evaluate_student_reports_warning_regime_and_forced_retake PASSED [ 81%]
+tests/test_official_rules.py::test_failed_elective_reopens_slot_and_allows_alternative PASSED [ 82%]
+tests/test_official_rules.py::test_graduation_gpa_boundary[5.49-False] PASSED [ 83%]
+tests/test_official_rules.py::test_graduation_gpa_boundary[5.5-True] PASSED [ 84%]
+tests/test_official_rules.py::test_graduation_requires_all_learning_outcomes PASSED [ 85%]
+tests/test_official_rules.py::test_honors_repeat_credit_indicator_uses_strict_five_percent_boundary PASSED [ 86%]
+tests/test_optimizer_v2.py::test_objective_break_even_threshold_and_unlock_compensation PASSED [ 87%]
+tests/test_optimizer_v2.py::test_actual_selected_load_not_scenario_budget_sets_pass_probability PASSED [ 88%]
+tests/test_optimizer_v2.py::test_warning_probabilities_exactly_match_exhaustive_enumeration PASSED [ 89%]
+tests/test_optimizer_v2.py::test_empty_eligibility_and_external_courses_are_not_optimizable PASSED [ 90%]
+tests/test_optimizer_v2.py::test_hard_risk_cap_fallback_is_best_effort_with_advisor_warning PASSED [ 91%]
+tests/test_optimizer_v2.py::test_best_effort_three_plan_labels_never_claim_safety PASSED [ 92%]
+tests/test_optimizer_v2.py::test_forced_retake_conflict_prioritizes_unlock_value_and_warns PASSED [ 93%]
+tests/test_optimizer_v2.py::test_discrete_credit_infeasibility_relaxes_minimum_as_best_effort PASSED [ 94%]
+tests/test_optimizer_v2.py::test_one_course_per_elective_slot_is_enforced PASSED [ 95%]
+tests/test_optimizer_v2.py::test_final_term_cases_compare_limited_and_completion_plan PASSED [ 96%]
+tests/test_optimizer_v2.py::test_scenario_pipeline_does_not_import_legacy_optimizer PASSED [ 97%]
+tests/test_scenario_v2.py::test_scenario_v2_contains_complete_official_progress_and_130_credit_balance PASSED [ 98%]
+tests/test_scenario_v2.py::test_t1_profiles_have_computed_gpa_and_probabilities_from_model_api PASSED [ 99%]
+tests/test_scenario_v2.py::test_scenario_edge_cases_retain_prerequisite_and_elective_evidence PASSED [100%]
+
+============================== warnings summary ===============================
+C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\anyio\pytest_plugin.py:14
+  C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\anyio\pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+tests/test_app_smoke.py: 84 warnings
+tests/test_dss_simulation.py: 147 warnings
+tests/test_ml_pipeline.py: 42 warnings
+  C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\joblib\numpy_pickle.py:207: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    array.shape = self.shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+===================== 100 passed, 274 warnings in 42.50s ======================

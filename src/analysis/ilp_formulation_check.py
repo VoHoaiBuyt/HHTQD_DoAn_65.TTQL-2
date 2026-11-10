@@ -19,10 +19,10 @@ from src.optimize.ilp_prototype import compute_unlock_values, solve_plan  # noqa
 from src.rules.rule_engine import evaluate_student  # noqa: E402
 
 CONFIG_PATH = ROOT / "src" / "config" / "credit_rules.yaml"
-COURSES_PATH = ROOT / "data" / "simulated" / "courses.csv"
-PREREQUISITES_PATH = ROOT / "data" / "simulated" / "prerequisites.csv"
-PROGRESS_PATH = ROOT / "data" / "simulated" / "student_progress.csv"
-PROFILE_PATH = ROOT / "data" / "simulated" / "student_profile.csv"
+COURSES_PATH = ROOT / "data" / "processed" / "courses.csv"
+PREREQUISITES_PATH = ROOT / "data" / "processed" / "prerequisites.csv"
+PROGRESS_PATH = ROOT / "data" / "processed" / "student_progress.csv"
+PROFILE_PATH = ROOT / "data" / "processed" / "student_profile.csv"
 PERSONA_IDS = ("S001", "S002", "S003", "S005")
 
 

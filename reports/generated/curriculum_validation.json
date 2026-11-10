@@ -1,0 +1,809 @@
+{
+  "source_label": "OFFICIAL (NTU)",
+  "source_document": "210_CNTT.pdf",
+  "source_section": "7.1",
+  "n_checks": 13,
+  "n_pass": 10,
+  "n_warn": 3,
+  "n_fail": 0,
+  "checks": [
+    {
+      "id": "course_id_unique",
+      "status": "PASS",
+      "message": "course_id values are unique.",
+      "details": null
+    },
+    {
+      "id": "prerequisite_references_exist",
+      "status": "PASS",
+      "message": "All prerequisite endpoints reference known course IDs.",
+      "details": []
+    },
+    {
+      "id": "prerequisite_graph_is_dag",
+      "status": "PASS",
+      "message": "The prerequisite graph is acyclic.",
+      "details": null
+    },
+    {
+      "id": "prerequisite_semester_order",
+      "status": "PASS",
+      "message": "Strict prerequisites precede their course; corequisites are in the same or an earlier semester.",
+      "details": []
+    },
+    {
+      "id": "prerequisite_relation_types",
+      "status": "PASS",
+      "message": "Prerequisite relation types use the supported vocabulary.",
+      "details": []
+    },
+    {
+      "id": "course_source_labels_present",
+      "status": "PASS",
+      "message": "Every course row has a source_label.",
+      "details": []
+    },
+    {
+      "id": "prerequisite_source_labels_present",
+      "status": "PASS",
+      "message": "Every prerequisite row has a source_label.",
+      "details": []
+    },
+    {
+      "id": "offering_rule_values",
+      "status": "PASS",
+      "message": "Offering values and planned-term parity are internally consistent.",
+      "details": []
+    },
+    {
+      "id": "credits_by_specialization_and_semester",
+      "status": "PASS",
+      "message": "Mandatory, elective-slot, and total credits match the OFFICIAL program values for every specialization.",
+      "details": {
+        "errors": [],
+        "computed": {
+          "SE": {
+            "mandatory": [
+              17,
+              15,
+              17,
+              13,
+              11,
+              15,
+              12,
+              10
+            ],
+            "elective": [
+              0,
+              2,
+              2,
+              5,
+              5,
+              3,
+              3,
+              0
+            ],
+            "total": 130,
+            "all_including_electives": [
+              17,
+              17,
+              19,
+              18,
+              16,
+              18,
+              15,
+              10
+            ]
+          },
+          "IS": {
+            "mandatory": [
+              17,
+              15,
+              17,
+              13,
+              11,
+              15,
+              12,
+              10
+            ],
+            "elective": [
+              0,
+              2,
+              2,
+              5,
+              5,
+              3,
+              3,
+              0
+            ],
+            "total": 130,
+            "all_including_electives": [
+              17,
+              17,
+              19,
+              18,
+              16,
+              18,
+              15,
+              10
+            ]
+          },
+          "NW": {
+            "mandatory": [
+              17,
+              15,
+              17,
+              13,
+              11,
+              15,
+              12,
+              10
+            ],
+            "elective": [
+              0,
+              2,
+              2,
+              5,
+              5,
+              3,
+              3,
+              0
+            ],
+            "total": 130,
+            "all_including_electives": [
+              17,
+              17,
+              19,
+              18,
+              16,
+              18,
+              15,
+              10
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "elective_slot_alternatives",
+      "status": "PASS",
+      "message": "Each required elective slot has alternatives with the configured slot credit value.",
+      "details": []
+    },
+    {
+      "id": "duplicate_course_names_review",
+      "status": "WARN",
+      "message": "Review duplicate course names; names are not used as keys.",
+      "details": [
+        {
+          "name": "Hệ thống thông tin địa lý",
+          "courses": [
+            {
+              "course_id": "HP045-SE-B",
+              "specialization": "SE",
+              "course_name": "Hệ thống thông tin địa lý"
+            },
+            {
+              "course_id": "HP045-IS-B",
+              "specialization": "IS",
+              "course_name": "Hệ thống thông tin địa lý"
+            }
+          ]
+        },
+        {
+          "name": "Xử lý dữ liệu lớn",
+          "courses": [
+            {
+              "course_id": "HP045-NW-A",
+              "specialization": "NW",
+              "course_name": "Xử lý dữ liệu lớn"
+            },
+            {
+              "course_id": "HP046-IS-B",
+              "specialization": "IS",
+              "course_name": "Xử lý dữ liệu lớn"
+            }
+          ]
+        },
+        {
+          "name": "IoT và Ứng dụng",
+          "courses": [
+            {
+              "course_id": "HP046-SE-B",
+              "specialization": "SE",
+              "course_name": "IoT và Ứng dụng"
+            },
+            {
+              "course_id": "HP046-NW-B",
+              "specialization": "NW",
+              "course_name": "IoT và ứng dụng"
+            }
+          ]
+        },
+        {
+          "name": "Hệ thống khuyến nghị",
+          "courses": [
+            {
+              "course_id": "HP043-IS",
+              "specialization": "IS",
+              "course_name": "Hệ thống khuyến nghị"
+            },
+            {
+              "course_id": "HP047-IS-A",
+              "specialization": "IS",
+              "course_name": "Hệ thống khuyến nghị"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "course_code_source_confirmation",
+      "status": "WARN",
+      "message": "Confirm which course IDs were printed in the PDF versus assigned by the team.",
+      "details": {
+        "TEAM_ASSIGNED_OR_UNVERIFIED": [
+          "HP007",
+          "HP008",
+          "HP009",
+          "HP010",
+          "HP011",
+          "HP012",
+          "HP013",
+          "HP014",
+          "HP015",
+          "HP016-A",
+          "HP016-B",
+          "HP017-A",
+          "HP018-A",
+          "HP018-B",
+          "HP018-C",
+          "HP019-A",
+          "HP019-B",
+          "HP022",
+          "HP023",
+          "HP024",
+          "HP025",
+          "HP026",
+          "HP027",
+          "HP028",
+          "HP029",
+          "HP030",
+          "HP031-A",
+          "HP031-B",
+          "HP031-C",
+          "HP031-D",
+          "HP032",
+          "HP033",
+          "HP034",
+          "HP035",
+          "HP036",
+          "HP037",
+          "HP038",
+          "HP039-IS",
+          "HP039-NW",
+          "HP039-SE",
+          "HP040-IS",
+          "HP040-NW",
+          "HP040-SE",
+          "HP041-IS",
+          "HP041-NW",
+          "HP041-SE",
+          "HP042-IS",
+          "HP042-NW",
+          "HP042-SE",
+          "HP043-IS",
+          "HP043-NW",
+          "HP043-SE",
+          "HP044-IS",
+          "HP044-NW",
+          "HP044-SE",
+          "HP045-IS-A",
+          "HP045-IS-B",
+          "HP045-NW-A",
+          "HP045-NW-B",
+          "HP045-SE-A",
+          "HP045-SE-B",
+          "HP046-IS-A",
+          "HP046-IS-B",
+          "HP046-NW-A",
+          "HP046-NW-B",
+          "HP046-SE-A",
+          "HP046-SE-B",
+          "HP047-IS-A",
+          "HP047-IS-B",
+          "HP047-NW-A",
+          "HP047-NW-B",
+          "HP047-SE-A",
+          "HP047-SE-B",
+          "HP048-A",
+          "HP048-B"
+        ],
+        "UNKNOWN_source_NOT_FOUND": []
+      }
+    },
+    {
+      "id": "prerequisite_completeness_confirmed",
+      "status": "WARN",
+      "message": "Prerequisite-list completeness is unconfirmed.",
+      "details": [
+        {
+          "field": "prerequisite_completeness",
+          "value": "UNCONFIRMED",
+          "label": "GIẢ ĐỊNH (chờ đối chiếu quy chế)",
+          "message": "A missing prerequisite row is not confirmed to mean no prerequisite."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "course_counts": {
+      "total_rows": 101,
+      "course_type": {
+        "bắt buộc": 54,
+        "tự chọn": 47
+      },
+      "specialization": {
+        "common": 65,
+        "SE": 12,
+        "IS": 12,
+        "NW": 12
+      },
+      "counts_toward_total": 82,
+      "outside_total": 19,
+      "elective_slots": 15,
+      "unknown_course_codes": [
+        "HP007",
+        "HP008",
+        "HP009",
+        "HP010",
+        "HP011",
+        "HP012",
+        "HP013",
+        "HP014",
+        "HP015",
+        "HP016-A",
+        "HP016-B",
+        "HP017-A",
+        "HP018-A",
+        "HP018-B",
+        "HP018-C",
+        "HP019-A",
+        "HP019-B",
+        "HP022",
+        "HP023",
+        "HP024",
+        "HP025",
+        "HP026",
+        "HP027",
+        "HP028",
+        "HP029",
+        "HP030",
+        "HP031-A",
+        "HP031-B",
+        "HP031-C",
+        "HP031-D",
+        "HP032",
+        "HP033",
+        "HP034",
+        "HP035",
+        "HP036",
+        "HP037",
+        "HP038",
+        "HP039-IS",
+        "HP039-NW",
+        "HP039-SE",
+        "HP040-IS",
+        "HP040-NW",
+        "HP040-SE",
+        "HP041-IS",
+        "HP041-NW",
+        "HP041-SE",
+        "HP042-IS",
+        "HP042-NW",
+        "HP042-SE",
+        "HP043-IS",
+        "HP043-NW",
+        "HP043-SE",
+        "HP044-IS",
+        "HP044-NW",
+        "HP044-SE",
+        "HP045-IS-A",
+        "HP045-IS-B",
+        "HP045-NW-A",
+        "HP045-NW-B",
+        "HP045-SE-A",
+        "HP045-SE-B",
+        "HP046-IS-A",
+        "HP046-IS-B",
+        "HP046-NW-A",
+        "HP046-NW-B",
+        "HP046-SE-A",
+        "HP046-SE-B",
+        "HP047-IS-A",
+        "HP047-IS-B",
+        "HP047-NW-A",
+        "HP047-NW-B",
+        "HP047-SE-A",
+        "HP047-SE-B",
+        "HP048-A",
+        "HP048-B"
+      ],
+      "course_code_source_not_found": []
+    },
+    "semester_credits_by_specialization": {
+      "SE": {
+        "mandatory": [
+          17,
+          15,
+          17,
+          13,
+          11,
+          15,
+          12,
+          10
+        ],
+        "elective": [
+          0,
+          2,
+          2,
+          5,
+          5,
+          3,
+          3,
+          0
+        ],
+        "total": 130,
+        "all_including_electives": [
+          17,
+          17,
+          19,
+          18,
+          16,
+          18,
+          15,
+          10
+        ]
+      },
+      "IS": {
+        "mandatory": [
+          17,
+          15,
+          17,
+          13,
+          11,
+          15,
+          12,
+          10
+        ],
+        "elective": [
+          0,
+          2,
+          2,
+          5,
+          5,
+          3,
+          3,
+          0
+        ],
+        "total": 130,
+        "all_including_electives": [
+          17,
+          17,
+          19,
+          18,
+          16,
+          18,
+          15,
+          10
+        ]
+      },
+      "NW": {
+        "mandatory": [
+          17,
+          15,
+          17,
+          13,
+          11,
+          15,
+          12,
+          10
+        ],
+        "elective": [
+          0,
+          2,
+          2,
+          5,
+          5,
+          3,
+          3,
+          0
+        ],
+        "total": 130,
+        "all_including_electives": [
+          17,
+          17,
+          19,
+          18,
+          16,
+          18,
+          15,
+          10
+        ]
+      }
+    },
+    "prerequisite_graph": {
+      "edge_count": 15,
+      "max_depth_courses": 3,
+      "longest_chain": [
+        "HP024",
+        "HP029",
+        "HP039-NW"
+      ],
+      "cycle": [],
+      "most_dependent_courses": [
+        [
+          "HP029",
+          5
+        ]
+      ]
+    },
+    "warnings": [
+      {
+        "id": "duplicate_course_names_review",
+        "status": "WARN",
+        "message": "Review duplicate course names; names are not used as keys.",
+        "details": [
+          {
+            "name": "Hệ thống thông tin địa lý",
+            "courses": [
+              {
+                "course_id": "HP045-SE-B",
+                "specialization": "SE",
+                "course_name": "Hệ thống thông tin địa lý"
+              },
+              {
+                "course_id": "HP045-IS-B",
+                "specialization": "IS",
+                "course_name": "Hệ thống thông tin địa lý"
+              }
+            ]
+          },
+          {
+            "name": "Xử lý dữ liệu lớn",
+            "courses": [
+              {
+                "course_id": "HP045-NW-A",
+                "specialization": "NW",
+                "course_name": "Xử lý dữ liệu lớn"
+              },
+              {
+                "course_id": "HP046-IS-B",
+                "specialization": "IS",
+                "course_name": "Xử lý dữ liệu lớn"
+              }
+            ]
+          },
+          {
+            "name": "IoT và Ứng dụng",
+            "courses": [
+              {
+                "course_id": "HP046-SE-B",
+                "specialization": "SE",
+                "course_name": "IoT và Ứng dụng"
+              },
+              {
+                "course_id": "HP046-NW-B",
+                "specialization": "NW",
+                "course_name": "IoT và ứng dụng"
+              }
+            ]
+          },
+          {
+            "name": "Hệ thống khuyến nghị",
+            "courses": [
+              {
+                "course_id": "HP043-IS",
+                "specialization": "IS",
+                "course_name": "Hệ thống khuyến nghị"
+              },
+              {
+                "course_id": "HP047-IS-A",
+                "specialization": "IS",
+                "course_name": "Hệ thống khuyến nghị"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "course_code_source_confirmation",
+        "status": "WARN",
+        "message": "Confirm which course IDs were printed in the PDF versus assigned by the team.",
+        "details": {
+          "TEAM_ASSIGNED_OR_UNVERIFIED": [
+            "HP007",
+            "HP008",
+            "HP009",
+            "HP010",
+            "HP011",
+            "HP012",
+            "HP013",
+            "HP014",
+            "HP015",
+            "HP016-A",
+            "HP016-B",
+            "HP017-A",
+            "HP018-A",
+            "HP018-B",
+            "HP018-C",
+            "HP019-A",
+            "HP019-B",
+            "HP022",
+            "HP023",
+            "HP024",
+            "HP025",
+            "HP026",
+            "HP027",
+            "HP028",
+            "HP029",
+            "HP030",
+            "HP031-A",
+            "HP031-B",
+            "HP031-C",
+            "HP031-D",
+            "HP032",
+            "HP033",
+            "HP034",
+            "HP035",
+            "HP036",
+            "HP037",
+            "HP038",
+            "HP039-IS",
+            "HP039-NW",
+            "HP039-SE",
+            "HP040-IS",
+            "HP040-NW",
+            "HP040-SE",
+            "HP041-IS",
+            "HP041-NW",
+            "HP041-SE",
+            "HP042-IS",
+            "HP042-NW",
+            "HP042-SE",
+            "HP043-IS",
+            "HP043-NW",
+            "HP043-SE",
+            "HP044-IS",
+            "HP044-NW",
+            "HP044-SE",
+            "HP045-IS-A",
+            "HP045-IS-B",
+            "HP045-NW-A",
+            "HP045-NW-B",
+            "HP045-SE-A",
+            "HP045-SE-B",
+            "HP046-IS-A",
+            "HP046-IS-B",
+            "HP046-NW-A",
+            "HP046-NW-B",
+            "HP046-SE-A",
+            "HP046-SE-B",
+            "HP047-IS-A",
+            "HP047-IS-B",
+            "HP047-NW-A",
+            "HP047-NW-B",
+            "HP047-SE-A",
+            "HP047-SE-B",
+            "HP048-A",
+            "HP048-B"
+          ],
+          "UNKNOWN_source_NOT_FOUND": []
+        }
+      },
+      {
+        "id": "prerequisite_completeness_confirmed",
+        "status": "WARN",
+        "message": "Prerequisite-list completeness is unconfirmed.",
+        "details": [
+          {
+            "field": "prerequisite_completeness",
+            "value": "UNCONFIRMED",
+            "label": "GIẢ ĐỊNH (chờ đối chiếu quy chế)",
+            "message": "A missing prerequisite row is not confirmed to mean no prerequisite."
+          }
+        ]
+      }
+    ],
+    "unknown": [
+      {
+        "field": "course_code_source",
+        "courses": [
+          "HP007",
+          "HP008",
+          "HP009",
+          "HP010",
+          "HP011",
+          "HP012",
+          "HP013",
+          "HP014",
+          "HP015",
+          "HP016-A",
+          "HP016-B",
+          "HP017-A",
+          "HP018-A",
+          "HP018-B",
+          "HP018-C",
+          "HP019-A",
+          "HP019-B",
+          "HP022",
+          "HP023",
+          "HP024",
+          "HP025",
+          "HP026",
+          "HP027",
+          "HP028",
+          "HP029",
+          "HP030",
+          "HP031-A",
+          "HP031-B",
+          "HP031-C",
+          "HP031-D",
+          "HP032",
+          "HP033",
+          "HP034",
+          "HP035",
+          "HP036",
+          "HP037",
+          "HP038",
+          "HP039-IS",
+          "HP039-NW",
+          "HP039-SE",
+          "HP040-IS",
+          "HP040-NW",
+          "HP040-SE",
+          "HP041-IS",
+          "HP041-NW",
+          "HP041-SE",
+          "HP042-IS",
+          "HP042-NW",
+          "HP042-SE",
+          "HP043-IS",
+          "HP043-NW",
+          "HP043-SE",
+          "HP044-IS",
+          "HP044-NW",
+          "HP044-SE",
+          "HP045-IS-A",
+          "HP045-IS-B",
+          "HP045-NW-A",
+          "HP045-NW-B",
+          "HP045-SE-A",
+          "HP045-SE-B",
+          "HP046-IS-A",
+          "HP046-IS-B",
+          "HP046-NW-A",
+          "HP046-NW-B",
+          "HP046-SE-A",
+          "HP046-SE-B",
+          "HP047-IS-A",
+          "HP047-IS-B",
+          "HP047-NW-A",
+          "HP047-NW-B",
+          "HP047-SE-A",
+          "HP047-SE-B",
+          "HP048-A",
+          "HP048-B"
+        ]
+      }
+    ],
+    "unconfirmed": [
+      {
+        "field": "prerequisite_completeness",
+        "value": "UNCONFIRMED",
+        "label": "GIẢ ĐỊNH (chờ đối chiếu quy chế)",
+        "message": "A missing prerequisite row is not confirmed to mean no prerequisite."
+      }
+    ]
+  }
+}

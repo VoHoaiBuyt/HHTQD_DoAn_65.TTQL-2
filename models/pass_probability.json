@@ -1,0 +1,28 @@
+{
+  "fit_scope": "train_only",
+  "hk1_ability_feature": "approved / enrolled in semester 1",
+  "thresholds": {
+    "low_max": 0.7142857142857143,
+    "medium_max": 1.0
+  },
+  "minimum_students_per_stratum": 30,
+  "strata": {
+    "Thấp": {
+      "students": 822,
+      "approved_units": 1467,
+      "enrolled_units": 4833
+    },
+    "Trung bình": {
+      "students": 657,
+      "approved_units": 3824,
+      "enrolled_units": 4680
+    },
+    "Cao": {
+      "students": 1067,
+      "approved_units": 6532,
+      "enrolled_units": 7021
+    }
+  },
+  "includes_later_dropout": true,
+  "dropout_note": "M3' gồm cả sinh viên sau đó Dropout; sinh viên không còn quan sát HK2 bị loại khỏi mẫu HK2."
+}

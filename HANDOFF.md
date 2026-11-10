@@ -1,78 +1,200 @@
-# HANDOFF — Giai đoạn 1
+# [MỐC] Phần 1/6 — nạp và kiểm định CTĐT OFFICIAL
 
-## Trạng thái
+## a) Đã làm / chưa làm
 
-- **A/B:** UCI-697 khảo sát; raw giữ nguyên; CTĐT/persona là **SIMULATED**; validator PASS nguyên văn ở `reports/curriculum_validation.txt` và B.2 báo cáo gộp.
-- **C:** exploratory models, leakage gate T1, calibration pass-rate, M1/C.3 đối chiếu, M3' baseline, restriction thresholds và persona REAL-derived đã cập nhật. Không huấn luyện mô hình cuối.
-- **D:** rule engine tách academic flags/eligibility; cảnh báo rủi ro không khóa tải mặc định. ILP prototype dùng soft Fmax, Cmin fallback và status chuẩn; S003 có kế hoạch `best_effort` kèm cờ vượt cap.
-- **E:** phân công/timeline cập nhật; TV3 nhận việc tự lấy CTĐT/quy chế NTU ở Tuần 1.
-- **Chưa làm:** Monte Carlo nhiều kỳ/đối chứng B1–B3; mô hình cuối, UI và đánh giá hiệu quả NTU. Các persona chỉ sanity-check; không tuyên bố hiệu quả.
+**Đã làm**
 
-## Nhãn dữ liệu, mốc, seed
+- Nạp `data/official/courses.csv` và `data/official/prerequisites.csv` từ nội
+  dung nhóm cung cấp của `210_CNTT.pdf`, mục 7.1; giữ nguyên course IDs và gắn
+  `source_label=OFFICIAL (NTU)`.
+- Tách logic curriculum, validation, rules, consistency, risk planning, ILP và
+  metrics vào `core/`; các module optimizer cũ trong `src/optimize/` còn wrapper
+  tương thích cho script/notebook.
+- Thêm enrichment/config và báo cáo giả định. Enrichment chỉ áp dụng khi nạp,
+  không sửa CSV OFFICIAL. Quy tắc chuyên ngành, elective slot, HP017, HP048,
+  lịch mở và ngữ nghĩa tiên quyết vẫn được gắn nhãn GIẢ ĐỊNH.
+- Chuyển generators/validator và test legacy của catalogue SIMULATED vào
+  `archive/`; test cũ không còn bị pytest thu thập.
+- Hoàn tất `evaluate_student`, corequisite fixed-point pruning và ràng buộc ILP
+  tương ứng; `best_effort` luôn có cảnh báo rủi ro và khuyến nghị gặp cố vấn,
+  không gọi phương án là “an toàn”.
+- Audit scenario v1 mà không sửa đầu vào; dữ liệu này chỉ dùng để kiểm tra, không
+  dùng làm kết quả cuối.
 
-- `data/raw/uci_697/data.csv`: **REAL (UCI-697)**, giữ nguyên.
-- Catalogue, tiến độ, persona trong `data/simulated/`: **SIMULATED**. Feature persona lấy từ medoid REAL của từng tercile năng lực HK1; S002 được kiểm tra thuộc Trung bình.
-- Feature dự báo T1 chỉ dùng `available_at ∈ {T0,T1_known}`. `enrolled_2` là `T1_decision`, chỉ dùng trong phân tích tải/M1 diagnostic. Sáu trường chưa rõ timestamp bị loại.
-- Seed chính: **20261105**.
-- Chia grade 0–20 → 0–10 chỉ tạo feature ML fixture, không suy ngưỡng đạt NTU.
+**Chưa làm**
 
-## Kết quả cần lưu ý
+- Chưa có scenario v2; chưa triển khai ML, Monte Carlo nhiều kỳ, giao diện
+  Streamlit hoặc đánh giá hiệu quả NTU.
+- Chưa xác minh mã HP0xx, tính đầy đủ/ý nghĩa quy chế của danh sách tiên quyết,
+  lịch mở môn và quy chế học vụ từ nguồn chính thức.
+- Chưa xác định chuyên ngành của các hồ sơ v1; không suy đoán để tính thiếu môn
+  chuyên ngành/tự chọn.
 
-- Validator CTĐT hiện tại: **PASS**, 48 môn/128 tín chỉ **SIMULATED**.
-- M1 binary OR `enrolled_2` 1,314506; M1 3-class effective OR 1,161026; C.3 observational OR 1,000469. Khác estimand, không nhân quả; M1 không dùng làm chính.
-- Pass-rate holdout RF MAE/RMSE 0,124046/0,193556; isotonic 0,124389/0,195836, nên isotonic không dùng cho pass-rate. Bảng calibration 10 decile trong báo cáo.
-- M3' all Target: Thấp 0,248377; Trung bình 0,779404; Cao 0,931902. Non-Dropout-only: 0,564428/0,833310/0,946581; đây là survivor-only hậu nghiệm, không dùng làm baseline. RF cho persona S003 là 0,048941; không chọn số thuận lợi.
-- Warning tier OOF shares/PPV: Thấp 12,72%/4,89%; Trung bình 32,95%/7,80%; Cao 54,34%/53,25%. Restriction mềm exploratory threshold P calibrated ≥0,50, PPV 0,809; 173 người gần tỷ lệ nền 32,13%, không ai vượt threshold.
-- Config `enforce_cap=false`; cap tín chỉ/Fmax là khuyến nghị mềm. Prototype giải từng scenario 12/15/18 × λ={0;0,1;0,3}. S003 tại 12, λ=0,1 chọn `IT501, IT502, IT503, IT504`, 12 tín chỉ; expected failures 2,980257, Fmax 1, slack 1,980257; `best_effort`, `risk_cap_exceeded=true`.
-- Mô phỏng hazard dropout và chế độ có điều kiện không bỏ học đã đặc tả; chưa chạy Monte Carlo. Hazard hằng kỳ từ P(Dropout) là giả định, không phải ước lượng trực tiếp.
+## b) File tạo/sửa chính
 
-## Chạy lại
+- Dữ liệu/config: `data/official/*.csv`, `data/scenarios_v1/*.csv`,
+  `data/scenarios/.gitkeep`, `config/courses_enrichment.yaml`,
+  `config/program_official.yaml`.
+- Core: `core/curriculum.py`, `core/curriculum_validation.py`,
+  `core/rules.py`, `core/ilp.py`, `core/plan_risk.py`,
+  `core/data/consistency.py`, `core/metrics.py`.
+- Tests: `tests/test_core_rules.py`, `tests/test_curriculum_validation.py`,
+  `tests/test_data_consistency.py`, `tests/test_metrics.py`.
+- Báo cáo/config trợ giúp: `requirements.txt`, `README.md`,
+  `reports/curriculum_validation.txt` và các tệp trong `reports/generated/`.
+- Tài liệu Stage 1 trước đây được giữ ở trạng thái lịch sử; không dùng số liệu
+  exploratory/persona cũ làm kết quả hiện tại.
 
-Từ gốc `E:\HHTQD_DoAn`, Python 3.14:
+## c) Kết quả chạy
 
-```powershell
-python -m pip install -r requirements-stage1.txt
-python src\data\generate_simulated_data.py
-python src\data\validate_curriculum.py
-python src\analysis\risk_to_plan_exploration.py
-python src\optimize\plan_risk.py
-python -m unittest discover -s tests -v
-python src\analysis\ilp_formulation_check.py
-python scripts\build_risk_exploration_notebook.py
-python scripts\build_ilp_formulation_notebook.py
-python -m jupyter nbconvert --to notebook --execute --inplace notebooks\02_risk_to_plan_exploration.ipynb
-python -m jupyter nbconvert --to notebook --execute --inplace notebooks\03_ilp_formulation_check.ipynb
+**Validator — `python -m core.curriculum_validation` (trích trường kết quả từ
+stdout JSON):**
+
+```json
+{
+  "source_label": "OFFICIAL (NTU)",
+  "source_document": "210_CNTT.pdf",
+  "source_section": "7.1",
+  "n_checks": 13,
+  "n_pass": 10,
+  "n_warn": 3,
+  "n_fail": 0
+}
 ```
 
-`reports/generated/` được tái tạo từ pipeline: OOF warning/restriction, calibration deciles, M3'/non-Dropout, persona scenarios, ILP scenarios và recommendation. Notebook chỉ gọi lại pipeline/script, không là mô hình cuối. Validator ghi kết quả vào `reports/curriculum_validation.txt`.
+- 101 course rows: 54 bắt buộc, 47 tự chọn; 19 môn ngoài tổng 130 tín chỉ.
+- Cả SE/IS/NW đều có bắt buộc `[17, 15, 17, 13, 11, 15, 12, 10]`, tự chọn
+  `[0, 2, 2, 5, 5, 3, 3, 0]`, tổng 130.
+- Đồ thị tiên quyết: 15 cạnh, không chu trình, chuỗi dài nhất 3 môn.
+- Ba WARN: trùng tên môn cần rà soát; mã HP chưa xác nhận nguồn; độ đầy đủ
+  prerequisite `UNCONFIRMED`. Chi tiết đầy đủ tại
+  `reports/generated/curriculum_validation.json`.
 
-## Cấu hình/method
+**Scenario v1 — `python -m core.data.consistency` (stdout JSON):**
 
-- `P(Dropout)` dùng riêng cho warning/risk tier và khuyến nghị cố vấn; không nhân trực tiếp vào xác suất đạt môn.
-- Warning ngưỡng recall và restriction threshold/PPV độc lập. Restriction threshold isotonic + PPV cùng train OOF có optimistic bias; phải đánh giá trên validation độc lập trước khi áp dụng.
-- M3' pass-rate nền gộp mọi tải theo HK1; λ/difficulty/retake là **GIẢ ĐỊNH** kịch bản. `enrolled_2=0` không bị coi là Dropout/pass=0.
-- ILP objective đo tín chỉ tương đương; β=1/8, γ=1 theo quy tắc trong spec; `u_i` là downstream credits chiết khấu. Fmax là số môn trượt kỳ vọng, khác với loss tín chỉ.
-- Status ILP: `optimal`, `best_effort`, `no_eligible_courses`, `graduation_ready`, `infeasible_data_error`; xem `reports/optimization_spec.md`.
-- Chưa có CTĐT/quy chế NTU được xác minh. Cap tín chỉ/GPA/attempts, λ, β/γ, deadline và risk policy đều có source/label/TODO trong `src/config/credit_rules.yaml`.
+- `status=CHECKED`, 8 hồ sơ, 248 dòng tiến độ; không có mã môn lạ, hồ sơ mồ côi
+  hoặc ID hồ sơ trùng.
+- 27 defect: 8 lệch mốc T1; 13 lệch feature HK1 so với số dòng tiến độ; 4 hồ sơ
+  có điểm hoàn thành hằng số; 2 hồ sơ ở HK8 nhưng còn tín chỉ.
+- GPA `UNCONFIRMED`; specialization `UNKNOWN` ở cả hồ sơ do không có trường đó.
+  Không ước lượng công thức GPA hay gán chuyên ngành.
+- Chi tiết theo từng hồ sơ tại `reports/generated/scenario_v1_defects.json`.
 
-## Tệp chính
+**Pytest — `python -m pytest -q` (nguyên văn):**
 
-| Nhóm | Tệp |
-|---|---|
-| Báo cáo gộp/phương pháp/spec | `reports/stage1_report.md`, `reports/risk_to_plan_methods.md`, `reports/optimization_spec.md` |
-| Config, rule, plan | `src/config/credit_rules.yaml`, `src/rules/rule_engine.py`, `src/optimize/plan_risk.py` |
-| Prototype | `src/optimize/ilp_prototype.py`, `src/analysis/ilp_formulation_check.py`, `notebooks/03_ilp_formulation_check.ipynb` |
-| C exploration | `src/analysis/risk_to_plan_exploration.py`, `notebooks/02_risk_to_plan_exploration.ipynb` |
-| Persona/data/validation | `src/data/generate_simulated_data.py`, `reports/curriculum_validation.txt`, `reports/data_dictionary.csv` |
-| Kết quả được sinh | `reports/generated/` |
-| Tests | `tests/test_stage1_rules_and_optimizer.py` |
-| Thư gửi cô (không sửa lượt này) | `reports/cover_message_to_co_Thuy.md` |
+```text
+...............                                                          [100%]
+============================== warnings summary ===============================
+C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\anyio\pytest_plugin.py:14
+  C:\Users\DELL\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\anyio\pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
 
-## Việc cần xác nhận trước giai đoạn 2
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+15 passed, 1 warning in 0.79s
+```
 
-1. Nhãn `Enrolled` và mốc T1; timestamp 6 feature chưa rõ.
-2. CTĐT/quy chế tín chỉ/GPA/học lại; tuần 1 TV3 tự tìm tài liệu và ghi nguồn.
-3. Có duyệt warning + khuyến nghị mềm, threshold restriction/PPV exploratory và không hard-cap mặc định không.
-4. Chấp nhận baseline M3', giả định độc lập, λ/difficulty/retake và hazard dropout như kịch bản không.
-5. Tiêu chí so B1–B3 với dung sai 95% theo paired Monte Carlo SE.
-6. Hạn nộp thực tế và thời gian nhóm có thể triển khai.
+`git diff --check` passed; compatibility imports from `src.optimize.*` passed.
+
+## d) Quyết định thiết kế
+
+- Course ID là khóa; tên môn không dùng làm khóa vì dữ liệu có tên trùng.
+- Không ghi cột suy diễn vào CSV OFFICIAL; giữ chúng trong loader/config, nhãn
+  `GIẢ ĐỊNH (suy từ CTĐT)`.
+- Không xác nhận ngầm “không có dòng prerequisite” thành “không có tiên quyết”.
+- `best_effort` không có nghĩa là an toàn; luôn kèm khuyến nghị trao đổi với cố
+  vấn học tập.
+- Các CSV scenario v1 được giữ nguyên để audit; không tái sử dụng cho kết quả ML
+  hoặc kết quả cuối.
+
+## e) Cần nhóm xác nhận
+
+1. Mã HP0xx/HP0xx-x nào có trong PDF, mã nào do nhóm gán?
+2. `HP017-A` và `BUA319` có thật sự cùng một ô tự chọn không? Cách nhóm các ô
+   khác theo mã có đúng bảng PDF không?
+3. Danh sách prerequisite đã đầy đủ chưa; “tiên quyết” có nghĩa phải đạt và
+   “song hành” có thể học cùng kỳ theo cách đang mô hình hóa không?
+4. `offered_semesters=odd/even/both` có phản ánh lịch mở học kỳ thực tế không;
+   học kỳ phụ có cần mô hình hóa không?
+5. Quy chế chính thức về trần tín chỉ, học lại, ngưỡng cảnh báo và tính GPA là
+   gì?
+6. Chuyên ngành nào được gán cho từng sinh viên scenario v1 (nếu nhóm xác nhận
+   cần đánh giá thiếu môn theo nhánh)?
+
+## f) Bước tiếp theo
+
+- Chờ nhóm xác nhận các câu hỏi ở trên và cung cấp quy chế chính thức.
+- Phần 2: hoàn thiện rule/solver theo quy chế đã xác nhận; giữ mọi UNKNOWN rõ
+  ràng cho tới khi có nguồn.
+- Phần 3: tạo scenario v2 trên học phần OFFICIAL và vector REAL được phép; tách
+  train/test trước khi đánh giá ML.
+
+---
+
+# [MỐC] Phần 6/6 — kiểm thử, báo cáo Word và đóng gói
+
+## Lệnh chạy lại từ môi trường mới
+
+Từ thư mục gốc repo, dùng Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m core.curriculum_validation
+python -m core.data.consistency
+python -m core.regulation
+python -m scripts.generate_scenario_v2
+python -m scripts.run_monte_carlo --runs 1000 --lambda 0.1 --workers 4
+python -m scripts.build_report
+python -m scripts.check_report_consistency
+python -m pytest -v
+streamlit run app/main.py
+```
+
+ML holdout đã được đánh giá một lần (`evaluation_count=1`); không chạy lại
+`python -m core.train_models --evaluate-test` với cùng split. Nếu huấn luyện lại,
+chỉ chạy `python -m core.train_models --skip-test`; mọi lần truy cập test mới cần
+quyết định và log riêng.
+
+## Seed và trạng thái
+
+- Split REAL (UCI-697): `data/processed/split_manifest.json`, seed `20261105`.
+- Scenario v2: `reports/generated/scenario_v2_validation.json`, seed `20261105`.
+- Monte Carlo: `config/monte_carlo_scenario.yaml` và
+  `reports/generated/mc_runtime.json`, seed `20261108`.
+- Bootstrap KTC ML validation: `reports/generated/ml_validation_bootstrap_ci.json`,
+  seed `20261110`.
+- Test summary nguyên văn: `reports/generated/pytest_summary.txt`.
+- Word report: `reports/stage2_report.docx`; kiểm tra bảng:
+  `python -m scripts.check_report_consistency`.
+
+## Danh sách file giao chính
+
+- Mã nguồn: `core/`, `app/`, `scripts/`, `tests/`.
+- Notebook: `notebooks/01_eda_uci697.ipynb`,
+  `notebooks/02_risk_to_plan_exploration.ipynb`,
+  `notebooks/03_ilp_formulation_check.ipynb`.
+- Dữ liệu/config: `data/official/`, `data/scenarios/`, `data/processed/`,
+  `config/`; không dùng catalogue SIMULATED trong kết quả cuối.
+- ML: `models/early_warning.joblib`,
+  `reports/generated/model_comparison.csv`,
+  `reports/generated/test_evaluation.json`,
+  `reports/generated/ml_validation_bootstrap_ci.json`,
+  `reports/generated/shap_global.csv`.
+- Rule/ILP: `reports/generated/curriculum_validation.json`,
+  `reports/generated/regulation_assumptions.md`,
+  `reports/generated/plans_by_student.csv`,
+  `reports/generated/ilp_sensitivity.csv`.
+- Monte Carlo: `reports/generated/mc_results.csv`,
+  `reports/generated/mc_pairwise.csv`, `reports/generated/mc_pareto.csv`.
+- Kiểm thử/báo cáo/hướng dẫn: `reports/generated/pytest_summary.txt`,
+  `reports/stage2_report.docx`, `reports/screens_to_capture.md`, `README.md`,
+  `HANDOFF.md`.
+
+Ảnh giao diện chưa có trong gói; dùng `reports/screens_to_capture.md` và chỉ chụp
+hồ sơ SCENARIO. Không có `mc_grad_hist.csv` trong artifact hiện tại, vì vậy không
+báo cáo phân phối kỳ tốt nghiệp suy ra.

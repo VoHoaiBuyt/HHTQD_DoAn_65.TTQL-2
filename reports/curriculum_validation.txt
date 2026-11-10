@@ -1,14 +1,15 @@
-Curriculum validation — SIMULATED
-PASS: Mã học phần duy nhất.
-PASS: Số học phần 48 nằm trong khoảng 40–50.
-PASS: Có đủ học kỳ dự kiến 1–8.
-PASS: Mọi học phần được gắn nhãn SIMULATED.
-PASS: Mọi course_id và prerequisite_id trong quan hệ tiên quyết đều tồn tại.
-PASS: Đồ thị tiên quyết là DAG, không có chu trình.
-PASS: Thứ tự học kỳ phù hợp loại quan hệ tiên quyết/học trước/song hành.
-PASS: Loại quan hệ chỉ gồm 'tiên quyết', 'học trước' hoặc 'song hành'.
-PASS: Mỗi học phần có ít nhất một học kỳ mở, gồm học kỳ dự kiến.
-PASS: Tổng tín chỉ catalogue 128 nằm trong khoảng 120–140.
-PASS: Tín chỉ từng học kỳ nằm trong khoảng cấu hình 12–18.
-Tín chỉ theo học kỳ — SIMULATED: HK1=16, HK2=15, HK3=16, HK4=17, HK5=16, HK6=16, HK7=16, HK8=16
-KẾT LUẬN: PASS (128 tín chỉ, 48 học phần)
+Current OFFICIAL curriculum validation
+Source: OFFICIAL (NTU), 210_CNTT.pdf, section 7.1.
+Validator result: n_checks=13, n_pass=10, n_warn=3, n_fail=0.
+Catalogue: 101 rows; course types={'bắt buộc': 54, 'tự chọn': 47}; outside total=19.
+Prerequisite graph: 15 edges; cycle=none; longest chain=3 courses.
+Credit schedule by specialization:
+- SE: mandatory=[17, 15, 17, 13, 11, 15, 12, 10]; elective=[0, 2, 2, 5, 5, 3, 3, 0]; total=130.
+- IS: mandatory=[17, 15, 17, 13, 11, 15, 12, 10]; elective=[0, 2, 2, 5, 5, 3, 3, 0]; total=130.
+- NW: mandatory=[17, 15, 17, 13, 11, 15, 12, 10]; elective=[0, 2, 2, 5, 5, 3, 3, 0]; total=130.
+Warnings:
+- duplicate_course_names_review: Review duplicate course names; names are not used as keys.
+- course_code_source_confirmation: Confirm which course IDs were printed in the PDF versus assigned by the team.
+- prerequisite_completeness_confirmed: Prerequisite-list completeness is unconfirmed.
+Full validation detail: reports/generated/curriculum_validation.json
+Enrichment assumptions: reports/generated/enrichment_assumptions.md

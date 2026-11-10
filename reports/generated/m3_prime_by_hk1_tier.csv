@@ -1,4 +1,4 @@
-﻿data_label,hk1_ability,student_count_with_hk2_enrollment,hk2_enrolled_units,hk2_approved_units,m3_prime_pass_rate
-REAL (UCI-697),Thấp,1169,6776,1683,0.2483766233766234
-REAL (UCI-697),Cao,1728,11366,10592,0.9319021643498152
-REAL (UCI-697),Trung bình,1347,9429,7349,0.7794039664863718
+﻿tier,low_max,medium_max,n_students_raw_tier_with_hk2,n_students_pooled,merged_tiers,approved_units_hk2_pooled,enrolled_units_hk2_pooled,pooled_pass_rate,estimable,includes_later_dropout
+Thấp,0.7142857142857143,1.0,822,822,Thấp,1467,4833,0.30353817504655495,True,True
+Trung bình,0.7142857142857143,1.0,657,657,Trung bình,3824,4680,0.8170940170940171,True,True
+Cao,0.7142857142857143,1.0,1067,1067,Cao,6532,7021,0.9303518017376442,True,True

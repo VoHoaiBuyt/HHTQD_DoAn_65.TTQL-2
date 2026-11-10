@@ -1,12 +1,19 @@
 # Báo cáo giai đoạn 1 — khảo sát, thiết kế và kế hoạch
 
-> **Phạm vi:** khảo sát dữ liệu, thiết kế hệ thống và kế hoạch giai đoạn 2. Mô hình và bộ giải ở đây chỉ exploratory/prototype; không huấn luyện mô hình cuối, không triển khai giao diện và không coi persona là bằng chứng hiệu quả. Toàn bộ bảng/hồ sơ CTĐT tự dựng được ghi **SIMULATED**; kết quả lấy từ UCI ghi **REAL (UCI-697)**; tham số chưa kiểm chứng ghi **GIẢ ĐỊNH**.
+> **Thông báo trạng thái:** Đây là báo cáo exploratory lịch sử, được viết trước
+> khi nạp lại CTĐT OFFICIAL và kiểm toán scenario v1. Các mô tả cũ về catalogue
+> hoặc persona SIMULATED, số liệu ILP/persona, cùng đường dẫn lệnh không phải kết
+> quả của Phần 1 hiện tại. Không dùng chúng cho kết quả cuối; xem `HANDOFF.md`,
+> `reports/generated/curriculum_validation.json` và
+> `reports/generated/scenario_v1_defects.json` để biết trạng thái đã kiểm chứng.
+
+> **Phạm vi tại thời điểm soạn bản lịch sử này:** khảo sát dữ liệu, thiết kế hệ thống và kế hoạch giai đoạn 2. Mô hình và bộ giải ở đây chỉ exploratory/prototype; không huấn luyện mô hình cuối, không triển khai giao diện và không coi persona là bằng chứng hiệu quả. Các nhận định này không mô tả trạng thái dữ liệu của Phần 1 hiện tại.
 
 ## Tóm tắt điều hành
 
 Đề xuất đề tài “Hệ hỗ trợ ra quyết định cảnh báo rủi ro học tập và tối ưu hóa lộ trình tích lũy tín chỉ sinh viên” theo kiến trúc nối tiếp: (1) ML cảnh báo nguy cơ bỏ học từ đặc trưng có sẵn tại T1, (2) rule engine cảnh báo học vụ và xác định môn đủ điều kiện, (3) tối ưu kế hoạch học phần có ràng buộc tín chỉ/tiên quyết/rủi ro, (4) mô phỏng nhiều kỳ và so sánh với phương án đăng ký thông thường. ML cảnh báo bỏ học và cảnh báo học vụ theo GPA/tiến độ là hai bài toán riêng.
 
-Khảo sát **REAL (UCI-697)** có 4.424 sinh viên, 37 thuộc tính, không thiếu/trùng toàn dòng. UCI không có dữ liệu cấp học phần, số tín chỉ từng môn hay CTĐT; nhóm đã dựng catalogue 48 môn/128 tín chỉ **SIMULATED** để thử schema và logic. Xác suất Dropout và tỷ lệ đạt HK2 chỉ là kết quả exploratory trên UCI Bồ Đào Nha; áp vào persona mô phỏng chỉ kiểm tra logic, không kiểm chứng độ chính xác ở NTU.
+Khảo sát **REAL (UCI-697)** có 4.424 sinh viên, 37 thuộc tính, không thiếu/trùng toàn dòng. Catalogue CNTT hiện dùng nội dung mục 7.1 của PDF `210_CNTT.pdf` (130 tín chỉ theo từng lộ trình); tiến độ/hồ sơ sinh viên trong `data/processed/` vẫn là dữ liệu mô phỏng. Các kết quả exploratory UCI không kiểm chứng độ chính xác ở NTU.
 
 Tải HK2 trong dữ liệu quan sát không cho bằng chứng nhất quán về quan hệ giảm pass-rate trong cùng tầng HK1. Vì vậy không dùng counterfactual đổi số môn đăng ký làm phương pháp quyết định. Baseline pass-rate đề xuất là M3' theo tầng năng lực HK1, gộp mọi mức tải; ảnh hưởng tải/độ khó/học lại chỉ hiển thị như tham số **GIẢ ĐỊNH kịch bản** độ nhạy. Prototype PuLP/HiGHS xác nhận mô hình nhỏ có nghiệm khác nhau theo persona/ngân sách, đồng thời cho thấy ràng buộc rủi ro có thể làm một số persona không khả thi—đây là thông tin để rà config, không phải hiệu quả hệ thống.
 
@@ -59,45 +66,26 @@ EDA cho thấy Target mất cân bằng; cần báo cáo precision, recall, F1 l
 
 ### B.1. Nguồn và schema
 
-CTĐT CNTT chính thức NTU chưa truy xuất được từ cổng CTĐT yêu cầu xác thực; vì vậy dữ liệu trong `data/simulated/` là **SIMULATED**, không phải CTĐT NTU. Schema đề xuất:
+Catalogue học phần được nhập từ PDF CTĐT CNTT chuẩn `210_CNTT.pdf`, mục 7.1, trong `data/processed/`. Tiến độ và hồ sơ persona tiếp tục là **SIMULATED**; tiến độ hiện chỉ dựng trên các học phần bắt buộc chung, không giả định chọn chuyên ngành. Schema:
 
 | Bảng | Trường trọng yếu | Nhãn |
 |---|---|---|
-| `courses` | `course_id`, `course_name`, `credits`, `planned_semester`, `course_type`, `offered_semesters`, `group`, `source_label` | SIMULATED |
-| `prerequisites` | `course_id`, `prerequisite_id`, `type` (`tiên quyết`/`học trước`/`song hành`), `source_label` | SIMULATED |
+| `courses` | `course_id`, `course_name`, `credits`, `planned_semester`, `course_type`, `offered_semesters`, `group`, `source_label` | PDF mục 7.1 |
+| `prerequisites` | `course_id`, `prerequisite_id`, `type` (`tiên quyết`/`học trước`/`song hành`), `source_label` | PDF mục 7.1 |
 | `student_progress` | `student_id`, `course_id`, `status`, `grade_10`, `attempt_count`, `semester_taken` | SIMULATED |
 | `student_profile` | `student_id`, feature T0/T1-known, kỳ hiện tại, GPA, tín chỉ đạt/còn thiếu, số môn nợ | SIMULATED/REAL-derived feature template |
 
-Khóa ghép tiến độ là (`student_id`,`course_id`); mã môn và sinh viên là khóa ngoại. Trạng thái gồm completed/in_progress/failed/not_taken. Dữ liệu UCI và CTĐT mô phỏng không nối record cá nhân thật với course_id.
+Khóa ghép tiến độ là (`student_id`,`course_id`); mã môn và sinh viên là khóa ngoại. Trạng thái gồm completed/in_progress/failed/not_taken. Dữ liệu UCI không nối record cá nhân thật với course_id.
 
 ### B.2. CTĐT nháp và kiểm tra
 
-Catalogue **SIMULATED** có 48 môn (40 bắt buộc, 8 elective placeholder), 8 học kỳ và 128 tín chỉ; tín chỉ theo kỳ HK1–HK8 lần lượt 16, 15, 16, 17, 16, 16, 16, 16. Mọi giới hạn hiện tại là fixture theo cấu hình, không phải quy chế.
-
-Kết quả chạy lại `python src/data/validate_curriculum.py` trên dữ liệu hiện hành — **nguyên văn**, nhãn **SIMULATED**:
-
-```text
-Curriculum validation — SIMULATED
-PASS: Mã học phần duy nhất.
-PASS: Số học phần 48 nằm trong khoảng 40–50.
-PASS: Có đủ học kỳ dự kiến 1–8.
-PASS: Mọi học phần được gắn nhãn SIMULATED.
-PASS: Mọi course_id và prerequisite_id trong quan hệ tiên quyết đều tồn tại.
-PASS: Đồ thị tiên quyết là DAG, không có chu trình.
-PASS: Thứ tự học kỳ phù hợp loại quan hệ tiên quyết/học trước/song hành.
-PASS: Loại quan hệ chỉ gồm 'tiên quyết', 'học trước' hoặc 'song hành'.
-PASS: Mỗi học phần có ít nhất một học kỳ mở, gồm học kỳ dự kiến.
-PASS: Tổng tín chỉ catalogue 128 nằm trong khoảng 120–140.
-PASS: Tín chỉ từng học kỳ nằm trong khoảng cấu hình 12–18.
-Tín chỉ theo học kỳ — SIMULATED: HK1=16, HK2=15, HK3=16, HK4=17, HK5=16, HK6=16, HK7=16, HK8=16
-KẾT LUẬN: PASS (128 tín chỉ, 48 học phần)
-```
+Catalogue có 101 dòng gồm học phần chung, lựa chọn thay thế, ba nhánh chuyên ngành và hai phương án tốt nghiệp; các phương án thay thế không cộng dồn. Mỗi lộ trình có 130 tín chỉ, gồm 110 tín chỉ bắt buộc (chọn một phương án tốt nghiệp) và 20 tín chỉ tự chọn. Phân bổ theo kỳ của lộ trình đã chọn là HK1–HK8: 17, 17, 19, 18, 16, 18, 15, 10. Các chi tiết phụ thuộc PDF; hồ sơ sinh viên vẫn là mô phỏng.
 
 ### B.3. Ánh xạ và persona
 
-UCI curricular unit chỉ được coi xấp xỉ một học phần khi đếm; không suy tín chỉ/môn hoặc tiên quyết. Điểm UCI 0–20 chia 2 thành 0–10 chỉ để tạo feature ML fixture; **không dùng để suy ngưỡng đạt NTU**. Mã ngành/nhân khẩu học trong persona chỉ thử schema.
+UCI curricular unit chỉ được coi xấp xỉ một học phần khi đếm; không suy tín chỉ/môn. Các quan hệ tiên quyết được trích từ mục 7.1; các dòng tiến độ là mô phỏng, hiện chỉ bao gồm học phần bắt buộc chung. Điểm UCI 0–20 chia 2 thành 0–10 chỉ để tạo feature ML fixture; **không dùng để suy ngưỡng đạt NTU**. Mã ngành/nhân khẩu học trong persona chỉ thử schema.
 
-Persona được tạo từ medoid vector feature REAL thuộc từng tầng HK1 rồi gắn nhãn SIMULATED; S002 được kiểm tra thuộc tầng Trung bình. Các ca học lại, môn chặn chuỗi, gần tốt nghiệp và hoàn tất tín chỉ dùng để sanity-check rule engine. Các persona không đủ môn để lấp tải được giữ nguyên, không thêm môn trái prerequisite. Toàn bộ điểm/course graph/lịch mở còn phải thay bằng dữ liệu CTĐT chính thức.
+Persona được tạo từ medoid vector feature REAL thuộc từng tầng HK1 rồi gắn nhãn SIMULATED; S002 được kiểm tra thuộc tầng Trung bình. Các ca học lại, môn chặn chuỗi, gần tốt nghiệp và hoàn tất tín chỉ dùng để sanity-check rule engine. Các persona không đủ môn để lấp tải được giữ nguyên, không thêm môn trái prerequisite. Điểm và lịch sử học vẫn là dữ liệu mô phỏng.
 
 ### B.4. Hạn chế: domain shift
 
@@ -115,7 +103,7 @@ Mô hình/quan sát học từ **REAL (UCI-697)** tại các cơ sở Bồ Đào
 | I.4 M3' | Đã làm | Baseline gộp mọi tải theo HK1: Thấp 0,248377; Trung bình 0,779404; Cao 0,931902. M3 theo band tải chỉ minh họa selection bias (Trung bình: 0,841799 ở 8+ so với 0,755601 ở 1–5). |
 | I.5 Quy đổi units | Đã làm | `credits_to_curricular_units` dùng half-up `floor(x+0.5)`, nên 4,5→5, đơn điệu; chi tiết ở [plan_risk.py](../src/optimize/plan_risk.py) và config. |
 | I.6 `enrolled_2=0` | Đã làm | 180 sinh viên không được gán pass-rate=0 hay mặc định là Dropout; tỷ lệ Dropout quan sát trong nhóm là 42,7778% **REAL**. |
-| I.7 Persona | Đã làm | [generate_simulated_data.py](../src/data/generate_simulated_data.py) lấy medoid feature vector thực trong mỗi một phần ba tầng năng lực HK1; kiểm tra lại tầng trước khi xuất. S002 được phân loại Trung bình; 4 persona ILP là S001/S002/S003/S005. |
+| I.7 Persona | Đã làm | [generate_simulated_data_legacy.py](../archive/generate_simulated_data_legacy.py) lấy medoid feature vector thực trong mỗi một phần ba tầng năng lực HK1; kiểm tra lại tầng trước khi xuất. Nội dung này chỉ là lịch sử exploratory và không phải dữ liệu scenario cuối. |
 
 Chi tiết hiệu chuẩn theo decile, gồm dự báo/trung bình thực tế, được trình bày ở C.1; bảng phân tầng tầng cảnh báo/PPV và ngưỡng restriction hiệu chuẩn được bổ sung ở D.1. Các persona mang nhãn **SIMULATED**, không phải hồ sơ cá nhân thật.
 
@@ -365,7 +353,7 @@ UCI không có course-level outcomes, difficulty, prerequisites, CTĐT hoặc at
 ## Tệp bàn giao
 
 - EDA/từ điển: `notebooks/01_eda_uci697.ipynb`, `reports/data_dictionary.csv`.
-- Mô phỏng/validator/config: `data/simulated/`, `src/data/validate_curriculum.py`, `reports/curriculum_validation.txt`, `src/config/credit_rules.yaml`.
+- Catalogue, tiến độ, validator/config: `data/processed/`, `src/data/validate_curriculum.py`, `reports/curriculum_validation.txt`, `src/config/credit_rules.yaml`.
 - Rủi ro/plan: `reports/risk_to_plan_methods.md`, `notebooks/02_risk_to_plan_exploration.ipynb`, `src/optimize/plan_risk.py`.
 - Rule/ILP/kiến trúc: `src/rules/rule_engine.py`, `src/optimize/ilp_prototype.py`, `reports/optimization_spec.md`, `reports/diagrams/architecture.md`, `notebooks/03_ilp_formulation_check.ipynb`.
 - Bảng kết quả tái lập: `reports/generated/` (OOF warning/restriction, calibration, M3', persona, prototype và khuyến nghị).
