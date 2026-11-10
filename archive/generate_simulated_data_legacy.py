@@ -199,7 +199,7 @@ def write_csv(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
 def real_feature_templates() -> dict[str, tuple[dict[str, float], str]]:
     data = pd.read_csv(ROOT / "data" / "raw" / "uci_697" / "data.csv", sep=";")
     data.columns = data.columns.str.strip()
-    with (ROOT / "reports" / "data_dictionary.csv").open(
+    with (ROOT / "archive" / "data_dictionary.csv").open(
         encoding="utf-8-sig", newline=""
     ) as file:
         feature_names = [

@@ -141,7 +141,7 @@ python -m pytest tests/test_app_smoke.py -q
 ```
 
 The required student/screenshots scenarios are listed in
-`reports/screens_to_capture.md`.
+`docs/screens_to_capture.md`.
 
 The simulation page discovers policies, comparisons, and Pareto labels from
 the generated CSV columns, defaults to `ILP-matched`, and offers `ILP-fixed` as

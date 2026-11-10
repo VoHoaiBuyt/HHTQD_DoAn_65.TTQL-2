@@ -38,7 +38,7 @@ Target được quan sát cuối cùng, không phải nhãn thời gian thực �
 
 ### A.2. Thời điểm có sẵn và leakage
 
-Từ điển thuộc tính đầy đủ lưu tại `reports/data_dictionary.csv`, gồm tên, kiểu, ý nghĩa, nhóm, `available_at`, cờ leakage và lý do. Feature cơ sở ở mốc **T1: cuối HK1, trước đăng ký HK2** chỉ nhận thuộc tính `T0` hoặc `T1_known`.
+Từ điển thuộc tính Stage 1 được lưu trữ tại `archive/data_dictionary.csv`, gồm tên, kiểu, ý nghĩa, nhóm, `available_at`, cờ leakage và lý do. Feature cơ sở ở mốc **T1: cuối HK1, trước đăng ký HK2** chỉ nhận thuộc tính `T0` hoặc `T1_known`.
 
 - Đầu vào/tuyển sinh: nhân khẩu học, phương thức/ngành tuyển sinh, học vấn đầu vào, điểm xét tuyển.
 - Học thuật HK1: credited, enrolled, evaluations, approved, grade, without evaluations; quan sát sau khi có kết quả HK1.
@@ -224,7 +224,7 @@ Warning ưu tiên recall để hiển thị và đề nghị cố vấn; PPV c�
 
 ### D.2. Mô hình toán học
 
-Đặc tả đầy đủ ở `reports/optimization_spec.md`. Với mỗi môn đủ điều kiện `i`, biến nhị phân `x_i∈{0,1}`; ràng buộc:
+Đặc tả đầy đủ ở `docs/optimization_spec.md`. Với mỗi môn đủ điều kiện `i`, biến nhị phân `x_i∈{0,1}`; ràng buộc:
 
 ```text
 C_min_used ≤ Σ c_i x_i ≤ C_scenario
@@ -281,7 +281,7 @@ Tiêu chí Pareto phải chốt trước khi chạy: dùng common random numbers
 
 ### D.5. Kiến trúc, công nghệ và chức năng dự kiến
 
-Sơ đồ luồng/schema lưu `reports/diagrams/architecture.md`. Đề xuất giai đoạn 2:
+Sơ đồ luồng/schema lưu `docs/diagrams/architecture.md`. Đề xuất giai đoạn 2:
 
 | Thành phần | Công nghệ đề xuất | Lý do / rủi ro |
 |---|---|---|
@@ -352,9 +352,9 @@ UCI không có course-level outcomes, difficulty, prerequisites, CTĐT hoặc at
 
 ## Tệp bàn giao
 
-- EDA/từ điển: `notebooks/01_eda_uci697.ipynb`, `reports/data_dictionary.csv`.
+- EDA/từ điển: `notebooks/01_eda_uci697.ipynb`, `archive/data_dictionary.csv`.
 - Catalogue, tiến độ, validator/config: `data/processed/`, `src/data/validate_curriculum.py`, `reports/curriculum_validation.txt`, `src/config/credit_rules.yaml`.
-- Rủi ro/plan: `reports/risk_to_plan_methods.md`, `notebooks/02_risk_to_plan_exploration.ipynb`, `src/optimize/plan_risk.py`.
-- Rule/ILP/kiến trúc: `src/rules/rule_engine.py`, `src/optimize/ilp_prototype.py`, `reports/optimization_spec.md`, `reports/diagrams/architecture.md`, `notebooks/03_ilp_formulation_check.ipynb`.
+- Rủi ro/plan: `docs/risk_to_plan_methods.md`, `archive/02_risk_to_plan_exploration.ipynb`, `src/optimize/plan_risk.py`.
+- Rule/ILP/kiến trúc: `src/rules/rule_engine.py`, `src/optimize/ilp_prototype.py`, `docs/optimization_spec.md`, `docs/diagrams/architecture.md`, `archive/03_ilp_formulation_check.ipynb`.
 - Bảng kết quả tái lập: `reports/generated/` (OOF warning/restriction, calibration, M3', persona, prototype và khuyến nghị).
-- Kế hoạch/thư: `HANDOFF.md`, `reports/cover_message_to_co_Thuy.md`.
+- Kế hoạch/thư: `HANDOFF.md`; thư Stage 1 không có trong workspace (`NOT_FOUND`).

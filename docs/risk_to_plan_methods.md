@@ -180,4 +180,4 @@ Với nested plans, expected failures không giảm khi tăng tải; expected cr
 - M3' pooling theo năng lực bỏ qua tải và biến cố cá nhân; độc lập giữa môn là giả định.
 - Ngưỡng risk tiers chọn exploratory trên 5-fold OOF train để đạt recall mục tiêu 0,90/0,98; cần đánh giá lại trên validation/NTU. Không dùng holdout để chọn threshold.
 
-Tái chạy: `python src/analysis/risk_to_plan_exploration.py`; tự kiểm tra quy đổi/rủi ro: `python src/optimize/plan_risk.py`. Notebook tái lập: `notebooks/02_risk_to_plan_exploration.ipynb`.
+Tái chạy: `python src/analysis/risk_to_plan_exploration.py`; tự kiểm tra quy đổi/rủi ro: `python src/optimize/plan_risk.py`. Notebook lưu trữ: `archive/02_risk_to_plan_exploration.ipynb`.

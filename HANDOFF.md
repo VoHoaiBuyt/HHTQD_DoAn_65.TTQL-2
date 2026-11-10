@@ -176,8 +176,8 @@ quyết định và log riêng.
 
 - Mã nguồn: `core/`, `app/`, `scripts/`, `tests/`.
 - Notebook: `notebooks/01_eda_uci697.ipynb`,
-  `notebooks/02_risk_to_plan_exploration.ipynb`,
-  `notebooks/03_ilp_formulation_check.ipynb`.
+  `archive/02_risk_to_plan_exploration.ipynb`,
+  `archive/03_ilp_formulation_check.ipynb` (legacy Stage 1).
 - Dữ liệu/config: `data/official/`, `data/scenarios/`, `data/processed/`,
   `config/`; không dùng catalogue SIMULATED trong kết quả cuối.
 - ML: `models/early_warning.joblib`,
@@ -192,9 +192,24 @@ quyết định và log riêng.
 - Monte Carlo: `reports/generated/mc_results.csv`,
   `reports/generated/mc_pairwise.csv`, `reports/generated/mc_pareto.csv`.
 - Kiểm thử/báo cáo/hướng dẫn: `reports/generated/pytest_summary.txt`,
-  `reports/stage2_report.docx`, `reports/screens_to_capture.md`, `README.md`,
+  `reports/stage2_report.docx`, `docs/screens_to_capture.md`, `README.md`,
   `HANDOFF.md`.
 
-Ảnh giao diện chưa có trong gói; dùng `reports/screens_to_capture.md` và chỉ chụp
+Ảnh giao diện chưa có trong gói; dùng `docs/screens_to_capture.md` và chỉ chụp
 hồ sơ SCENARIO. Không có `mc_grad_hist.csv` trong artifact hiện tại, vì vậy không
 báo cáo phân phối kỳ tốt nghiệp suy ra.
+
+## Trạng thái dọn cấu trúc Phần 5.5
+
+- Cache/bytecode sinh lại được đã xóa; `.gitignore` loại `.venv`, `__pycache__`,
+  `*.pyc`, `.pytest_cache` và `.ipynb_checkpoints`.
+- Baseline SHA-256 được dựng từ tag `pre-restructure`; danh sách chính xác và
+  so sánh hiện tại nằm tại `reports/generated/restructure_baseline.txt` và
+  `reports/generated/restructure_hashes.csv`. Bộ lọc tag có 72 file sau khi
+  loại `pytest_summary.txt` theo chỉ đạo; cả 72 hash đều khớp.
+- Tài liệu kỹ thuật được chuyển từ `reports/` sang `docs/`; tài liệu/notebook
+  Stage 1 được lưu trong `archive/`. `reports/data_dictionary.csv` còn bản
+  tương thích byte-identical do `core/data/consistency.py` vẫn đọc đường dẫn đó.
+- Trạng thái, cây thư mục, các mục REVIEW và kết quả cổng được ghi trong
+  `cleanup_manifest.md`. Step 2C/2D được hoãn; các mục REVIEW chưa có quyết
+  định cụ thể vẫn được giữ nguyên.

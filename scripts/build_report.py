@@ -360,7 +360,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     sensitivity = _read_csv("ilp_sensitivity.csv")
     regulation_text = _read_text("regulation_assumptions.md")
     optimization_text = _read_text("optimization_spec.md")
-    screens_path = ROOT / "reports" / "screens_to_capture.md"
+    screens_path = ROOT / "docs" / "screens_to_capture.md"
     pytest_path = GENERATED / "pytest_summary.txt"
 
     document = Document()
@@ -507,7 +507,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     document.add_paragraph(
         "Ứng dụng: app/main.py. Hồ sơ là SCENARIO; ML chỉ hiển thị trong phạm vi T1 hợp lệ; "
         "kết quả mô phỏng được gắn nhãn giả định. Không có ảnh chụp được đính kèm trong artifact "
-        "hiện tại. Chụp theo reports/screens_to_capture.md và chỉ dùng hồ sơ SCENARIO."
+        "hiện tại. Chụp theo docs/screens_to_capture.md và chỉ dùng hồ sơ SCENARIO."
     )
     for caption in (
         "Ảnh 1 — Hồ sơ & tiến độ: [CHƯA CHỤP — bổ sung ảnh tại đây]",
@@ -559,7 +559,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         ["2", "Quy chế và rule engine", "Làm một phần", "config/credit_rules_official.yaml; regulation_assumptions.md; tests/test_official_rules.py — còn UNCONFIRMED/UNKNOWN."],
         ["3", "ML cảnh báo tại T1", "Làm một phần", "model_comparison.csv; test_evaluation.json; ml_validation_bootstrap_ci.json — chỉ UCI-697, chưa kiểm định NTU."],
         ["4", "ILP và phương án đăng ký", "Làm một phần", "plans_by_student.csv; ilp_sensitivity.csv; optimization_spec.md — các tham số/nhánh quy chế còn giả định."],
-        ["5", "Monte Carlo và giao diện", "Làm một phần", "mc_results.csv; mc_pairwise.csv; mc_pareto.csv; app/main.py; screens_to_capture.md — chưa có ảnh, mô phỏng không phải bằng chứng."],
+        ["5", "Monte Carlo và giao diện", "Làm một phần", "mc_results.csv; mc_pairwise.csv; mc_pareto.csv; app/main.py; docs/screens_to_capture.md — chưa có ảnh, mô phỏng không phải bằng chứng."],
         ["6", "Kiểm thử, báo cáo, đóng gói", "Làm một phần", "pytest_summary.txt; stage2_report.docx; HANDOFF.md — cần xác nhận cài đặt sạch và rubric gốc."],
     ]
     _add_table(
@@ -584,12 +584,12 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     _add_section(document, "PHỤ LỤC — DANH SÁCH FILE GIAO")
     deliverables = [
         "Mã nguồn: core/, app/, scripts/, tests/.",
-        "Notebook: notebooks/01_eda_uci697.ipynb, notebooks/02_risk_to_plan_exploration.ipynb, notebooks/03_ilp_formulation_check.ipynb.",
+        "Notebook hoạt động: notebooks/01_eda_uci697.ipynb. Notebook Stage 1 cũ: archive/02_risk_to_plan_exploration.ipynb và archive/03_ilp_formulation_check.ipynb.",
         "Dữ liệu và cấu hình: data/official/, data/scenarios/, data/processed/, config/; dữ liệu scenario mang nhãn SCENARIO.",
         "ML: models/early_warning.joblib; reports/generated/model_comparison.csv, test_evaluation.json, ml_validation_bootstrap_ci.json, shap_global.csv.",
         "Rule/ILP: reports/generated/curriculum_validation.json, regulation_assumptions.md, plans_by_student.csv, ilp_sensitivity.csv.",
         "Monte Carlo: reports/generated/mc_results.csv, mc_pairwise.csv, mc_pareto.csv và các artifact liên quan.",
-        "Tài liệu chạy: README.md, HANDOFF.md, reports/screens_to_capture.md.",
+        "Tài liệu chạy: README.md, HANDOFF.md, docs/screens_to_capture.md.",
         "Báo cáo: reports/stage2_report.docx; kết quả test: reports/generated/pytest_summary.txt.",
     ]
     for item in deliverables:
