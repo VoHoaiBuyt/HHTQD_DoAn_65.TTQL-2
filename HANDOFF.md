@@ -213,3 +213,6 @@ báo cáo phân phối kỳ tốt nghiệp suy ra.
 - Trạng thái, cây thư mục, các mục REVIEW và kết quả cổng được ghi trong
   `cleanup_manifest.md`. Step 2C/2D được hoãn; các mục REVIEW chưa có quyết
   định cụ thể vẫn được giữ nguyên.
+- Bản `dist/` hiện chỉ có hai tệp `data/scenarios_v1/` cùng README bằng chứng
+  kiểm định; sẽ hoàn thiện theo whitelist ở Phần 6. `.github/prompts/` được giữ
+  trong repo nhưng loại khỏi `dist/`.

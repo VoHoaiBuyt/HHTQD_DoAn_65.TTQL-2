@@ -72,6 +72,12 @@ After Step 2A/2B:
 └── tests
 ```
 
+After Step 3 review packaging (partial `dist/` for the two v1 evidence files):
+
+```text
+dist/data/scenarios_v1
+```
+
 ## Step 2B — completed
 
 - Archived: `notebooks/02_risk_to_plan_exploration.ipynb`,
@@ -127,6 +133,17 @@ After Step 2A/2B:
   root. Do not rename/move the similarly named
   `BaoCao_Nhom1_HTTQD_65.TTQL-2.docx` without confirmation. No code/script
   reference to the requested filename was found.
+- `dist/data/scenarios_v1/` now contains byte-for-byte copies of the two source
+  scenario files and a README labeling them as v1 validation evidence, not final
+  results. The rest of `dist/` is intentionally left for Part 6.
+- The package whitelist projection is 5,279,166 bytes (5.035 MiB, 148 files),
+  including the raw UCI data and model artifacts, excluding `.github/prompts/`,
+  `archive/`, `.git`, environments, and caches. This is an estimate before
+  Part 6 packaging and any added demo media; the partial `dist/` currently holds
+  19,844 bytes.
+- Folder READMEs were added where permitted. READMEs inside `app/`, `core/`,
+  `config/`, `data/`, and `models/` remain omitted to honor the explicit
+  no-touch constraint; the root README describes those locations.
 
 ## Full REVIEW list
 
