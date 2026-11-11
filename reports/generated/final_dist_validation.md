@@ -9,7 +9,7 @@
 - `check_dist_links`: PASS (210 internal path references).
 - Streamlit health: HTTP 200; response body `ok`.
 - ZIP test: PASS (178 entries, archive integrity verified; 3.84 MiB). The test archive was created outside the package to avoid recursive packaging.
-- SHA256 manifest: PASS (177 entries; 0 mismatches). Distribution: 178 files, 8,217,266 bytes (7.84 MiB), below the 25 MB threshold.
+- SHA256 manifest: PASS (177 entries; 0 mismatches). Distribution: 178 files, 8,218,235 bytes (7.84 MiB), below the 25 MB threshold.
 - Personal-path and machine-username scan: 0 hits. The internal-token scan found 4 code-only validator/configuration lines; no document or generated-result hits.
 - Distribution includes seven demo-media files, the final Word report, and `reports/generated/pytest_summary.txt`; no cover letter is packaged. The cover letter is stored in the sibling `outbox/`.
 - Notebook execution in a clean environment: 6/6 code cells completed, 0 errors; saved outputs remain cleared in the distribution.
