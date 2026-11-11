@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import shutil
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
+REPORT = ROOT / "reports" / "BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx"
 EXCLUDED_GENERATED = {
-    "pytest_summary.txt",
     "pytest_part4_output.txt",
     "part4_fix_evidence.md",
     "part5_fix_report.md",
@@ -19,17 +21,25 @@ EXCLUDED_GENERATED = {
     "restructure_hashes.csv",
     "old_report_outline.md",
     "old_report_replaced_content.md",
+    "final_mismatch_disposition.md",
+    "final_cover_message.md",
+    "scenario_v1_defects.json",
+    "mc_interpretation.md",
+}
+IGNORED_NAMES = {
+    ".git",
+    ".venv",
+    "__pycache__",
+    ".pytest_cache",
+    ".ipynb_checkpoints",
+    "_repro_tmp",
+    "archive",
 }
 
 
 def _copy_tree(source: Path, destination: Path, *, exclude_templates: bool = False) -> None:
     def ignore(directory: str, names: list[str]) -> set[str]:
-        ignored = {
-            name
-            for name in names
-            if name in {".git", ".venv", "__pycache__", ".pytest_cache", ".ipynb_checkpoints"}
-            or name.endswith((".pyc", ".pyo"))
-        }
+        ignored = {name for name in names if name in IGNORED_NAMES or name.endswith((".pyc", ".pyo"))}
         if exclude_templates and Path(directory).name == "docs":
             ignored.add("templates")
         return ignored
@@ -37,7 +47,62 @@ def _copy_tree(source: Path, destination: Path, *, exclude_templates: bool = Fal
     shutil.copytree(source, destination, dirs_exist_ok=True, ignore=ignore)
 
 
+def _copy_current_docs() -> None:
+    destination = DIST / "docs"
+    destination.mkdir(parents=True, exist_ok=True)
+    for name in ("README.md", "course_code_provenance.md", "ml_protocol.md"):
+        shutil.copy2(ROOT / "docs" / name, destination / name)
+
+
+def _clear_notebook_outputs() -> None:
+    for path in (DIST / "notebooks").rglob("*.ipynb"):
+        notebook = json.loads(path.read_text(encoding="utf-8"))
+        for cell in notebook.get("cells", []):
+            if cell.get("cell_type") == "code":
+                cell["execution_count"] = None
+                cell["outputs"] = []
+        path.write_text(
+            json.dumps(notebook, ensure_ascii=False, indent=1) + "\n",
+            encoding="utf-8",
+        )
+
+
+def _write_hashes() -> None:
+    lines = []
+    for path in sorted(
+        (item for item in DIST.rglob("*") if item.is_file() and item.name != "SHA256SUMS.txt"),
+        key=lambda item: item.relative_to(DIST).as_posix().casefold(),
+    ):
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        lines.append(f"{digest}  {path.relative_to(DIST).as_posix()}")
+    (DIST / "SHA256SUMS.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _update_deliverables_tree() -> None:
+    path = ROOT / "deliverables.md"
+    text = path.read_text(encoding="utf-8")
+    start = "<!-- DIST_TREE_START -->"
+    end = "<!-- DIST_TREE_END -->"
+    if start not in text or end not in text:
+        raise ValueError("deliverables.md must contain distribution-tree markers")
+    entries = []
+    for item in sorted(DIST.iterdir(), key=lambda entry: (not entry.is_dir(), entry.name.casefold())):
+        entries.append(f"- `{item.name}{'/' if item.is_dir() else ''}`")
+        if item.is_dir():
+            entries.extend(
+                f"  - `{item.name}/{child.name}{'/' if child.is_dir() else ''}`"
+                for child in sorted(item.iterdir(), key=lambda entry: (not entry.is_dir(), entry.name.casefold()))
+            )
+    replacement = start + "\n" + "\n".join(entries) + "\n" + end
+    before, remainder = text.split(start, 1)
+    _, after = remainder.split(end, 1)
+    path.write_text(before + replacement + after, encoding="utf-8")
+    shutil.copy2(path, DIST / path.name)
+
+
 def build_dist() -> list[Path]:
+    if not REPORT.is_file():
+        raise FileNotFoundError(f"Build the final report before packaging: {REPORT}")
     DIST.mkdir(exist_ok=True)
     for child in list(DIST.iterdir()):
         if child.is_dir():
@@ -47,70 +112,31 @@ def build_dist() -> list[Path]:
 
     for name in ("README.md", "HANDOFF.md", "requirements.txt", "deliverables.md"):
         shutil.copy2(ROOT / name, DIST / name)
-
     for name in ("core", "app", "config", "tests", "scripts", "notebooks", "models"):
         _copy_tree(ROOT / name, DIST / name)
-    core_init = DIST / "core" / "__init__.py"
-    core_init.write_bytes(core_init.read_bytes().rstrip(b"\r\n") + b"\n")
-    for name in ("raw", "official", "scenarios", "scenarios_v1", "processed"):
+    _clear_notebook_outputs()
+    for name in ("raw", "official", "scenarios", "processed"):
         _copy_tree(ROOT / "data" / name, DIST / "data" / name)
-    (DIST / "data" / "scenarios_v1" / "README.md").write_text(
-        "# Scenario v1 validation evidence\n\n"
-        "These two files are retained for consistency checks and legacy validation only. "
-        "They are not used to produce final results and are not displayed in the application.\n",
-        encoding="utf-8",
-    )
-    _copy_tree(ROOT / "docs", DIST / "docs", exclude_templates=True)
+    _copy_current_docs()
     _copy_tree(ROOT / "reports" / "figures", DIST / "reports" / "figures")
     shutil.copy2(ROOT / "reports" / "data_dictionary.csv", DIST / "reports" / "data_dictionary.csv")
-    (DIST / "reports" / "generated").mkdir(parents=True, exist_ok=True)
+    generated_dest = DIST / "reports" / "generated"
+    generated_dest.mkdir(parents=True, exist_ok=True)
     for path in (ROOT / "reports" / "generated").iterdir():
         if path.is_file() and path.name not in EXCLUDED_GENERATED:
-            shutil.copy2(path, DIST / "reports" / "generated" / path.name)
-    shutil.copy2(ROOT / "reports" / "stage2_report.docx", DIST / "reports" / "stage2_report.docx")
-
-    demo_media = ROOT / "demo_media"
-    if demo_media.is_dir():
-        _copy_tree(demo_media, DIST / "demo_media")
-    else:
-        (DIST / "demo_media").mkdir()
-
-    media_files = [path for path in (DIST / "demo_media").rglob("*") if path.is_file()]
-    image_count = sum(
-        path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"} for path in media_files
-    )
-    video_count = sum(
-        path.suffix.lower() in {".mp4", ".mov", ".webm"} for path in media_files
-    )
-    deliverables_path = DIST / "deliverables.md"
-    deliverables = deliverables_path.read_text(encoding="utf-8")
-    old_media_note = (
-        "- **No UI screenshots or demo videos are included yet.** "
-        "The group must capture and add them under `demo_media/`."
-    )
-    if image_count and video_count:
-        media_note = f"- UI screenshots and demo videos are included under `demo_media/` ({image_count} images; {video_count} videos)."
-    elif image_count:
-        media_note = f"- UI screenshots are included under `demo_media/` ({image_count} images); no demo videos are included."
-    elif video_count:
-        media_note = f"- Demo videos are included under `demo_media/` ({video_count} videos); no UI screenshots are included."
-    else:
-        media_note = "- **No UI screenshots or demo videos are included yet.** The group must capture and add them under `demo_media/`."
-    if old_media_note not in deliverables:
-        raise ValueError("Expected demo-media note is missing from deliverables.md")
-    deliverables_path.write_text(
-        deliverables.replace(old_media_note, media_note),
-        encoding="utf-8",
-    )
+            shutil.copy2(path, generated_dest / path.name)
+    shutil.copy2(REPORT, DIST / "reports" / REPORT.name)
+    _copy_tree(ROOT / "demo_media", DIST / "demo_media")
 
     forbidden = []
     for path in DIST.rglob("*"):
-        if path.name in {".git", ".venv", "__pycache__", ".pytest_cache", ".ipynb_checkpoints"}:
-            forbidden.append(path)
-        elif path.suffix.lower() in {".pyc", ".pyo"}:
+        if path.name in IGNORED_NAMES or path.suffix.lower() in {".pyc", ".pyo"}:
             forbidden.append(path)
     if forbidden:
-        raise RuntimeError(f"Forbidden cache or environment files in dist: {forbidden}")
+        raise RuntimeError(f"Forbidden archive/cache/environment entries in dist: {forbidden}")
+    _write_hashes()
+    _update_deliverables_tree()
+    _write_hashes()
     return [path for path in DIST.rglob("*") if path.is_file()]
 
 

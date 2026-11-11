@@ -1,221 +1,43 @@
-# NTU IT study-risk and credit-planning prototype
+# Hệ hỗ trợ cảnh báo rủi ro học tập và tối ưu lộ trình tín chỉ
 
-## Data locations and labels
+Prototype dành cho ngành Công nghệ thông tin, Trường Đại học Nha Trang. Hệ thống kết nối dự báo ML tại T1, quy tắc đào tạo, tối ưu ILP, phân tích Monte Carlo và giao diện Streamlit. Đây là công cụ hỗ trợ thảo luận, không thay thế tư vấn học vụ.
 
-- `data/official/`: curriculum and prerequisite rows transcribed from the
-  team-provided `210_CNTT.pdf`, section 7.1. Course IDs are preserved exactly.
-- `data/scenarios_v1/`: scenario-v1 profiles and progress retained for audit
-  only. Known defects are reported but the input files are not changed.
-- `data/raw/uci_697/`: the independent UCI-697 dataset.
-- `data/processed/split_manifest.json`: deterministic stratified split IDs and
-  row hashes; it is not regenerated unless the source hash changes.
-- `archive/`: legacy Stage 1 files retained outside pytest discovery.
-- `core/`: UI-independent curriculum, rule, consistency, ML, and metrics code.
+## Nguồn và nhãn dữ liệu
 
-Curriculum enrichments are labeled `GIẢ ĐỊNH (suy từ CTĐT)` in
-`config/courses_enrichment.yaml`. Regulation values transcribed from
-QĐ 753/QĐ-ĐHNT carry article references and `CONFIRMED` status; unresolved
-interpretations (including final-term identification, exact 105-credit year,
-debt definition, corequisite meaning, and offering parity) remain `UNCONFIRMED` in
-`config/credit_rules_official.yaml` and
-`reports/generated/regulation_assumptions.md`. GPA calculations and enrollment
-limits are implemented in `core/gpa.py` and `core/rules.py`. The previous
-ILP/risk-projection functions remain marked `LEGACY`; the new scenario-v2
-planner uses `core/optimizer.py` and never imports the legacy solver.
+- `REAL (UCI-697)`: đặc trưng mô hình được lấy từ bộ dữ liệu UCI; chưa được kiểm định trên sinh viên NTU.
+- `OFFICIAL (NTU)`: CTĐT và QĐ 753 theo tài liệu do nhóm cung cấp. Trường không có trong nguồn được ghi `UNKNOWN`, `source=NOT_FOUND`.
+- `SCENARIO`: hồ sơ minh họa, không phải dữ liệu cá nhân thật.
+- `GIẢ ĐỊNH`: tham số/diễn giải mô phỏng; trạng thái chưa xác nhận được nêu trong báo cáo.
+- Mã `HP0xx` là mã định danh nội bộ do nhóm gán; xem `docs/course_code_provenance.md`.
 
-## Clean Windows PowerShell environment
-
-The verified environment is Windows 11, Python 3.14.6, pip 26.1.2. Create and
-activate a fresh virtual environment, then install pinned dependencies:
+## Cài đặt và chạy trên Windows PowerShell
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pytest -v
-python -m scripts.build_report
+python -m pytest
+python -m streamlit run app/main.py
+```
+
+Mở địa chỉ cục bộ do Streamlit in ra. Ứng dụng chỉ dùng hồ sơ `SCENARIO`. ML chỉ hiển thị với hồ sơ có phạm vi T1 hợp lệ. Mức cảnh báo rủi ro độc lập với trạng thái solver; trạng thái `optimal` không xác nhận phù hợp học vụ. Phương án mức CAO khuyến nghị trao đổi với cố vấn học tập.
+
+## Báo cáo và kiểm tra
+
+Báo cáo Word thống nhất: `reports/BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx`.
+Thư gửi giảng viên được lưu riêng ngoài gói phân phối; không nằm trong `dist/`.
+Ước lượng độ dài báo cáo: `reports/generated/report_stats.json`.
+
+```powershell
+python -m scripts.build_final_report --final
 python -m scripts.check_report_consistency
+python -m scripts.check_dist_links
 ```
 
-The required ML libraries import on the verified Python 3.14 environment.
-LightGBM is optional and was not installed; XGBoost is used. If a clean
-interpreter cannot install one of the pinned ML wheels, use Python 3.12 for the
-venv. If SHAP is unavailable, the documented alternatives are XGBoost
-`pred_contribs=True` or, for Logistic Regression, coefficient times
-`(feature - training_mean)`.
+`--final` yêu cầu đầy đủ ảnh chụp thật trong `demo_media/`, dữ liệu nguồn và transcript pytest đã loại đường dẫn máy cá nhân. Các số báo cáo lấy từ artifact trong `reports/generated/`; không chạy lại mô phỏng hay huấn luyện để dựng báo cáo. Cấu trúc và tệp nộp được liệt kê trong `deliverables.md`.
 
-### Clean-copy verification (2026-11-10)
+Notebook EDA `notebooks/01_eda_uci697.ipynb` được kiểm tra chạy từ đầu trong môi trường sạch trước khi đóng gói; gói phân phối giữ notebook ở trạng thái không có output.
 
-A clean copy excluding `.git`, `.venv`, `__pycache__`, `.pytest_cache`,
-notebook checkpoints, `dist/`, and `_repro_tmp/` was verified with a new venv.
-PowerShell commands run inside that copy:
+## Hạn chế
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pytest -v
-.\.venv\Scripts\python.exe -m streamlit run app/main.py --server.headless true --server.port 8766
-```
-
-Observed results: `pip install` exit 0; `119 passed in 29.19s`; Streamlit health
-`HTTP 200; body=ok`. This verifies a clean project copy, not the filtered
-submission `dist/` package. The full in-worktree pytest transcript is
-`reports/generated/pytest_summary.txt`; the concise clean-copy record is
-`reports/generated/final_environment_validation.md`.
-
-### Submission package
-
-Build the whitelist package with `python -m scripts.package_dist`. The package
-is assembled under `dist/`; `deliverables.md` lists its contents and exclusions.
-The package intentionally excludes the previous report template, temporary
-Monte Carlo reproductions, raw machine-specific test logs, caches, `.git`, and
-`.github/prompts/`. Current clean-dist contents and verification are recorded
-in `reports/generated/final_dist_validation.md`. Existing screenshots are
-included from `demo_media/`; no video is currently included.
-
-### Final report correction and verification
-
-- `reports/stage2_report.docx` now has a cover, an updateable level-1/2 TOC,
-  page-number fields, ordered Heading 1/2 sections, and risk severity in the
-  three-plan table. Its actual rendered page count remains unverified because
-  no Word/PDF renderer is available.
-- The validation comparison in `final_questions_for_co.md` uses the XGBoost
-  three-class and binary validation metrics. The supplied bootstrap artifact
-  has no paired interval for their differences, so the report does not claim
-  statistical separation.
-- Risk thresholds are explicitly labeled `GIẢ ĐỊNH`; high-risk plans carry
-  advisor guidance and are separate from solver status. Display labels are
-  “Ưu tiên giảm rủi ro”, “Cân bằng”, and “Tăng tốc”. The registration-plans page
-  explains that `optimal` means optimal under the modeled objective/constraints,
-  not best for academic fit.
-- The final claim audit checks each row in `reports/generated/prose_claims.csv`.
-  Latest full pytest passed 125 tests; targeted claim/AppTest checks passed 26.
-  The existing clean `dist/` result (122 tests) predates the latest UI changes
-  and has not been rebuilt or revalidated for this snapshot.
-- No model retraining, Monte Carlo run, or raw test-set access was performed
-  for these corrections. The `v2-sent` tag identifies the earlier submitted
-  snapshot; no `submission-v1` tag has been created.
-
-## Curriculum and regulation checks
-
-```powershell
-python -m core.curriculum_validation
-python -m core.data.consistency
-python -m core.regulation
-```
-
-These commands write generated reports under `reports/generated/`. Scenario
-v1 is audited only; it is not repaired or promoted.
-
-## Scenario v2 and credit planning
-
-The scenario generator reads OFFICIAL curriculum rows, uses REAL UCI-697
-feature vectors with explicit labels, and calls the existing
-`core.pass_prob.p_student_pass` interface. It stops rather than fabricating a
-probability if the estimator cannot return one. The default NW specialization
-is a configurable GIẢ ĐỊNH awaiting confirmation.
-
-```powershell
-python -m scripts.generate_scenario_v2
-```
-
-The command writes scenario-v2 profiles and progress under `data/scenarios/`,
-plus validation, three-plan outputs, reduced sensitivity, unlock-value
-statistics, and `optimization_spec.md` under `reports/generated/`. Risk
-probabilities and Fmax are advisory; they do not limit official registration
-rights.
-
-## DSS and Monte Carlo comparison
-
-`core.run_dss.run_dss(student_id, options)` is the shared entry point for
-student summaries and simulated term decisions. Run a small multi-process
-smoke test, benchmark N=200, then run the requested N=1,000 at the central
-load penalty:
-
-```powershell
-python -m scripts.run_monte_carlo --runs 1 --student-ids V2-001 --workers 2 --no-write
-python -m scripts.run_monte_carlo --runs 200 --lambda 0.1 --workers 4 --benchmark-only
-python -m scripts.run_monte_carlo --runs 1000 --lambda 0.1 --workers 4
-```
-
-Simulation settings and explicitly assumed pass/fail proxies are in
-`config/monte_carlo_scenario.yaml`; retake multipliers are shared with the
-scenario-v2 optimizer configuration.
-
-The final command writes `mc_results.csv`, `mc_pairwise.csv`, `mc_pareto.csv`,
-`mc_grad_hist.csv`, `mc_runtime.json`, and figures under `reports/`. Simulation outputs are
-scenario analyses, not evidence of effectiveness for NTU students. Future
-pass/fail outcomes are independent; M3-prime already includes later dropout,
-so no extra hazard is added. Later registration regimes are recalculated from
-the previous simulated main term using representative pass/fail grades of 7.0
-and 4.0, explicitly labeled GIẢ ĐỊNH. Summer terms are not modeled.
-
-## ML training and one-time test evaluation
-
-```powershell
-python -m core.train_models --skip-test
-```
-
-Review the validation metrics, thresholds, protocol, and SHAP summaries before
-the one-time holdout evaluation. Tuning and calibration use training OOF
-predictions and validation only. Test access requires explicit opt-in:
-
-```powershell
-$env:ALLOW_TEST_EVAL = "1"
-python -m core.train_models --evaluate-test
-```
-
-The loader refuses test access without the environment variable and logs
-accepted access to `reports/generated/test_evaluation_log.jsonl`. Do not rerun
-the test evaluation; only one successful evaluation is allowed.
-
-## Streamlit interface
-
-Run the presentation layer from the repository root:
-
-```powershell
-streamlit run app/main.py
-```
-
-The interface selects only `SCENARIO` profiles, calls `core.run_dss` for
-student results, and reads Monte Carlo artifacts already generated under
-`reports/generated/`. It does not calculate an alternative business result in
-the UI. ML risk and local SHAP are shown only for `ml_scope=T1_valid`; what-if
-parameters are labeled `GIẢ ĐỊNH`, and Monte Carlo results are not described
-as evidence for NTU students. When editing course status or grade, inconsistent
-combinations are rejected before the DSS is rerun. Run the page-data and Streamlit AppTest coverage for every scenario/page,
-invalid progress edits, empty-plan handling, final-term profiles, risk callouts,
-and profile isolation with:
-
-```powershell
-python -m pytest tests/test_app_smoke.py -q
-```
-
-The required student/screenshots scenarios are listed in
-`docs/screens_to_capture.md`.
-
-The simulation page discovers policies, comparisons, and Pareto labels from
-the generated CSV columns, defaults to `ILP-matched`, and offers `ILP-fixed` as
-a robustness row when present. It filters all MC tables, including
-`mc_grad_hist.csv`, by the selected scenario and λ. The graduation histogram
-shows term-by-term completions, forced withdrawals, and the residual not
-completed by term 16; if the histogram is unavailable, the UI reports that
-instead of reconstructing it. Pairwise confidence intervals and the generated
-`mc_interpretation.md` are displayed alongside the scenario results.
-
-## Word report and report consistency
-
-Build `reports/stage2_report.docx` from the generated ML, curriculum, ILP, and
-Monte Carlo artifacts, then verify every embedded source table:
-
-```powershell
-python -m scripts.build_report
-python -m scripts.check_report_consistency
-```
-
-The checker fails if a required input is missing, if `n_checks` differs from
-the number of curriculum checks in JSON, or if a table value differs from its
-source artifact. The current pytest transcript is preserved verbatim in
-`reports/generated/pytest_summary.txt`; rerun `python -m pytest -v` to validate
-the current environment.
+Mô hình học máy được xây trên UCI-697 (Bồ Đào Nha), không trên sinh viên NTU. Một số mã học phần, quan hệ tiên quyết/song hành và diễn giải quy chế còn cần đối chiếu. Monte Carlo là phân tích kịch bản theo giả định, không phải bằng chứng hiệu quả với sinh viên NTU. Các ảnh giao diện thật và ngữ cảnh chụp được ghi trong `demo_media/README.md`.

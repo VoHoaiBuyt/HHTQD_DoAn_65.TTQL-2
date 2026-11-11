@@ -1811,5 +1811,68 @@
       "over_10_seconds": false,
       "student_id": "V2-001"
     }
+  },
+  "final_report": {
+    "source_label": "GIẢ ĐỊNH (tổng hợp từ artifact Monte Carlo đã lưu)",
+    "sources": [
+      "reports/generated/mc_results.csv",
+      "reports/generated/mc_profile_metrics.csv"
+    ],
+    "monte_carlo": {
+      "lambda_0": {
+        "ILP-matched": {
+          "p_graduated_on_time_mean": 0.4101111111111111,
+          "expected_failed_courses_mean": 4.047777777777778
+        },
+        "B1": {
+          "p_graduated_on_time_mean": 0.5421111111111111,
+          "expected_failed_courses_mean": 4.4654444444444445
+        },
+        "B2": {
+          "p_graduated_on_time_mean": 0.5337777777777778,
+          "expected_failed_courses_mean": 4.463444444444445
+        }
+      },
+      "lambda_0.1": {
+        "ILP-matched": {
+          "p_graduated_on_time_mean": 0.2817777777777778,
+          "expected_failed_courses_mean": 4.062
+        },
+        "B1": {
+          "p_graduated_on_time_mean": 0.24244444444444443,
+          "expected_failed_courses_mean": 11.579555555555556
+        },
+        "B2": {
+          "p_graduated_on_time_mean": 0.20622222222222222,
+          "expected_failed_courses_mean": 11.709555555555555
+        }
+      },
+      "lambda_0.3": {
+        "ILP-matched": {
+          "p_graduated_on_time_mean": 0.2817777777777778,
+          "expected_failed_courses_mean": 4.062
+        },
+        "B1": {
+          "p_graduated_on_time_mean": 0.11411111111111111,
+          "expected_failed_courses_mean": 17.70011111111111
+        },
+        "B2": {
+          "p_graduated_on_time_mean": 0.11177777777777778,
+          "expected_failed_courses_mean": 16.697555555555553
+        }
+      }
+    },
+    "max_selected_load_mean_by_lambda_and_policy": {
+      "lambda_0.1": {
+        "ILP-matched": 14.873155735930736,
+        "B1": 20.51886504329004,
+        "B2": 21.84254444444444
+      },
+      "lambda_0.3": {
+        "ILP-matched": 14.873155735930736,
+        "B1": 21.30257102064602,
+        "B2": 22.139377344877342
+      }
+    }
   }
 }

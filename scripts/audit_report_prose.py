@@ -79,7 +79,12 @@ def audit() -> list[dict[str, str]]:
     document = Document(REPORT_PATH)
     sources = _source_numbers()
     rows: list[dict[str, str]] = []
+    in_references = False
     for paragraph_index, paragraph in enumerate(document.paragraphs, 1):
+        if paragraph.style.name == "Heading 1" and paragraph.text.strip().casefold() == "tài liệu tham khảo":
+            in_references = True
+        if in_references:
+            continue
         text = paragraph.text
         for match in NUMBER.finditer(text):
             token = match.group()
@@ -122,7 +127,7 @@ def phrase_hits() -> list[tuple[str, str, str]]:
         ),
         (
             "cover message",
-            _read_text(ROOT / "reports" / "generated" / "final_cover_message.md"),
+            _read_text(ROOT / "outbox" / "final_cover_message.md"),
         ),
     ]
     texts.extend(
@@ -159,6 +164,67 @@ def phrase_hits() -> list[tuple[str, str, str]]:
                     )
                 )
     return hits
+
+
+def report_phrase_hits() -> list[dict[str, str]]:
+    document = Document(REPORT_PATH)
+    segments = [
+        ("report prose", paragraph.text)
+        for paragraph in document.paragraphs
+    ]
+    segments.extend(
+        (f"report table {table_index} row {row_index} cell {cell_index}", cell.text)
+        for table_index, table in enumerate(document.tables, 1)
+        for row_index, row in enumerate(table.rows, 1)
+        for cell_index, cell in enumerate(row.cells, 1)
+    )
+    markers = (
+        "không phải",
+        "không luôn",
+        "không nhất thiết",
+        "không có phương án nào",
+        "không đồng nghĩa",
+        "không chứng minh",
+        "không cho phép",
+        "không kết luận",
+        "không có nghĩa",
+        "không xác nhận",
+        "chưa thể",
+        "chưa được",
+        "not evidence",
+    )
+    rows = []
+    for location, text in segments:
+        for phrase in PHRASES:
+            for match in re.finditer(re.escape(phrase), text, flags=re.IGNORECASE):
+                context = text[
+                    max(0, match.start() - 120) : match.end() + 120
+                ].replace("\n", " ").strip()
+                limited = any(marker in context.casefold() for marker in markers)
+                assessment = "NEGATED_OR_LIMITED" if limited else "UNRESOLVED"
+                rows.append(
+                    {
+                        "location": location,
+                        "phrase": phrase,
+                        "context": context,
+                        "assessment": assessment,
+                    }
+                )
+    return rows
+
+
+def write_report_phrase_scan() -> list[dict[str, str]]:
+    rows = report_phrase_hits()
+    output = ROOT / "reports" / "generated" / "final_report_phrase_scan.csv"
+    with output.open("w", encoding="utf-8-sig", newline="") as stream:
+        writer = csv.DictWriter(
+            stream,
+            fieldnames=("location", "phrase", "context", "assessment"),
+            lineterminator="\n",
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+    return rows
 
 
 def main() -> None:
@@ -224,6 +290,13 @@ def main() -> None:
             )
     print(f"PHRASE_HITS={len(hits)}")
     print("PHRASE_SCAN_CSV=reports/generated/final_phrase_scan.csv")
+    report_hits = write_report_phrase_scan()
+    unresolved = [row for row in report_hits if row["assessment"] == "UNRESOLVED"]
+    print(f"FINAL_REPORT_PHRASE_HITS={len(report_hits)}")
+    print(f"FINAL_REPORT_PHRASE_UNRESOLVED={len(unresolved)}")
+    print("FINAL_REPORT_PHRASE_SCAN=reports/generated/final_report_phrase_scan.csv")
+    if unresolved:
+        raise ValueError(f"Unqualified restricted terms in final report: {unresolved}")
 
 
 if __name__ == "__main__":

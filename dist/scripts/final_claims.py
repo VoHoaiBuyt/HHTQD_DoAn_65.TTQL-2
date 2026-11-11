@@ -8,14 +8,10 @@ from typing import Any
 
 import yaml
 
+from app.risk_labels import PLAN_DISPLAY_LABELS, RISK_THRESHOLDS, risk_level as _risk_level
+
 ROOT = Path(__file__).resolve().parents[1]
 GENERATED = ROOT / "reports" / "generated"
-RISK_THRESHOLDS = {
-    "high_failed_courses": 1.0,
-    "high_warning_probability": 0.5,
-    "medium_failed_courses": 0.5,
-    "source_label": "GIẢ ĐỊNH",
-}
 HIGH_RISK_ADVICE = (
     "khuyến nghị trao đổi với cố vấn học tập; `optimal` chỉ có nghĩa tối ưu theo hàm mục tiêu, "
     "không có nghĩa an toàn"
@@ -63,18 +59,7 @@ def load_validation_claims() -> dict[str, Any]:
 
 
 def risk_level(row: dict[str, str]) -> str:
-    failed = float(row["expected_failed_courses"])
-    w1 = float(row["p_warning_W1"])
-    w2 = float(row["p_warning_W2"])
-    if (
-        failed >= RISK_THRESHOLDS["high_failed_courses"]
-        or w1 >= RISK_THRESHOLDS["high_warning_probability"]
-        or w2 >= RISK_THRESHOLDS["high_warning_probability"]
-    ):
-        return "CAO"
-    if failed >= RISK_THRESHOLDS["medium_failed_courses"]:
-        return "TRUNG BÌNH"
-    return "THẤP"
+    return _risk_level(row)
 
 
 def plan_signatures(plans: list[dict[str, str]]) -> tuple[int, int, list[str]]:
@@ -162,6 +147,9 @@ def build_risk_rows(plans: list[dict[str, str]]) -> list[dict[str, str]]:
             {
                 "student_id": plan["student_id"],
                 "plan_type": plan["plan_type"],
+                "display_label": PLAN_DISPLAY_LABELS.get(
+                    plan["plan_type"], plan["plan_type"]
+                ),
                 "selected_credits": plan["selected_credits"],
                 "expected_credits_passed": plan["expected_credits_passed"],
                 "expected_failed_courses": plan["expected_failed_courses"],
@@ -226,12 +214,12 @@ def build_prose_claim_rows() -> list[dict[str, str]]:
             "p_warning_W2",
         ):
             claims.append(
-                _csv_claim("stage2_report.docx / plan table", grouped_source, selector, field, plan[field])
+                _csv_claim                ("BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table", grouped_source, selector, field, plan[field])
             )
 
     identical_count, distinct_count, repeated = plan_signatures(plans)
     profile_count = len({row["student_id"] for row in plans})
-    for location in ("stage2_report.docx", "final_cover_message.md"):
+    for location in ("BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx", "outbox/final_cover_message.md"):
         claims.append(
             _json_claim(
                 location,
@@ -281,7 +269,7 @@ def build_prose_claim_rows() -> list[dict[str, str]]:
                 "source_value": str(len({row["student_id"] for row in _read_csv(GENERATED / "mc_results.csv")})),
             },
             {
-                "location": "stage2_report.docx / executive summary",
+                "location": "BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / executive summary",
                 "number": str(sum(row["risk_level"] == "CAO" for row in build_risk_rows(plans))),
                 "source_file": grouped_source,
                 "key": "derived:high_risk_plan_count",
@@ -367,7 +355,7 @@ def build_prose_claim_rows() -> list[dict[str, str]]:
     ):
         claims.append(
             _json_claim(
-                "stage2_report.docx / risk thresholds",
+                "BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / risk thresholds",
                 "reports/generated/final_risk_thresholds.json",
                 key,
                 value,
@@ -392,6 +380,7 @@ def write_prose_claims() -> list[dict[str, str]]:
 
 
 def _write_risk_thresholds() -> None:
+    optimizer = _read_yaml(ROOT / "config" / "optimizer_scenario_v2.yaml")["optimizer"]
     (GENERATED / "final_risk_thresholds.json").write_text(
         json.dumps(
             {
@@ -399,6 +388,16 @@ def _write_risk_thresholds() -> None:
                 "high_expected_failed_courses_gte": RISK_THRESHOLDS["high_failed_courses"],
                 "high_warning_probability_gte": RISK_THRESHOLDS["high_warning_probability"],
                 "medium_expected_failed_courses_gte": RISK_THRESHOLDS["medium_failed_courses"],
+                "threshold_note": (
+                    "Ngưỡng cảnh báo hiển thị là GIẢ ĐỊNH theo yêu cầu WP1. "
+                    "fast_fmax và Fmax mềm là tham số bộ lập kế hoạch; không đồng nhất "
+                    "chúng với các ngưỡng cảnh báo rủi ro."
+                ),
+                "config_file": "config/optimizer_scenario_v2.yaml",
+                "fast_fmax_config_key": "optimizer.plan_selection.fast_fmax",
+                "fast_fmax_config_value": optimizer["plan_selection"]["fast_fmax"],
+                "soft_fmax_grid_config_key": "optimizer.risk_cap.fmax_grid",
+                "soft_fmax_grid_config_value": optimizer["risk_cap"]["fmax_grid"],
             },
             ensure_ascii=False,
             indent=2,
@@ -461,6 +460,12 @@ def write_final_artifacts() -> None:
             if line.startswith(prefix + " "):
                 question_lines[index] = replacement
                 break
+    labels_question = (
+        "7. Cô xác nhận cách trình bày ba nhãn “Ưu tiên giảm rủi ro”, “Cân bằng”, "
+        "“Tăng tốc” và mức cảnh báo rủi ro GIẢ ĐỊNH tách biệt với trạng thái bộ giải không?"
+    )
+    if not any(line.startswith("7. ") for line in question_lines):
+        question_lines.append(labels_question)
     question_path.write_text(
         "\n".join([question, *question_lines[1:]]) + "\n",
         encoding="utf-8",
@@ -518,16 +523,29 @@ def write_final_artifacts() -> None:
             "SIMULATED cũ, không thuộc đầu ra hiện hành. Đầu ra SCENARIO có phương án best_effort; "
             "cần giữ cảnh báo rủi ro và khuyến nghị cố vấn. |"
         ),
+        "Nhãn phương án và cảnh báo": (
+            "| Nhãn phương án và cảnh báo rủi ro | Đã làm | "
+            f"`app/view_data.py`, `app/main.py`, `final_risk_thresholds.json`: "
+            f"risk_focused={PLAN_DISPLAY_LABELS['risk_focused']}; "
+            f"balanced={PLAN_DISPLAY_LABELS['balanced']}; "
+            f"acceleration={PLAN_DISPLAY_LABELS['acceleration']}. "
+            "Mức CAO hiện riêng với trạng thái bộ giải, kèm khuyến nghị cố vấn. |"
+        ),
     }
     matrix_lines = matrix_text.splitlines()
     for prefix, new_row in row_replacements.items():
         try:
             row_index, _ = _find_matrix_row(matrix_text, prefix)
         except ValueError:
-            if prefix != "“14 tiêu chí”":
+            if prefix == "“14 tiêu chí”":
+                row_index, _ = _find_matrix_row(matrix_text, "Kiểm định số lượng hiện hành")
+                matrix_lines[row_index] = new_row
+            elif prefix == "Nhãn phương án và cảnh báo":
+                matrix_lines.append(new_row)
+            else:
                 raise
-            row_index, _ = _find_matrix_row(matrix_text, "Kiểm định số lượng hiện hành")
-        matrix_lines[row_index] = new_row
+        else:
+            matrix_lines[row_index] = new_row
     matrix_path.write_text("\n".join(matrix_lines) + "\n", encoding="utf-8")
 
     identical_count, distinct_count, repeated = plan_signatures(plans)
@@ -559,10 +577,17 @@ def write_final_artifacts() -> None:
         "Kết quả Monte Carlo là phân tích kịch bản theo giả định, không phải bằng chứng hiệu quả "
         "với sinh viên NTU."
     )
+    labels_note = (
+        f"Nhãn phương án hiển thị: {PLAN_DISPLAY_LABELS['risk_focused']}, "
+        f"{PLAN_DISPLAY_LABELS['balanced']}, {PLAN_DISPLAY_LABELS['acceleration']}. "
+        "Mức cảnh báo rủi ro là GIẢ ĐỊNH và tách khỏi trạng thái bộ giải."
+    )
     draft = draft.replace(
         "Ảnh/video giao diện chưa được nhóm bổ sung; OULAD chưa sử dụng.",
         f"{media_note} OULAD chưa sử dụng.",
     )
+    if labels_note not in draft:
+        draft = draft.replace("\n\nTừ ", f"\n\n{labels_note}\n\nTừ ", 1)
     if mandatory_note not in draft:
         draft = draft.replace("Em cảm ơn cô.", f"{mandatory_note}\n\n{added_sentences}\n\nEm cảm ơn cô.")
     draft_path.write_text(draft + "\n", encoding="utf-8")
@@ -580,6 +605,7 @@ def write_risk_levels() -> list[dict[str, str]]:
             fieldnames=(
                 "student_id",
                 "plan_type",
+                "display_label",
                 "selected_credits",
                 "expected_credits_passed",
                 "expected_failed_courses",

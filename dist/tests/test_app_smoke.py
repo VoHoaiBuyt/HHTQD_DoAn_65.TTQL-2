@@ -17,6 +17,7 @@ from app.view_data import (
     options_cache_key,
     progress_override_from_rows,
 )
+from app.risk_labels import PLAN_DISPLAY_LABELS
 from core.run_dss import clear_dss_cache, run_dss
 
 TEST_FIXTURE = "TEST_FIXTURE"
@@ -86,7 +87,7 @@ def test_problem_plan_status_is_red_flagged_without_safe_label() -> None:
     test_result["plans"][0]["status"] = "best_effort"
     plan = build_plans_data(test_result)["plans"][0]
     assert plan["needs_advisor"] is True
-    assert "An toàn" not in plan["display_label"]
+    assert plan["display_label"] == PLAN_DISPLAY_LABELS["risk_focused"]
 
 
 @pytest.mark.parametrize(
@@ -179,6 +180,64 @@ def test_apptest_all_pages_for_every_scenario(page: str) -> None:
             "V2-007",
         }:
             assert any("cố vấn học tập" in error.value for error in app.error)
+
+
+def test_plan_labels_and_risk_callouts_on_all_pages_and_scenarios() -> None:
+    app_path = Path(__file__).resolve().parents[1] / "app" / "main.py"
+    scenarios = list_scenarios()
+    app = AppTest.from_file(str(app_path), default_timeout=120).run()
+    assert not app.exception
+
+    for scenario in scenarios:
+        student_id = scenario["student_id"]
+        for page in PAGE_KEYS:
+            app.sidebar.selectbox[0].set_value(student_id)
+            app.sidebar.radio[0].set_value(page)
+            app.run()
+            assert not app.exception, (
+                f"AppTest exception for {student_id} × {page}: "
+                f"{[error.message for error in app.exception]}"
+            )
+            card_headings = [
+                element.value
+                for element in app.markdown
+                if element.value.startswith("### ")
+            ]
+            assert all("An toàn" not in heading for heading in card_headings)
+
+            if page == "Phương án đăng ký":
+                assert any(
+                    "Trạng thái `optimal` chỉ có nghĩa nghiệm tối ưu theo hàm mục tiêu"
+                    in element.value
+                    for element in app.info
+                )
+                assert {
+                    element.value.removeprefix("### ")
+                    for element in app.markdown
+                    if element.value.startswith("### ")
+                } >= set(PLAN_DISPLAY_LABELS.values())
+                if student_id == "V2-005":
+                    assert any(
+                        "Mức cảnh báo rủi ro: CAO" in element.value
+                        and "khuyến nghị trao đổi với cố vấn học tập" in element.value
+                        for element in app.error
+                    )
+
+            if page == "What-if":
+                tables = [element.value for element in app.dataframe]
+                what_if_table = next(
+                    table for table in tables
+                    if "Mức cảnh báo rủi ro" in table.columns
+                )
+                assert set(what_if_table["Mức cảnh báo rủi ro"]) <= {
+                    "CAO", "TRUNG BÌNH", "THẤP"
+                }
+                if student_id == "V2-005":
+                    assert any(
+                        "mức cảnh báo rủi ro CAO" in element.value
+                        and "khuyến nghị trao đổi với cố vấn học tập" in element.value
+                        for element in app.error
+                    )
 
 
 def test_apptest_ml_disabled_no_plan_final_term_and_invalid_edit(

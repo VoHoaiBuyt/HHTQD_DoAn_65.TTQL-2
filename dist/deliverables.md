@@ -1,16 +1,116 @@
-# Deliverables
+# Tệp bàn giao
 
-- `reports/stage2_report.docx` — final project report.
-- `core/`, `app/`, `config/`, `scripts/`, `tests/` — application, logic, configuration, tools, and tests.
-- `notebooks/` — runnable analysis notebook and instructions.
-- `data/raw/`, `data/official/`, `data/scenarios/`, `data/processed/` — UCI-697 source, NTU-provided curriculum, labeled scenarios, and split manifest.
-- `data/scenarios_v1/` — two legacy validation-evidence files plus a README; retained for consistency checks only, not used for final results.
-- `models/` — model artifacts required by the application.
-- `reports/generated/` and `reports/figures/` — generated metrics, model/rule/ILP/Monte Carlo evidence, and figures.
-- `reports/data_dictionary.csv` — variable dictionary required by the app and data checks.
-- `docs/`, `README.md`, `HANDOFF.md`, `requirements.txt` — project documentation and setup instructions.
-- `reports/generated/final_app_test.txt`, `final_health.txt`, and `final_environment_validation.md` — concise test and clean-copy evidence.
-- `reports/generated/final_dist_validation.md` — clean `dist/` install, test, consistency, and health results.
-- UI screenshots are included under `demo_media/` (5 images); no demo videos are included.
+- `reports/BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx` — báo cáo cuối kỳ duy nhất.
+- `reports/generated/pytest_summary.txt` — tóm tắt pytest đã loại đường dẫn máy cá nhân.
+- `reports/generated/` — metrics, kết quả ML/ILP/Monte Carlo đã lưu, ma trận phản hồi và bằng chứng kiểm tra cần thiết.
+- `reports/generated/report_stats.json` — số từ, bảng, hình và ước lượng số trang theo chương (không tính phụ lục trong tổng thân).
+- `core/`, `app/`, `config/`, `scripts/`, `tests/`, `models/` — logic, giao diện, cấu hình, scripts, kiểm thử và mô hình.
+- `data/` — nguồn UCI, dữ liệu CTĐT nhóm cung cấp, hồ sơ SCENARIO và dữ liệu xử lý.
+- `notebooks/` — notebook phân tích được giữ trong whitelist.
+- `docs/` — giao thức ML, nguồn mã học phần, hướng dẫn và giới hạn.
+- `demo_media/` — ảnh chụp giao diện thật; tệp và nội dung được mô tả trong `demo_media/README.md`.
+- `README.md`, `HANDOFF.md`, `requirements.txt` — hướng dẫn sử dụng, bàn giao và phụ thuộc.
+- `SHA256SUMS.txt` — băm SHA-256 các tệp trong gói, không gồm chính manifest.
 
-The submission package omits `.git`, `.github/prompts/`, `archive/`, the previous Word report template, temporary reproduction files, machine-specific raw test logs, and caches.
+Gói `dist/` chỉ gồm tệp phục vụ chạy, kiểm chứng và bàn giao; tư liệu lưu trữ, tài liệu mẫu, môi trường phát triển, cache và tệp tạm không được đóng gói.
+Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
+
+## Cây thư mục dist/ (2 cấp)
+
+<!-- DIST_TREE_START -->
+- `app/`
+  - `app/__init__.py`
+  - `app/main.py`
+  - `app/risk_labels.py`
+  - `app/view_data.py`
+- `config/`
+  - `config/courses_enrichment.yaml`
+  - `config/credit_rules_official.yaml`
+  - `config/monte_carlo_scenario.yaml`
+  - `config/optimizer_scenario_v2.yaml`
+  - `config/program_official.yaml`
+- `core/`
+  - `core/data/`
+  - `core/__init__.py`
+  - `core/curriculum.py`
+  - `core/curriculum_validation.py`
+  - `core/gpa.py`
+  - `core/ilp.py`
+  - `core/metrics.py`
+  - `core/ml_data.py`
+  - `core/models.py`
+  - `core/optimizer.py`
+  - `core/pass_prob.py`
+  - `core/plan_risk.py`
+  - `core/regulation.py`
+  - `core/rules.py`
+  - `core/run_dss.py`
+  - `core/scenario_v2.py`
+  - `core/simulation.py`
+  - `core/train_models.py`
+- `data/`
+  - `data/official/`
+  - `data/processed/`
+  - `data/raw/`
+  - `data/scenarios/`
+- `demo_media/`
+  - `demo_media/README.md`
+  - `demo_media/V2-003-PADK.png`
+  - `demo_media/V2-003-WhatIf.png`
+  - `demo_media/V2-005-PADK.png`
+  - `demo_media/V2-006-DLGD.png`
+  - `demo_media/V2-006-HP.png`
+  - `demo_media/V2-006-MP.png`
+- `docs/`
+  - `docs/course_code_provenance.md`
+  - `docs/ml_protocol.md`
+  - `docs/README.md`
+- `models/`
+  - `models/early_warning.joblib`
+  - `models/pass_probability.json`
+- `notebooks/`
+  - `notebooks/01_eda_uci697.ipynb`
+  - `notebooks/README.md`
+- `reports/`
+  - `reports/figures/`
+  - `reports/generated/`
+  - `reports/BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx`
+  - `reports/data_dictionary.csv`
+- `scripts/`
+  - `scripts/audit_report_prose.py`
+  - `scripts/build_final_report.py`
+  - `scripts/build_ilp_formulation_notebook.py`
+  - `scripts/build_report.py`
+  - `scripts/build_risk_exploration_notebook.py`
+  - `scripts/check_dist_links.py`
+  - `scripts/check_final_hash_baseline.py`
+  - `scripts/check_report_consistency.py`
+  - `scripts/final_claims.py`
+  - `scripts/generate_final_supplements.py`
+  - `scripts/generate_scenario_v2.py`
+  - `scripts/package_dist.py`
+  - `scripts/README.md`
+  - `scripts/run_monte_carlo.py`
+  - `scripts/test_prose_claims.py`
+- `tests/`
+  - `tests/__init__.py`
+  - `tests/README.md`
+  - `tests/test_app_smoke.py`
+  - `tests/test_core_rules.py`
+  - `tests/test_curriculum_validation.py`
+  - `tests/test_data_consistency.py`
+  - `tests/test_dss_simulation.py`
+  - `tests/test_evaluate_student_demo.py`
+  - `tests/test_mc_grad_hist.py`
+  - `tests/test_metrics.py`
+  - `tests/test_ml_pipeline.py`
+  - `tests/test_official_rules.py`
+  - `tests/test_optimizer_v2.py`
+  - `tests/test_prose_claims.py`
+  - `tests/test_scenario_v2.py`
+- `deliverables.md`
+- `HANDOFF.md`
+- `README.md`
+- `requirements.txt`
+- `SHA256SUMS.txt`
+<!-- DIST_TREE_END -->

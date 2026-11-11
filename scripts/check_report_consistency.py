@@ -1,171 +1,332 @@
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 from docx import Document
 from docx.oxml.ns import qn
+from docx.enum.style import WD_STYLE_TYPE
 
-from scripts.build_report import (
-    MC_HISTOGRAM_SOURCE_LABEL,
+from scripts.build_final_report import (
+    MEDIA,
+    REQUIRED_IMAGES,
+    REPORT_FIGURES,
     REPORT_PATH,
     ROOT,
-    _markdown_table,
+    _parse_table,
     _read_text,
-    report_tables,
 )
+from scripts.build_report import report_tables
 from scripts.audit_report_prose import audit as audit_report_prose
 
 
-REQUIRED_HEADINGS = {
-    "TÓM TẮT ĐIỀU HÀNH",
-    "DỮ LIỆU OFFICIAL (NTU)",
-    "QUY CHẾ QĐ 753/2021 VÀ CÁCH MÔ HÌNH HÓA",
-    "MÔ HÌNH ML — MỐC T1",
-    "RULE ENGINE VÀ KẾT QUẢ KIỂM THỬ",
-    "ILP — HÀM MỤC TIÊU VÀ CÁC PHƯƠNG ÁN",
-    "MONTE CARLO — MÔ PHỎNG, KHÔNG PHẢI BẰNG CHỨNG THỰC TẾ",
-    "GIAO DIỆN STREAMLIT",
-    "CÀI ĐẶT VÀ CHẠY",
-    "HẠN CHẾ VÀ PHẦN CHƯA HOÀN THÀNH",
-    "PHỤ LỤC — CÂY THƯ MỤC, FILE VÀ GIẢ ĐỊNH",
-}
+EXPECTED_CHAPTERS = (
+    "CHƯƠNG 1. GIỚI THIỆU",
+    "CHƯƠNG 2. CƠ SỞ VÀ PHƯƠNG PHÁP",
+    "CHƯƠNG 3. DỮ LIỆU VÀ QUY CHẾ",
+    "CHƯƠNG 4. THIẾT KẾ HỆ THỐNG",
+    "CHƯƠNG 5. MÔ HÌNH ML",
+    "CHƯƠNG 6. TỐI ƯU ILP",
+    "CHƯƠNG 7. MÔ PHỎNG MONTE CARLO",
+    "CHƯƠNG 8. GIAO DIỆN HỆ THỐNG",
+    "CHƯƠNG 9. KIỂM THỬ VÀ HƯỚNG DẪN CÀI ĐẶT, CHẠY",
+    "CHƯƠNG 10. KẾT LUẬN, HẠN CHẾ VÀ HƯỚNG PHÁT TRIỂN",
+)
+CAPTION = re.compile(r"^Bảng ([A-E]|\d+)\.(\d+)\. (.+)$")
 
 
-def _table_contents(table) -> list[list[str]]:
+def _contents(table) -> list[list[str]]:
     return [[cell.text for cell in row.cells] for row in table.rows]
+
+
+def _paragraph_text(paragraph) -> str:
+    return "".join(paragraph._p.xpath(".//w:t/text()"))
+
+
+def _check_fonts(document: Document) -> tuple[int, int]:
+    checked_runs = 0
+    table_runs = 0
+    expected_styles = {
+        "Normal": 12,
+        "Title": 12,
+        "Subtitle": 12,
+        "Caption": 12,
+        "TOC 1": 12,
+        "TOC 2": 12,
+        "Heading 1": 14,
+        "Heading 2": 13,
+        "Heading 3": 12,
+    }
+    for name, size in expected_styles.items():
+        if name not in document.styles:
+            raise ValueError(f"Required paragraph style is missing: {name}")
+        style = document.styles[name]
+        if style.font.name != "Times New Roman" or style.font.size.pt != size:
+            raise ValueError(f"Style {name} must be Times New Roman {size} pt")
+        rpr = style.element.rPr
+        rfonts = rpr.rFonts if rpr is not None else None
+        if rfonts is None or any(
+            rfonts.get(qn(f"w:{key}")) != "Times New Roman"
+            for key in ("ascii", "hAnsi", "eastAsia", "cs")
+        ):
+            raise ValueError(f"Style {name} lacks explicit Times New Roman mappings")
+    for style in document.styles:
+        if style.type not in {WD_STYLE_TYPE.PARAGRAPH, WD_STYLE_TYPE.CHARACTER}:
+            continue
+        if style.font.name != "Times New Roman":
+            raise ValueError(f"Style {style.name} must use Times New Roman")
+        rpr = style.element.rPr
+        rfonts = rpr.rFonts if rpr is not None else None
+        if rfonts is None or any(
+            rfonts.get(qn(f"w:{key}")) != "Times New Roman"
+            for key in ("ascii", "hAnsi", "eastAsia", "cs")
+        ):
+            raise ValueError(f"Style {style.name} lacks explicit font mappings")
+    for paragraph in document.paragraphs:
+        expected_size = {
+            "Heading 1": 14,
+            "Heading 2": 13,
+            "Heading 3": 12,
+        }.get(paragraph.style.name, 12)
+        for run in paragraph.runs:
+            if not run.text and not run._element.xpath("./w:rPr/w:rFonts"):
+                continue
+            checked_runs += 1
+            if run.font.name != "Times New Roman":
+                raise ValueError(f"Non-Times New Roman paragraph run: {run.text[:50]!r}")
+            if run.font.size is None or run.font.size.pt != expected_size:
+                raise ValueError(
+                    f"{paragraph.style.name} run must use {expected_size} pt: {run.text[:50]!r}"
+                )
+            rfonts = run._element.rPr.rFonts if run._element.rPr is not None else None
+            if rfonts is None or any(
+                rfonts.get(qn(f"w:{key}")) != "Times New Roman"
+                for key in ("ascii", "hAnsi", "eastAsia", "cs")
+            ):
+                raise ValueError(f"Missing explicit Times New Roman font mappings: {run.text[:50]!r}")
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    for run in paragraph.runs:
+                        table_runs += 1
+                        if run.font.name != "Times New Roman" or run.font.size.pt != 11:
+                            raise ValueError("Table runs must use Times New Roman 11 pt")
+                        rfonts = run._element.rPr.rFonts if run._element.rPr is not None else None
+                        if rfonts is None or any(
+                            rfonts.get(qn(f"w:{key}")) != "Times New Roman"
+                            for key in ("ascii", "hAnsi", "eastAsia", "cs")
+                        ):
+                            raise ValueError("Table run lacks explicit East Asian font mapping")
+    for section in document.sections:
+        for paragraph in section.footer.paragraphs:
+            for run in paragraph.runs:
+                if run.font.name != "Times New Roman" or run.font.size.pt != 12:
+                    raise ValueError("Footer runs must use Times New Roman 12 pt")
+    return checked_runs, table_runs
 
 
 def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     if not report_path.is_file():
-        raise FileNotFoundError(f"Word report not found: {report_path}")
+        raise FileNotFoundError(f"Final Word report not found: {report_path}")
     document = Document(report_path)
-    paragraphs = [
-        re.sub(r"^\d+\.\s*", "", paragraph.text.strip())
+    headings1 = [paragraph.text.strip() for paragraph in document.paragraphs if paragraph.style.name == "Heading 1"]
+    missing = [heading for heading in EXPECTED_CHAPTERS if heading not in headings1]
+    if missing:
+        raise ValueError(f"Missing final report chapters: {missing}")
+    for required in ("PHỤ LỤC A.", "PHỤ LỤC B.", "PHỤ LỤC C.", "PHỤ LỤC D.", "PHỤ LỤC E."):
+        if not any(heading.startswith(required) for heading in headings1):
+            raise ValueError(f"Missing required appendix heading: {required}")
+    headings2 = [paragraph.text.strip() for paragraph in document.paragraphs if paragraph.style.name == "Heading 2"]
+    if not headings2:
+        raise ValueError("Report must use Heading 2 styles for sections")
+    required_chapter7_sections = {
+        "7.1 Thiết kế mô phỏng",
+        "7.2 Vì sao kết quả thay đổi theo λ",
+        "7.3 Vì sao ILP không luôn tốt hơn B1/B2",
+        "7.4 Những yếu tố chưa được mô phỏng",
+        "7.5 Kết quả theo hồ sơ (V2-001, V2-003)",
+        "7.6 Kiểm tra tái tạo và độ tin cậy",
+    }
+    if not required_chapter7_sections.issubset(set(headings2)):
+        raise ValueError(f"Missing Chapter 7 sections: {required_chapter7_sections - set(headings2)}")
+
+    caption_titles: list[str] = []
+    table_caption_count = 0
+    figure_caption_count = 0
+    for paragraph in document.paragraphs:
+        text = _paragraph_text(paragraph).strip()
+        instructions = [
+            field.get(qn("w:instr"), "")
+            for field in paragraph._p.xpath(".//w:fldSimple")
+        ]
+        match = CAPTION.match(text)
+        if match and any(value.startswith("SEQ Table") for value in instructions):
+            caption_titles.append(match.group(3))
+            table_caption_count += 1
+        elif text.startswith("Hình ") and any(
+            value.startswith("SEQ Figure") for value in instructions
+        ):
+            figure_caption_count += 1
+    if table_caption_count != len(document.tables):
+        raise ValueError(f"Table captions ({table_caption_count}) do not match tables ({len(document.tables)})")
+    if figure_caption_count != len(document.inline_shapes):
+        raise ValueError(f"Figure captions ({figure_caption_count}) do not match images ({len(document.inline_shapes)})")
+    chapter7_table_captions = [
+        title for title in caption_titles
+        if title.startswith((
+            "Tóm tắt Monte Carlo", "Tải tín chỉ, units(L)", "Tín chỉ trung bình mỗi kỳ",
+            "KTC ghép cặp của V2-001/V2-003", "Nhãn Pareto V2-001/V2-003",
+        ))
+    ]
+    if len(chapter7_table_captions) != 5:
+        raise ValueError(f"Chapter 7 must contain exactly five specified tables, found {len(chapter7_table_captions)}")
+    non_caption_text = [
+        _paragraph_text(paragraph).strip()
         for paragraph in document.paragraphs
-    ]
-    missing_headings = sorted(REQUIRED_HEADINGS - set(paragraphs))
-    if missing_headings:
-        raise ValueError(f"Report is missing required headings: {missing_headings}")
-
-    tables_by_title: dict[str, list[list[str]]] = {}
-    for table in document.tables:
-        contents = _table_contents(table)
-        if not contents or not contents[0]:
-            continue
-        title = contents[0][0]
-        if title in tables_by_title:
-            raise ValueError(f"Duplicate report source table: {title}")
-        tables_by_title[title] = contents
-
-    checked = []
-    for title, headers, rows in report_tables():
-        if title not in tables_by_title:
-            raise ValueError(f"Report is missing source table: {title}")
-        actual = tables_by_title[title]
-        expected = [[title] + [""] * (len(headers) - 1), headers, *rows]
-        if actual != expected:
-            raise ValueError(
-                f"Report table does not match generated source: {title}; "
-                f"expected {len(expected)} rows, got {len(actual)}"
-            )
-        checked.append(title)
-
-    matrix_headers, matrix_rows = _markdown_table(
-        _read_text("final_requirements_matrix.md")
-    )
-    matrix = tables_by_title.get("Các điểm đã chỉnh so với báo cáo lần trước")
-    expected_matrix = [
-        ["Các điểm đã chỉnh so với báo cáo lần trước"]
-        + [""] * (len(matrix_headers) - 1),
-        matrix_headers,
-        *matrix_rows,
-    ]
-    if matrix != expected_matrix:
-        raise ValueError("The report's comparison matrix differs from final_requirements_matrix.md")
-    histogram = tables_by_title["Monte Carlo — histogram từng hồ sơ, λ=0.1"]
-    if any(row[-1] != MC_HISTOGRAM_SOURCE_LABEL for row in histogram[2:]):
-        raise ValueError("Histogram display labels do not use the report generator source label")
-    report_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
-    if "Kiểm tái tạo 3 nhóm (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0,1)" not in report_text:
-        raise ValueError("Report is missing the Monte Carlo reproducibility disclosure")
-    interpretation = _read_text("mc_interpretation.md")
-    if "Kiểm tái tạo 3 nhóm (V2-001/ILP-matched, V2-001/B1, V2-005/B1; λ=0,1)" not in interpretation:
-        raise ValueError("Monte Carlo interpretation is missing the scoped reproduction disclosure")
-    if "optimizer không nằm trong" in report_text or "không ảnh hưởng đến kết quả đã lưu" in report_text:
-        raise ValueError("Report contains an unsupported broad optimizer-impact claim")
-    checked.append("Các điểm đã chỉnh so với báo cáo lần trước")
-
-    curriculum_table = next(
-        rows for title, _, rows in report_tables()
-        if title == "CTĐT — số kiểm tra và thông tin (tách riêng)"
-    )
-    summary = {row[0]: row[1] for row in curriculum_table}
-    checks = int(summary["n_checks (đếm từ JSON)"])
-    if checks != len(
-        next(rows for title, _, rows in report_tables() if title == "CTĐT — kiểm tra")
-    ):
-        raise ValueError("n_checks is not the number of validation checks")
-    prose_numbers = audit_report_prose()
-    unmatched = [
-        row for row in prose_numbers
-        if row["source_match"] == "KHÔNG KHỚP/CHƯA XÁC ĐỊNH"
-    ]
-    if unmatched:
-        raise ValueError(
-            f"Report prose contains {len(unmatched)} numbers without a generated/config source match"
+        if not any(
+            field.get(qn("w:instr"), "").startswith(("SEQ Table", "SEQ Figure"))
+            for field in paragraph._p.xpath(".//w:fldSimple")
         )
-    heading_styles = [
-        paragraph.style.name
-        for paragraph in document.paragraphs
-        if paragraph.style.name in {"Heading 1", "Heading 2"}
     ]
-    if "Heading 1" not in heading_styles or "Heading 2" not in heading_styles:
-        raise ValueError("Report must contain both Heading 1 and Heading 2 styles")
-    field_instructions = [
-        field.get(qn("w:instr"), "")
-        for field in document._element.xpath(".//w:fldSimple")
-    ]
-    if not any(instruction.startswith("TOC ") for instruction in field_instructions):
-        raise ValueError("Report is missing the automatic level 1–2 table-of-contents field")
+    for paragraph in document.paragraphs:
+        caption = CAPTION.match(_paragraph_text(paragraph).strip())
+        if not caption:
+            continue
+        instructions = [
+            field.get(qn("w:instr"), "")
+            for field in paragraph._p.xpath(".//w:fldSimple")
+        ]
+        if not any(value.startswith(("SEQ Table", "SEQ Figure")) for value in instructions):
+            continue
+        kind = "Bảng" if any(value.startswith("SEQ Table") for value in instructions) else "Hình"
+        reference = f"{kind} {caption.group(1)}.{caption.group(2)}"
+        if not any(reference in text for text in non_caption_text):
+            raise ValueError(f"Caption is not referenced in report text: {reference}")
+    missing_images = [name for name, _, _ in REQUIRED_IMAGES if not (MEDIA / name).is_file()]
+    if missing_images:
+        raise FileNotFoundError(f"Required demo screenshots missing: {missing_images}")
+    expected_figures = len(REQUIRED_IMAGES) + len(REPORT_FIGURES) + 1
+    if len(document.inline_shapes) != expected_figures:
+        raise ValueError(f"Expected {expected_figures} report figures, found {len(document.inline_shapes)}")
+
+    source = {title: (headers, rows) for title, headers, rows in report_tables()}
+    tables_by_caption: dict[str, list[list[str]]] = {}
+    table_index = 0
+    for paragraph in document.paragraphs:
+        match = CAPTION.match(_paragraph_text(paragraph).strip())
+        instructions = [
+            field.get(qn("w:instr"), "")
+            for field in paragraph._p.xpath(".//w:fldSimple")
+        ]
+        if match and any(value.startswith("SEQ Table") for value in instructions):
+            title = match.group(3)
+            if table_index >= len(document.tables):
+                raise ValueError(f"Missing Word table for caption {title}")
+            if title in tables_by_caption:
+                raise ValueError(f"Duplicate table caption: {title}")
+            tables_by_caption[title] = _contents(document.tables[table_index])
+            table_index += 1
+    checked = []
+    for title, (headers, rows) in source.items():
+        actual = tables_by_caption.get(title)
+        expected = [headers, *rows]
+        if actual != expected:
+            raise ValueError(f"Source table differs from generated artifact: {title}")
+        checked.append(title)
+    if len(checked) != len(source):
+        raise ValueError("Not all source-backed report tables were verified")
+    if "Ma trận góp ý, thay đổi, vị trí và bằng chứng" not in tables_by_caption:
+        raise ValueError("Appendix A feedback matrix is missing")
+    matrix_headers, matrix_rows = _parse_table(_read_text("final_requirements_matrix.md"))
+    if matrix_headers != ["Nhóm góp ý", "Thay đổi đã làm", "Vị trí (chương/tệp)", "Bằng chứng"] or len(matrix_rows) != 4:
+        raise ValueError("Appendix A must contain four feedback groups and four requested columns")
+    if tables_by_caption["Ma trận góp ý, thay đổi, vị trí và bằng chứng"] != [matrix_headers, *matrix_rows]:
+        raise ValueError("Appendix A does not match final_requirements_matrix.md")
+
+    fields = [field.get(qn("w:instr"), "") for field in document._element.xpath(".//w:fldSimple")]
+    if not any(instruction.startswith('TOC \\o "1-2"') for instruction in fields):
+        raise ValueError("Missing automatic Heading 1–2 TOC")
+    if not any(instruction.startswith('TOC \\h \\z \\c "Table"') for instruction in fields):
+        raise ValueError("Missing generated list of tables")
+    if not any(instruction.startswith('TOC \\h \\z \\c "Figure"') for instruction in fields):
+        raise ValueError("Missing generated list of figures")
+    if sum(instruction.startswith("SEQ Table") for instruction in fields) != table_caption_count:
+        raise ValueError("Every table caption must use a SEQ field")
+    if sum(instruction.startswith("SEQ Figure") for instruction in fields) != figure_caption_count:
+        raise ValueError("Every figure caption must use a SEQ field")
     update_fields = document.settings.element.find(qn("w:updateFields"))
     if update_fields is None or update_fields.get(qn("w:val")) not in {"true", "1"}:
-        raise ValueError("Word updateFields is not enabled")
-    footer_xml = "\n".join(
-        paragraph._p.xml
+        raise ValueError("Word updateFields must be enabled")
+    footer_fields = [
+        field.get(qn("w:instr"), "")
         for section in document.sections
-        for paragraph in section.footer.paragraphs
-    )
-    if " PAGE " not in footer_xml:
-        raise ValueError("Report footer is missing its page-number field")
-    plan_table = tables_by_title["ILP — ba phương án cho 9 hồ sơ"]
-    if "Mức cảnh báo rủi ro" not in plan_table[1]:
-        raise ValueError("Plan table is missing the risk-level column")
-    if len(plan_table) != 29:
-        raise ValueError("Plan table must contain all 27 plans and its two header rows")
-    if not any(
-        "khuyến nghị trao đổi với cố vấn học tập" in cell
-        for row in plan_table[2:]
-        for cell in row
-    ):
-        raise ValueError("High-risk plan rows are missing the advisor recommendation")
-    if "XGBoost: PR-AUC Dropout ba lớp=" not in report_text or "recall tại precision ≥ 0,50" not in report_text:
-        raise ValueError("Report is missing the corrected validation comparison")
-    if "chênh=0.0458" in report_text or "recall ba lớp=0.7113, nhị phân=0.6655" in report_text:
-        raise ValueError("Report contains the incorrect validation/test recall comparison")
+        for field in section.footer._element.xpath(".//w:fldSimple")
+    ]
+    if "PAGE" not in footer_fields:
+        raise ValueError("Footer page-number field is missing")
+
+    for section in document.sections:
+        if round(section.page_width.cm, 1) != 21.0 or round(section.page_height.cm, 1) != 29.7:
+            raise ValueError("Report pages must be A4")
+        if round(section.left_margin.cm, 1) != 3.0 or any(
+            round(value.cm, 1) != 2.0
+            for value in (section.top_margin, section.bottom_margin, section.right_margin)
+        ):
+            raise ValueError("Report margins must be 3 cm left and 2 cm elsewhere")
+    _check_fonts(document)
+
+    reference_numbers: set[int] = set()
+    bibliography_numbers: set[int] = set()
+    in_bibliography = False
+    for paragraph in document.paragraphs:
+        text = paragraph.text.strip()
+        if paragraph.style.name == "Heading 1" and text.upper() == "TÀI LIỆU THAM KHẢO":
+            in_bibliography = True
+            continue
+        if in_bibliography:
+            match = re.match(r"\[(\d+)\]\s", text)
+            if match:
+                bibliography_numbers.add(int(match.group(1)))
+        else:
+            for citation in re.findall(r"\[(\d+(?:\s*,\s*\d+)*)\]", text):
+                reference_numbers.update(int(value.strip()) for value in citation.split(","))
+    if not reference_numbers or reference_numbers != bibliography_numbers:
+        raise ValueError(
+            f"Citation/bibliography mismatch: citations={sorted(reference_numbers)}, "
+            f"bibliography={sorted(bibliography_numbers)}"
+        )
+
+    text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+    if "Kết quả là phân tích kịch bản theo giả định; không phải bằng chứng hiệu quả với sinh viên NTU." not in text:
+        raise ValueError("Required Monte Carlo limitation statement is missing")
+    if "Trạng thái `optimal` chỉ có nghĩa nghiệm tối ưu theo hàm mục tiêu và các ràng buộc đã mô hình hóa" not in text:
+        raise ValueError("Required optimal-status limitation is missing")
+    if re.search(r"Phần 4-fix|_repro_tmp|stage2_report\.docx|BaoCao_Nhom1_HTTQD_65\.TTQL-2\.docx", text, re.I):
+        raise ValueError("Obsolete/internal terms remain in the final report")
+
+    prose_numbers = audit_report_prose()
+    unmatched = [row for row in prose_numbers if row["source_match"] == "KHÔNG KHỚP/CHƯA XÁC ĐỊNH"]
+    if unmatched:
+        raise ValueError(f"{len(unmatched)} report prose numbers have no generated/config source match")
+    checked.extend(("Appendix A feedback matrix", "front-matter fields", "report formatting", "sourced prose"))
     return checked
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     checked = check_report()
-    print("PASS: curriculum n_checks sourced from JSON; informational counts are separate.")
-    print(f"PASS: {len(checked)} source tables match reports/generated inputs.")
-    print(f"PASS: {len(REQUIRED_HEADINGS)} required report sections are present.")
-    prose_numbers = audit_report_prose()
-    print(
-        f"PASS: {len(prose_numbers)} prose-number occurrences matched reports/generated or config; 0 unresolved."
-    )
-    print(f"REPORT_CONSISTENCY: PASS ({len(checked)} tables)")
+    document = Document(REPORT_PATH)
+    headings = [paragraph.text for paragraph in document.paragraphs if paragraph.style.name == "Heading 1"]
+    print("REPORT_CONSISTENCY: PASS")
+    print(f"SOURCE_TABLES={len([title for title, _, _ in report_tables()])}")
+    print(f"TOTAL_TABLES={len(document.tables)}")
+    print(f"FIGURES={len(document.inline_shapes)}")
+    print(f"HEADING_1={len(headings)}")
+    print("HEADING_LIST=" + " | ".join(headings))
+    print(f"REPORT_CHECKS={len(checked)}")
 
 
 if __name__ == "__main__":

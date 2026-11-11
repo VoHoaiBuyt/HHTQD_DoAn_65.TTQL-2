@@ -1,28 +1,44 @@
-# Thứ tự Heading 1/2 trong báo cáo
+# Danh sách Heading 1/2
 
-- Heading 1: 1. TÓM TẮT ĐIỀU HÀNH
-  - Heading 2: Tóm tắt và phạm vi
-  - Heading 2: Các điểm đã chỉnh so với báo cáo lần trước
-- Heading 1: 2. DỮ LIỆU OFFICIAL (NTU)
-  - Heading 2: Nguồn và phạm vi dữ liệu
-- Heading 1: 3. QUY CHẾ QĐ 753/2021 VÀ CÁCH MÔ HÌNH HÓA
-  - Heading 2: Quy tắc và trạng thái xác nhận
-- Heading 1: 4. MÔ HÌNH ML — MỐC T1
-  - Heading 2: Giao thức, validation và so sánh
-  - Heading 2: KTC validation và kiểm định Enrolled
-- Heading 1: 5. RULE ENGINE VÀ KẾT QUẢ KIỂM THỬ
-  - Heading 2: Bao phủ kiểm thử
-- Heading 1: 6. ILP — HÀM MỤC TIÊU VÀ CÁC PHƯƠNG ÁN
-  - Heading 2: Phương án và mức cảnh báo rủi ro
-- Heading 1: 7. MONTE CARLO — MÔ PHỎNG, KHÔNG PHẢI BẰNG CHỨNG THỰC TẾ
-  - Heading 2: Thiết kế, kết quả và giới hạn
-- Heading 1: 8. GIAO DIỆN STREAMLIT
-  - Heading 2: Trang giao diện và ảnh minh họa
-- Heading 1: 9. CÀI ĐẶT VÀ CHẠY
-  - Heading 2: Cài đặt và kiểm tra
-- Heading 1: 10. HẠN CHẾ VÀ PHẦN CHƯA HOÀN THÀNH
-  - Heading 2: Giới hạn và việc cần xác nhận
-- Heading 1: 11. PHỤ LỤC — CÂY THƯ MỤC, FILE VÀ GIẢ ĐỊNH
-  - Heading 2: Tham số giả định
-
-Số trang thật: chưa kiểm chứng (không render Word/PDF trong môi trường tạo báo cáo).
+- Heading 1: LỜI MỞ ĐẦU / TÓM TẮT
+- Heading 1: MỤC LỤC
+- Heading 1: DANH MỤC BẢNG
+- Heading 1: DANH MỤC HÌNH
+- Heading 1: DANH MỤC TỪ VIẾT TẮT
+- Heading 1: CHƯƠNG 1. GIỚI THIỆU
+- Heading 2: Bài toán, mục tiêu và phạm vi
+- Heading 2: Bố cục báo cáo
+- Heading 1: CHƯƠNG 2. CƠ SỞ VÀ PHƯƠNG PHÁP
+- Heading 2: Dự báo, đánh giá và giải thích
+- Heading 2: ILP và mô phỏng
+- Heading 1: CHƯƠNG 3. DỮ LIỆU VÀ QUY CHẾ
+- Heading 2: Ba loại thông tin và nguồn
+- Heading 2: Giới hạn dữ liệu quy chế
+- Heading 1: CHƯƠNG 4. THIẾT KẾ HỆ THỐNG
+- Heading 2: Luồng xử lý và rule engine
+- Heading 2: Kiểm thử nghiệp vụ
+- Heading 1: CHƯƠNG 5. MÔ HÌNH ML
+- Heading 2: Mốc T1, tách tập và kết quả
+- Heading 2: Giải thích mô hình
+- Heading 1: CHƯƠNG 6. TỐI ƯU ILP
+- Heading 2: Mục tiêu, ràng buộc và cách đọc phương án
+- Heading 1: CHƯƠNG 7. MÔ PHỎNG MONTE CARLO
+- Heading 2: 7.1 Thiết kế mô phỏng
+- Heading 2: 7.2 Vì sao kết quả thay đổi theo λ
+- Heading 2: 7.3 Vì sao ILP không luôn tốt hơn B1/B2
+- Heading 2: 7.4 Những yếu tố chưa được mô phỏng
+- Heading 2: 7.5 Kết quả theo hồ sơ (V2-001, V2-003)
+- Heading 2: 7.6 Kiểm tra tái tạo và độ tin cậy
+- Heading 1: CHƯƠNG 8. GIAO DIỆN HỆ THỐNG
+- Heading 2: Ảnh chụp thật và nội dung hiển thị
+- Heading 1: CHƯƠNG 9. KIỂM THỬ VÀ HƯỚNG DẪN CÀI ĐẶT, CHẠY
+- Heading 2: Kiểm thử và gói sạch
+- Heading 1: CHƯƠNG 10. KẾT LUẬN, HẠN CHẾ VÀ HƯỚNG PHÁT TRIỂN
+- Heading 2: Kết luận
+- Heading 2: Hạn chế và hướng phát triển
+- Heading 1: TÀI LIỆU THAM KHẢO
+- Heading 1: PHỤ LỤC A. PHẢN HỒI TỪNG GÓP Ý
+- Heading 1: PHỤ LỤC B. THAM SỐ GIẢ ĐỊNH VÀ TRẠNG THÁI
+- Heading 1: PHỤ LỤC C. DANH MỤC BÀN GIAO VÀ CẤU TRÚC THƯ MỤC
+- Heading 1: PHỤ LỤC D. PHÂN CÔNG THÀNH VIÊN
+- Heading 1: PHỤ LỤC E. BẢNG CHI TIẾT VÀ ARTIFACT HỖ TRỢ

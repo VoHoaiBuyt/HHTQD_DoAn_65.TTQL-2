@@ -22,6 +22,7 @@ from app.view_data import (
     options_cache_key,
     progress_override_from_rows,
 )
+from app.risk_labels import RISK_THRESHOLD_NOTE
 from core.run_dss import run_dss
 
 
@@ -230,12 +231,23 @@ def _render_courses(result: dict[str, Any]) -> None:
 
 def _render_plan_cards(data: dict[str, Any]) -> None:
     plans = data["plans"]
+    st.info(
+        "Trạng thái `optimal` chỉ có nghĩa nghiệm tối ưu theo hàm mục tiêu và các "
+        "ràng buộc đã mô hình hóa; không đồng nghĩa với phương án phù hợp nhất về mặt học vụ."
+    )
+    st.caption(RISK_THRESHOLD_NOTE)
     columns = st.columns(max(1, len(plans)))
     for index, plan in enumerate(plans):
         with columns[index]:
             st.markdown(f"### {plan['display_label']}")
+            if plan["risk_level"] == "CAO":
+                st.error(
+                    "Mức cảnh báo rủi ro: CAO — khuyến nghị trao đổi với cố vấn học tập."
+                )
+            else:
+                st.caption(f"Mức cảnh báo rủi ro: {plan['risk_level']}")
             status = str(plan.get("status", "UNKNOWN"))
-            if plan["needs_advisor"]:
+            if plan["status_needs_advisor"]:
                 st.error(
                     f"Trạng thái `{status}` — kết quả có rủi ro/giới hạn. "
                     "Khuyến nghị gặp cố vấn học tập."
@@ -346,6 +358,7 @@ def _render_what_if(result: dict[str, Any], student_id: str) -> None:
     alternate = _run(student_id, options)
     data = build_what_if_data(result, alternate)
     st.markdown("**So sánh phương án mặc định và what-if**")
+    st.caption(RISK_THRESHOLD_NOTE)
     rows = []
     for title, plans in (
         ("Mặc định", data["baseline_plans"]),
@@ -361,10 +374,17 @@ def _render_what_if(result: dict[str, Any], student_id: str) -> None:
                     "Tín chỉ đạt kỳ vọng": plan.get("expected_credits_passed", "UNKNOWN"),
                     "Môn trượt kỳ vọng": plan.get("expected_failed_courses", "UNKNOWN"),
                     "P(≥1 trượt)": plan.get("p_at_least_one_failure", "UNKNOWN"),
+                    "Mức cảnh báo rủi ro": plan["risk_level"],
                 }
             )
     if rows:
         st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+        for row in rows:
+            if row["Mức cảnh báo rủi ro"] == "CAO":
+                st.error(
+                    f"{row['Bộ phương án']} · {row['Chiến lược']}: mức cảnh báo rủi ro "
+                    "CAO — khuyến nghị trao đổi với cố vấn học tập."
+                )
     _source_badge("GIẢ ĐỊNH (what-if); OFFICIAL (NTU) (giới hạn tín chỉ)")
 
 

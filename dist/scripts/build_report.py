@@ -14,7 +14,6 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 
 from scripts.final_claims import (
-    HIGH_RISK_ADVICE,
     RISK_THRESHOLDS,
     build_risk_rows,
     load_validation_claims,
@@ -22,11 +21,12 @@ from scripts.final_claims import (
     write_final_artifacts,
     write_risk_levels,
 )
+from app.risk_labels import RISK_THRESHOLD_NOTE
 
 
 ROOT = Path(__file__).resolve().parents[1]
 GENERATED = ROOT / "reports" / "generated"
-REPORT_PATH = ROOT / "reports" / "stage2_report.docx"
+REPORT_PATH = ROOT / "reports" / "BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx"
 MC_HISTOGRAM_SOURCE_LABEL = "SCENARIO / GIẢ ĐỊNH (Monte Carlo)"
 
 
@@ -69,6 +69,17 @@ def _fmt(value: Any, decimals: int = 3) -> str:
     return str(value)
 
 
+def _plan_warnings_for_report(value: str) -> str:
+    warnings = json.loads(value)
+    if not isinstance(warnings, list) or not all(isinstance(item, str) for item in warnings):
+        raise ValueError("plans_by_student.csv warnings must be a JSON string list")
+    retained = [
+        item for item in warnings
+        if "không phải phương án an toàn" not in item.casefold()
+    ]
+    return json.dumps(retained, ensure_ascii=False)
+
+
 def _find_one(rows: list[dict[str, str]], description: str, **filters: str) -> dict[str, str]:
     matches = [
         row for row in rows
@@ -98,6 +109,19 @@ def _markdown_table(text: str) -> tuple[list[str], list[list[str]]]:
     if not rows:
         raise ValueError("The regulation assumptions table contains no data rows")
     return headers, rows
+
+
+def display_pareto_label(label: str) -> str:
+    labels = {
+        "ILP vượt trội": "ILP không bị trội trong cặp",
+        "ILP bị vượt trội": "ILP bị trội trong cặp",
+        "đánh đổi": "đánh đổi",
+        "chưa phân biệt": "chưa phân biệt",
+    }
+    try:
+        return labels[label]
+    except KeyError as exc:
+        raise ValueError(f"Unknown saved Pareto label: {label}") from exc
 
 
 def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
@@ -291,15 +315,13 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
             ],
             [
                 [
-                    row["student_id"], row["persona"], row["plan_type"], row["status"],
+                    row["student_id"], row["persona"],
+                    risk_by_plan[(row["student_id"], row["plan_type"])]["display_label"],
+                    row["status"],
                     row["selected_credits"], row["expected_credits_passed"],
                     row["expected_failed_courses"], row["p_warning_W1"], row["p_warning_W2"],
                     risk_by_plan[(row["student_id"], row["plan_type"])]["risk_level"],
-                    (
-                        f"{row['warnings']} {HIGH_RISK_ADVICE}".strip()
-                        if risk_by_plan[(row["student_id"], row["plan_type"])]["risk_level"] == "CAO"
-                        else row["warnings"]
-                    ),
+                    _plan_warnings_for_report(row["warnings"]),
                 ]
                 for row in plans
             ],
@@ -367,7 +389,11 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
             [
                 [
                     row["student_id"], row["policy_a"], row["policy_b"],
-                    row["dominance"], row["interpretation"],
+                    display_pareto_label(row["dominance"]),
+                    (
+                        "Phân loại cặp theo 5 chỉ tiêu chính; nếu chỉ tiêu chính bất lợi "
+                        "có ý nghĩa, không kết luận quan hệ Pareto trội."
+                    ),
                 ]
                 for row in pareto_rows
             ],
@@ -389,7 +415,13 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
         (
             "Monte Carlo — Pareto V2-001 và V2-003, λ=0.1",
             ["Hồ sơ", "Chính sách A", "Chính sách B", "Nhãn Pareto"],
-            selected(pareto_focus_rows, ["student_id", "policy_a", "policy_b", "dominance"]),
+            [
+                [
+                    row["student_id"], row["policy_a"], row["policy_b"],
+                    display_pareto_label(row["dominance"]),
+                ]
+                for row in pareto_focus_rows
+            ],
         ),
         (
             "Monte Carlo — ghi chú metadata histogram, λ=0.1",
@@ -562,7 +594,7 @@ def _build_mc_distribution_figure(histogram: list[dict[str, str]]) -> Path:
     return output
 
 
-def build_report(output_path: Path = REPORT_PATH) -> Path:
+def _build_previous_report(output_path: Path = REPORT_PATH) -> Path:
     write_final_artifacts()
     risk_rows = write_risk_levels()
     tables = report_tables()
@@ -837,6 +869,10 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     _add_table_by_title(document, tables, "ILP — ba phương án cho 9 hồ sơ")
     _add_table_by_title(document, tables, "ILP — độ nhạy scenario V2-002")
     document.add_paragraph(
+        "Trạng thái `optimal` chỉ có nghĩa nghiệm tối ưu theo hàm mục tiêu và các "
+        "ràng buộc đã mô hình hóa; không đồng nghĩa với phương án phù hợp nhất về mặt học vụ."
+    )
+    document.add_paragraph(
         f"Mức cảnh báo là GIẢ ĐỊNH: CAO nếu số môn trượt kỳ vọng ≥ {RISK_THRESHOLDS['high_failed_courses']:.1f} "
         f"hoặc P(W1) ≥ {RISK_THRESHOLDS['high_warning_probability']:.1f} hoặc "
         f"P(W2) ≥ {RISK_THRESHOLDS['high_warning_probability']:.1f}; TRUNG BÌNH nếu số môn "
@@ -844,10 +880,11 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         f"Với mọi mức CAO: {HIGH_RISK_ADVICE}. "
         f"Riêng V2-005 risk_focused là CAO (P(W1)={float(v2005['p_warning_W1']):.3f}; "
         f"kỳ vọng trượt {float(v2005['expected_failed_courses']):.2f} môn). "
-        "Trong app, nhãn risk_focused hiển thị “An toàn” ngay cả với hồ sơ CAO này; "
-        "đây là nhãn gây hiểu nhầm, cần AQL xem xét riêng. "
+        "Nhãn hiển thị: risk_focused = Ưu tiên giảm rủi ro; balanced = Cân bằng; "
+        "acceleration = Tăng tốc. Mức cảnh báo tách biệt với trạng thái bộ giải. "
+        f"{RISK_THRESHOLD_NOTE} "
         "Các dòng best_effort luôn phải giữ cảnh báo rủi ro và khuyến nghị gặp cố vấn học tập; "
-        "không được gọi là an toàn. Bảng kế hoạch lấy dữ liệu từ plans_by_student.csv; "
+        "không được gọi là phương án an toàn. Bảng kế hoạch lấy dữ liệu từ plans_by_student.csv; "
         "chi tiết warnings/status đầy đủ vẫn nằm trong artifact nguồn."
     )
     document.add_paragraph(
@@ -1057,7 +1094,7 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         "Rule/ILP: reports/generated/curriculum_validation.json, regulation_assumptions.md, plans_by_student.csv, ilp_sensitivity.csv.",
         "Monte Carlo: reports/generated/mc_results.csv, mc_grad_hist.csv, mc_pairwise.csv, mc_pareto.csv và diễn giải.",
         "Tài liệu chạy: README.md, HANDOFF.md, docs/screens_to_capture.md.",
-        "Báo cáo: reports/stage2_report.docx; transcript: reports/generated/pytest_summary.txt.",
+        "Báo cáo: reports/BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx; transcript: reports/generated/pytest_summary.txt.",
         "Ảnh/video demo: chưa có; nhóm bổ sung.",
     ]
     for item in deliverables:
@@ -1089,11 +1126,9 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build the stage 2 Word report from generated artifacts.")
-    parser.add_argument("--output", type=Path, default=REPORT_PATH)
-    args = parser.parse_args()
-    output = build_report(args.output)
-    print(f"REPORT_WRITTEN: {output.relative_to(ROOT)}")
+    from scripts.build_final_report import main as build_final_main
+
+    build_final_main()
 
 
 if __name__ == "__main__":

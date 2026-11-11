@@ -214,12 +214,12 @@ def build_prose_claim_rows() -> list[dict[str, str]]:
             "p_warning_W2",
         ):
             claims.append(
-                _csv_claim("stage2_report.docx / plan table", grouped_source, selector, field, plan[field])
+                _csv_claim                ("BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table", grouped_source, selector, field, plan[field])
             )
 
     identical_count, distinct_count, repeated = plan_signatures(plans)
     profile_count = len({row["student_id"] for row in plans})
-    for location in ("stage2_report.docx", "final_cover_message.md"):
+    for location in ("BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx", "outbox/final_cover_message.md"):
         claims.append(
             _json_claim(
                 location,
@@ -269,7 +269,7 @@ def build_prose_claim_rows() -> list[dict[str, str]]:
                 "source_value": str(len({row["student_id"] for row in _read_csv(GENERATED / "mc_results.csv")})),
             },
             {
-                "location": "stage2_report.docx / executive summary",
+                "location": "BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / executive summary",
                 "number": str(sum(row["risk_level"] == "CAO" for row in build_risk_rows(plans))),
                 "source_file": grouped_source,
                 "key": "derived:high_risk_plan_count",
@@ -355,7 +355,7 @@ def build_prose_claim_rows() -> list[dict[str, str]]:
     ):
         claims.append(
             _json_claim(
-                "stage2_report.docx / risk thresholds",
+                "BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / risk thresholds",
                 "reports/generated/final_risk_thresholds.json",
                 key,
                 value,
