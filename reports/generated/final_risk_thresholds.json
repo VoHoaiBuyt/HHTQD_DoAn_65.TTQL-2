@@ -2,5 +2,18 @@
   "source_label": "GIẢ ĐỊNH",
   "high_expected_failed_courses_gte": 1.0,
   "high_warning_probability_gte": 0.5,
-  "medium_expected_failed_courses_gte": 0.5
+  "medium_expected_failed_courses_gte": 0.5,
+  "threshold_note": "Ngưỡng cảnh báo hiển thị là GIẢ ĐỊNH theo yêu cầu WP1. fast_fmax và Fmax mềm là tham số bộ lập kế hoạch; không đồng nhất chúng với các ngưỡng cảnh báo rủi ro.",
+  "config_file": "config/optimizer_scenario_v2.yaml",
+  "fast_fmax_config_key": "optimizer.plan_selection.fast_fmax",
+  "fast_fmax_config_value": 2.0,
+  "soft_fmax_grid_config_key": "optimizer.risk_cap.fmax_grid",
+  "soft_fmax_grid_config_value": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    null
+  ]
 }

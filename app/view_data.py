@@ -7,6 +7,12 @@ from typing import Any
 
 import pandas as pd
 
+from app.risk_labels import (
+    PLAN_DISPLAY_LABELS,
+    RISK_THRESHOLD_NOTE,
+    risk_level,
+)
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_PATH = ROOT / "data" / "scenarios" / "student_profile_v2.csv"
@@ -178,27 +184,24 @@ def build_courses_data(result: dict[str, Any]) -> dict[str, Any]:
 def build_plans_data(result: dict[str, Any]) -> dict[str, Any]:
     cards = []
     risky_statuses = {"best_effort", "regulatory_conflict", "risk_cap_exceeded"}
-    labels = {
-        "risk_focused": "An toàn — ưu tiên giảm rủi ro (không bảo đảm kết quả)",
-        "balanced": "Cân bằng",
-        "acceleration": "Tăng tốc",
-    }
     for plan in result.get("plans", []):
         status = str(plan.get("status", "UNKNOWN"))
-        issue = (
+        status_issue = (
             status in risky_statuses
             or bool(plan.get("regulatory_conflict"))
             or bool(plan.get("risk_cap_exceeded"))
         )
+        level = risk_level(plan)
         cards.append(
             {
                 **plan,
-                "display_label": (
-                    "Ưu tiên giảm rủi ro"
-                    if issue and plan.get("plan_type") == "risk_focused"
-                    else labels.get(str(plan.get("plan_type")), str(plan.get("plan_type")))
+                "display_label": PLAN_DISPLAY_LABELS.get(
+                    str(plan.get("plan_type")), str(plan.get("plan_type"))
                 ),
-                "needs_advisor": issue,
+                "risk_level": level,
+                "risk_threshold_note": RISK_THRESHOLD_NOTE,
+                "status_needs_advisor": status_issue,
+                "needs_advisor": status_issue or level == "CAO",
                 "source_label": "GIẢ ĐỊNH",
             }
         )

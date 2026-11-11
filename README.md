@@ -85,15 +85,17 @@ included from `demo_media/`; no video is currently included.
   has no paired interval for their differences, so the report does not claim
   statistical separation.
 - Risk thresholds are explicitly labeled `GIẢ ĐỊNH`; high-risk plans carry
-  advisor guidance. The existing app label for `risk_focused` still includes
-  “An toàn”; it was inspected but not changed under the final edit scope.
+  advisor guidance and are separate from solver status. Display labels are
+  “Ưu tiên giảm rủi ro”, “Cân bằng”, and “Tăng tốc”. The registration-plans page
+  explains that `optimal` means optimal under the modeled objective/constraints,
+  not best for academic fit.
 - The final claim audit checks each row in `reports/generated/prose_claims.csv`.
-  Full pytest passed 122 tests; focused AppTest passed 23 tests. The final clean
-  dist passed 122 tests, 20 report tables, 259 sourced prose numbers, and HTTP
-  200 health. See `HANDOFF.md` and `reports/generated/final_dist_validation.md`
-  for the recorded results.
-- No model retraining, Monte Carlo run, raw test-set access, or submission tag
-  was performed for these corrections. Raw test records were not inspected.
+  Latest full pytest passed 125 tests; targeted claim/AppTest checks passed 26.
+  The existing clean `dist/` result (122 tests) predates the latest UI changes
+  and has not been rebuilt or revalidated for this snapshot.
+- No model retraining, Monte Carlo run, or raw test-set access was performed
+  for these corrections. The `v2-sent` tag identifies the earlier submitted
+  snapshot; no `submission-v1` tag has been created.
 
 ## Curriculum and regulation checks
 

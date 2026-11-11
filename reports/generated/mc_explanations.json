@@ -1,0 +1,544 @@
+{
+  "source_label": "GIẢ ĐỊNH (Monte Carlo)",
+  "sources": [
+    "reports/generated/mc_results.csv",
+    "reports/generated/mc_pairwise.csv",
+    "reports/generated/mc_pareto.csv",
+    "config/monte_carlo_scenario.yaml",
+    "config/optimizer_scenario_v2.yaml",
+    "data/official/courses.csv",
+    "config/program_official.yaml",
+    "config/courses_enrichment.yaml"
+  ],
+  "nw_mean_credits": 2.8260869565217392,
+  "nw_course_count": 46,
+  "load_rounding": "floor(L / mean_credits + 0.5)",
+  "load_factor_threshold_units": 6,
+  "largest_integer_load_without_penalty": 18,
+  "load_penalties": [
+    {
+      "lambda": 0.1,
+      "credits_L": 15,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 5,
+      "g_load": 1.0,
+      "penalized": false
+    },
+    {
+      "lambda": 0.1,
+      "credits_L": 18,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 6,
+      "g_load": 1.0,
+      "penalized": false
+    },
+    {
+      "lambda": 0.1,
+      "credits_L": 21,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 7,
+      "g_load": 0.9048374180359595,
+      "penalized": true
+    },
+    {
+      "lambda": 0.1,
+      "credits_L": 24,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 8,
+      "g_load": 0.8187307530779818,
+      "penalized": true
+    },
+    {
+      "lambda": 0.3,
+      "credits_L": 15,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 5,
+      "g_load": 1.0,
+      "penalized": false
+    },
+    {
+      "lambda": 0.3,
+      "credits_L": 18,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 6,
+      "g_load": 1.0,
+      "penalized": false
+    },
+    {
+      "lambda": 0.3,
+      "credits_L": 21,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 7,
+      "g_load": 0.7408182206817179,
+      "penalized": true
+    },
+    {
+      "lambda": 0.3,
+      "credits_L": 24,
+      "mean_credits_NW": 2.8260869565217392,
+      "units_L": 8,
+      "g_load": 0.5488116360940265,
+      "penalized": true
+    }
+  ],
+  "average_selected_credits_per_semester": [
+    {
+      "policy": "ILP-matched",
+      "lambda": 0.1,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 11.374299518074517,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "B1",
+      "lambda": 0.1,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 14.884177677261013,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "B2",
+      "lambda": 0.1,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 15.33064042654876,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "B3",
+      "lambda": 0.1,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 10.140315977232644,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "ILP-matched",
+      "lambda": 0.3,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 11.374299518074517,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "B1",
+      "lambda": 0.3,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 16.273103013036348,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "B2",
+      "lambda": 0.3,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 17.155551504668168,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    },
+    {
+      "policy": "B3",
+      "lambda": 0.3,
+      "profile_rows": 9,
+      "mean_credits_per_semester": 10.140315977232644,
+      "source_label": "GIẢ ĐỊNH (Monte Carlo)"
+    }
+  ],
+  "paired_95_ci": [
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - B1",
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "p_graduated_on_time_difference": -0.247,
+      "p_graduated_on_time_ci95": [
+        -0.278,
+        -0.214975
+      ],
+      "expected_failed_courses_difference": -0.052,
+      "expected_failed_courses_ci95": [
+        -0.1950249999999999,
+        0.0840249999999999
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - B2",
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "p_graduated_on_time_difference": -0.232,
+      "p_graduated_on_time_ci95": [
+        -0.265,
+        -0.199
+      ],
+      "expected_failed_courses_difference": -0.099,
+      "expected_failed_courses_ci95": [
+        -0.228,
+        0.0290499999999999
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - B3",
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "p_graduated_on_time_difference": 0.577,
+      "p_graduated_on_time_ci95": [
+        0.548,
+        0.608
+      ],
+      "expected_failed_courses_difference": -0.043,
+      "expected_failed_courses_ci95": [
+        -0.19,
+        0.104
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - ILP-fixed",
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "p_graduated_on_time_difference": 0.276,
+      "p_graduated_on_time_ci95": [
+        0.245,
+        0.305
+      ],
+      "expected_failed_courses_difference": -0.039,
+      "expected_failed_courses_ci95": [
+        -0.1290249999999999,
+        0.0560249999999999
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - B1",
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "p_graduated_on_time_difference": -0.1,
+      "p_graduated_on_time_ci95": [
+        -0.1220249999999999,
+        -0.079
+      ],
+      "expected_failed_courses_difference": -0.003,
+      "expected_failed_courses_ci95": [
+        -0.2180249999999999,
+        0.2050249999999999
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - B2",
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "p_graduated_on_time_difference": -0.081,
+      "p_graduated_on_time_ci95": [
+        -0.103,
+        -0.06
+      ],
+      "expected_failed_courses_difference": -0.18,
+      "expected_failed_courses_ci95": [
+        -0.382025,
+        0.0340499999999999
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - B3",
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "p_graduated_on_time_difference": 0.046,
+      "p_graduated_on_time_ci95": [
+        0.035,
+        0.059
+      ],
+      "expected_failed_courses_difference": -0.269,
+      "expected_failed_courses_ci95": [
+        -0.531025,
+        -0.0167250000000002
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "comparison": "ILP-matched - ILP-fixed",
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "p_graduated_on_time_difference": 0.043,
+      "p_graduated_on_time_ci95": [
+        0.031,
+        0.056
+      ],
+      "expected_failed_courses_difference": -0.029,
+      "expected_failed_courses_ci95": [
+        -0.1780249999999999,
+        0.1070249999999999
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - B1",
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "p_graduated_on_time_difference": 0.07,
+      "p_graduated_on_time_ci95": [
+        0.031,
+        0.107
+      ],
+      "expected_failed_courses_difference": -13.339,
+      "expected_failed_courses_ci95": [
+        -13.61605,
+        -13.064975
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - B2",
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "p_graduated_on_time_difference": 0.137,
+      "p_graduated_on_time_ci95": [
+        0.102,
+        0.171
+      ],
+      "expected_failed_courses_difference": -13.313,
+      "expected_failed_courses_ci95": [
+        -13.572025,
+        -13.038975
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - B3",
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "p_graduated_on_time_difference": 0.301,
+      "p_graduated_on_time_ci95": [
+        0.272975,
+        0.329025
+      ],
+      "expected_failed_courses_difference": -0.004,
+      "expected_failed_courses_ci95": [
+        -0.1510749999999999,
+        0.1480749999999999
+      ]
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - ILP-fixed",
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "p_graduated_on_time_difference": 0.0,
+      "p_graduated_on_time_ci95": [
+        0.0,
+        0.0
+      ],
+      "expected_failed_courses_difference": 0.0,
+      "expected_failed_courses_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - B1",
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "p_graduated_on_time_difference": -0.002,
+      "p_graduated_on_time_ci95": [
+        -0.008,
+        0.003
+      ],
+      "expected_failed_courses_difference": -9.198,
+      "expected_failed_courses_ci95": [
+        -9.504,
+        -8.8949
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - B2",
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "p_graduated_on_time_difference": 0.002,
+      "p_graduated_on_time_ci95": [
+        -0.0010249999999999,
+        0.006
+      ],
+      "expected_failed_courses_difference": -9.136,
+      "expected_failed_courses_ci95": [
+        -9.482075,
+        -8.817874999999999
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - B3",
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "p_graduated_on_time_difference": 0.003,
+      "p_graduated_on_time_ci95": [
+        0.0,
+        0.007
+      ],
+      "expected_failed_courses_difference": -0.24,
+      "expected_failed_courses_ci95": [
+        -0.4850499999999999,
+        0.022
+      ]
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "comparison": "ILP-matched - ILP-fixed",
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "p_graduated_on_time_difference": 0.0,
+      "p_graduated_on_time_ci95": [
+        0.0,
+        0.0
+      ],
+      "expected_failed_courses_difference": 0.0,
+      "expected_failed_courses_ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "pareto_labels": [
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "pareto_label": "ILP bị vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "pareto_label": "ILP bị vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "pareto_label": "ILP bị vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "pareto_label": "ILP bị vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.0,
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-001",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "pareto_label": "chưa phân biệt"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "B1",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "B2",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "B3",
+      "pareto_label": "ILP vượt trội"
+    },
+    {
+      "student_id": "V2-003",
+      "lambda": 0.1,
+      "policy_a": "ILP-matched",
+      "policy_b": "ILP-fixed",
+      "pareto_label": "chưa phân biệt"
+    }
+  ],
+  "profiles_with_expulsion_probability_at_least_0_95_under_all_rows": [
+    {
+      "student_id": "V2-005",
+      "policy_lambda_rows": 15,
+      "p_expelled_min": 0.999,
+      "p_expelled_max": 1.0,
+      "expected_failed_courses_min": 12.638,
+      "expected_failed_courses_max": 17.217,
+      "p_graduated_16_min": 0.0,
+      "p_graduated_16_max": 0.001,
+      "consecutive_warning_limit": 2,
+      "interpretation": "In the stored scenarios, all policy/lambda rows exceed the threshold. The model's rule is a consecutive-warning limit; these associations are simulated outcomes, not causal evidence."
+    }
+  ]
+}

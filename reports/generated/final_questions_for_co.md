@@ -4,3 +4,4 @@
 4. Trong Monte Carlo có giới hạn buộc thôi học ở W1/W2 do không có chuỗi điểm để đánh giá W3/W4 không? **Mặc định:** chỉ W1/W2; ghi rõ W3/W4 chưa mô phỏng.
 5. Cô duyệt tiêu chí Pareto hiện tại và KTC bootstrap ghép cặp 95% không? **Mặc định:** chỉ kết luận trội khi tiêu chí chính và KTC cùng ủng hộ; nếu không thì ghi chưa phân biệt.
 6. Có cần bổ sung OULAD hay mô hình hóa học kỳ hè? **Mặc định:** chưa thêm nguồn hoặc giả định ngoài dữ liệu được nhóm cung cấp; OULAD chưa sử dụng, hè chưa mô hình hóa.
+7. Cô xác nhận cách trình bày ba nhãn “Ưu tiên giảm rủi ro”, “Cân bằng”, “Tăng tốc” và mức cảnh báo rủi ro GIẢ ĐỊNH tách biệt với trạng thái bộ giải không?

@@ -14,3 +14,4 @@
 | g_load theo ngân sách | Đã làm | `optimization_spec.md`, `core/optimizer.py`, `plans_by_student.csv`: tải lấy từ tín chỉ thực chọn L và chuyển thành `units(L)` theo công thức; không dùng số môn làm đại diện tín chỉ. |
 | S003 best_effort | Đã làm một phần | Hồ sơ và số liệu S003 thuộc Persona/catalogue SIMULATED cũ, không thuộc đầu ra hiện hành. Đầu ra SCENARIO có phương án best_effort; cần giữ cảnh báo rủi ro và khuyến nghị cố vấn. |
 | P(Dropout) | Đã làm | `optimization_spec.md`, `plans_by_student.csv`: cảnh báo mềm/hậu kiểm; risk cap chính ở chế độ off; không khóa quyền đăng ký. |
+| Nhãn phương án và cảnh báo rủi ro | Đã làm | `app/view_data.py`, `app/main.py`, `final_risk_thresholds.json`: risk_focused=Ưu tiên giảm rủi ro; balanced=Cân bằng; acceleration=Tăng tốc. Mức CAO hiện riêng với trạng thái bộ giải, kèm khuyến nghị cố vấn. |

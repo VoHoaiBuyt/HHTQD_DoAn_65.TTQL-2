@@ -130,6 +130,21 @@ def phrase_hits() -> list[tuple[str, str, str]]:
         for path in ROOT.joinpath("app").rglob("*")
         if path.is_file() and path.suffix.lower() in TEXT_SUFFIXES | {".py", ".toml"}
     )
+    texts.extend(
+        (path.relative_to(ROOT).as_posix(), _read_text(path))
+        for path in ROOT.joinpath("docs").rglob("*.md")
+        if path.is_file()
+    )
+    texts.extend(
+        (path.relative_to(ROOT).as_posix(), _read_text(path))
+        for path in (
+            ROOT / "README.md",
+            ROOT / "HANDOFF.md",
+            ROOT / "reports" / "generated" / "final_questions_for_co.md",
+            ROOT / "reports" / "generated" / "final_requirements_matrix.md",
+        )
+        if path.is_file()
+    )
     hits = []
     for location, text in texts:
         for phrase in PHRASES:
@@ -172,6 +187,16 @@ def main() -> None:
                     "không phải",
                     "không cho phép",
                     "không được gọi",
+                    "không gọi",
+                    "không có nghĩa",
+                    "không chứng minh",
+                    "không diễn giải",
+                    "không được diễn giải",
+                    "không trình bày",
+                    "không nhận dạng",
+                    "không nhân quả",
+                    "không xác nhận",
+                    "không giả định",
                     "chưa kết luận",
                     "chưa được",
                     "not evidence",
@@ -179,8 +204,8 @@ def main() -> None:
             )
             if phrase == "vượt trội":
                 assessment = "Descriptive Pareto category or explicit qualification; not a claim of NTU effectiveness"
-            elif phrase == "an toàn" and location == "app/view_data.py":
-                assessment = "Risk-focused display label for non-best_effort optimal plan; best_effort uses another label"
+            elif phrase == "tốt hơn" and "optimization_spec.md" in location:
+                assessment = "Conditional objective definition, not an empirical superiority claim"
             elif phrase == "an toàn" and "best_effort" in normalized and not negative:
                 assessment = "PROHIBITED: best_effort is labeled safe"
             elif phrase in {"tốt hơn", "hiệu quả hơn", "tối ưu hơn"} and not negative:

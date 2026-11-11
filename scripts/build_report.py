@@ -22,6 +22,7 @@ from scripts.final_claims import (
     write_final_artifacts,
     write_risk_levels,
 )
+from app.risk_labels import RISK_THRESHOLD_NOTE
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -291,7 +292,9 @@ def report_tables() -> list[tuple[str, list[str], list[list[str]]]]:
             ],
             [
                 [
-                    row["student_id"], row["persona"], row["plan_type"], row["status"],
+                    row["student_id"], row["persona"],
+                    risk_by_plan[(row["student_id"], row["plan_type"])]["display_label"],
+                    row["status"],
                     row["selected_credits"], row["expected_credits_passed"],
                     row["expected_failed_courses"], row["p_warning_W1"], row["p_warning_W2"],
                     risk_by_plan[(row["student_id"], row["plan_type"])]["risk_level"],
@@ -837,6 +840,10 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
     _add_table_by_title(document, tables, "ILP — ba phương án cho 9 hồ sơ")
     _add_table_by_title(document, tables, "ILP — độ nhạy scenario V2-002")
     document.add_paragraph(
+        "Trạng thái `optimal` chỉ có nghĩa nghiệm tối ưu theo hàm mục tiêu và các "
+        "ràng buộc đã mô hình hóa; không đồng nghĩa với phương án phù hợp nhất về mặt học vụ."
+    )
+    document.add_paragraph(
         f"Mức cảnh báo là GIẢ ĐỊNH: CAO nếu số môn trượt kỳ vọng ≥ {RISK_THRESHOLDS['high_failed_courses']:.1f} "
         f"hoặc P(W1) ≥ {RISK_THRESHOLDS['high_warning_probability']:.1f} hoặc "
         f"P(W2) ≥ {RISK_THRESHOLDS['high_warning_probability']:.1f}; TRUNG BÌNH nếu số môn "
@@ -844,10 +851,11 @@ def build_report(output_path: Path = REPORT_PATH) -> Path:
         f"Với mọi mức CAO: {HIGH_RISK_ADVICE}. "
         f"Riêng V2-005 risk_focused là CAO (P(W1)={float(v2005['p_warning_W1']):.3f}; "
         f"kỳ vọng trượt {float(v2005['expected_failed_courses']):.2f} môn). "
-        "Trong app, nhãn risk_focused hiển thị “An toàn” ngay cả với hồ sơ CAO này; "
-        "đây là nhãn gây hiểu nhầm, cần AQL xem xét riêng. "
+        "Nhãn hiển thị: risk_focused = Ưu tiên giảm rủi ro; balanced = Cân bằng; "
+        "acceleration = Tăng tốc. Mức cảnh báo tách biệt với trạng thái bộ giải. "
+        f"{RISK_THRESHOLD_NOTE} "
         "Các dòng best_effort luôn phải giữ cảnh báo rủi ro và khuyến nghị gặp cố vấn học tập; "
-        "không được gọi là an toàn. Bảng kế hoạch lấy dữ liệu từ plans_by_student.csv; "
+        "không được gọi là phương án an toàn. Bảng kế hoạch lấy dữ liệu từ plans_by_student.csv; "
         "chi tiết warnings/status đầy đủ vẫn nằm trong artifact nguồn."
     )
     document.add_paragraph(

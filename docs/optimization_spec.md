@@ -57,6 +57,18 @@ u_i = Σ_{j ∈ D_i, j chưa hoàn tất} c_j × δ^{d(i,j)}
 
 `optimal`: nghiệm tối ưu, không vượt Fmax mềm, Cmin thường. `best_effort`: vẫn có phương án nhưng vượt Fmax hoặc dùng Cmin giảm tải; kèm cờ và khuyến nghị trao đổi cố vấn. `no_eligible_courses`/`graduation_ready`: không gọi solver. `infeasible_data_error`: cả lượt chuẩn và lượt giảm Cmin đều không tạo nghiệm, cần rà schema, prerequisite, giới hạn và dữ liệu. Trạng thái nội bộ PuLP được lưu riêng ở `solver_status`.
 
+### Nhãn hiển thị và mức cảnh báo
+
+- `risk_focused`: “Ưu tiên giảm rủi ro”; `balanced`: “Cân bằng”;
+  `acceleration`: “Tăng tốc”. Đây là nhãn chiến lược, độc lập với trạng thái
+  bộ giải.
+- Mức cảnh báo giao diện là `GIẢ ĐỊNH`: CAO nếu số môn trượt kỳ vọng ≥1,0,
+  P(W1) ≥0,5 hoặc P(W2) ≥0,5; TRUNG BÌNH nếu số môn trượt kỳ vọng ≥0,5;
+  còn lại THẤP. CAO luôn có cảnh báo đỏ và khuyến nghị trao đổi với cố vấn.
+- `optimal` chỉ nói nghiệm tối ưu theo hàm mục tiêu và các ràng buộc được mô
+  hình hóa; không kết luận phương án đó phù hợp nhất về mặt học vụ. `best_effort`,
+  xung đột quy chế và vượt trần rủi ro tiếp tục có cảnh báo riêng.
+
 Fmax được đưa vào trước như slack bị phạt lớn; nếu bài toán vẫn vô nghiệm thì giảm Cmin theo config; không có fallback khả thi mới báo `infeasible_data_error`. Prototype S003 dùng Cmin=12, Fmax=1, `enforce_cap=false`: phải trả kế hoạch 12 tín chỉ với `status=best_effort`, `risk_cap_exceeded=true`, số vượt cap và gợi ý gặp cố vấn. Nếu sau này bật hard cap thì không được che giấu tình trạng không khả thi.
 
 ## 5. Kiểm tra đơn vị và không suy biến

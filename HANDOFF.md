@@ -274,10 +274,10 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
   Heading 1/2 outline. Actual rendered page count remains unverified.
 - `reports/generated/prose_claims.csv`: 178 rows; all source checks pass.
   `final_prose_numbers.csv`: 259 prose-number occurrences, 0 unresolved.
-  Phrase scan: 121 hits, classified in `final_phrase_scan.csv`; the app's
-  `risk_focused` display still says “An toàn” for V2-005 despite CAO risk.
-  This UI text was inspected and reported, not edited under the restricted
-  final write scope.
+  Phrase scan: 121 hits, classified in `final_phrase_scan.csv`. The final UI
+  now labels `risk_focused` as “Ưu tiên giảm rủi ro”; CAO alert severity is
+  separate from solver status, with advisor guidance shown on plan and What-if
+  pages. `optimal` is explicitly qualified as model-objective optimality only.
 - Full pytest: 122 passed, 252 warnings. AppTest: 23 passed, 84 warnings.
   Report consistency: 20 tables; 11 required sections; 259 prose numbers; 0
   unresolved. Streamlit health: HTTP 200, body `ok`.
@@ -297,3 +297,29 @@ hồ sơ SCENARIO. Histogram MC có sẵn tại `reports/generated/mc_grad_hist.
   `6,648,237` bytes (`6.34 MiB`), including `5` PNGs and no videos; absolute
   personal/workspace path scan had `0` hits. Package is below the 25 MiB split
   threshold.
+
+## Final urgent WP0–WP2 update (2026-11-10)
+
+- WP0: `v2-sent` remains at the submitted commit; work continues on branch
+  `final`. No `submission-v1` tag was created. External ZIP backup:
+  `E:\HHTQD_DoAn_source_backup_final_20261110.zip` (567 files; ZIP integrity
+  check passed).
+- UI and report use `Ưu tiên giảm rủi ro`, `Cân bằng`, and `Tăng tốc`. Risk
+  severity is a separate `GIẢ ĐỊNH` badge; CAO includes advisor guidance.
+  V2-005 displays CAO (P(W1)=0.967; expected failed courses=3.54). The exact
+  `optimal` disclaimer is on the registration-plan page and in the report.
+- `plans_by_budget.csv` contains 81 SCENARIO/DSS rows (9 profiles × 3
+  budgets × 3 strategies); 6/9 profiles change across budget settings.
+  `mc_explanations.csv/json` use stored MC results; no Monte Carlo rerun,
+  retraining, or test-set access was performed.
+- `prose_claims.csv` contains 178 rows and every claim is source-checked.
+  Report consistency passes 20 tables, 11 required sections, and 259 prose
+  numbers with 0 unresolved. The latest phrase audit distinguishes qualified
+  limitations and descriptive Pareto terminology from unsupported claims.
+- Full pytest: 125 passed, 252 warnings. Focused claim/AppTest run: 26 passed,
+  84 warnings. Streamlit health: HTTP 200, body `ok`. Rendered page count is
+  still unverified; the report contains a cover, updateable TOC fields, page
+  fields, and ordered Heading 1/2 outline.
+- The validation bootstrap artifact has no paired 95% CI for the three-class
+  versus binary task difference; no statistical separation is claimed.
+  Existing `dist/` validation predates this update and was not rerun.

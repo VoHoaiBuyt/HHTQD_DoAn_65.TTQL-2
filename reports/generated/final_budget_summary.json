@@ -1,0 +1,46 @@
+{
+  "source_label": "SCENARIO / GIẢ ĐỊNH (DSS)",
+  "lambda": 0.1,
+  "profile_count": 9,
+  "plan_budget_row_count": 81,
+  "profiles_with_three_strategy_outcomes_identical_at_any_budget": 8,
+  "profiles_with_three_strategy_outcomes_identical_at_any_budget_ids": [
+    "V2-001",
+    "V2-002",
+    "V2-003",
+    "V2-004",
+    "V2-006",
+    "V2-007",
+    "V2-008",
+    "V2-009"
+  ],
+  "profiles_with_three_strategy_outcomes_identical_at_every_budget": 8,
+  "profiles_with_three_strategy_outcomes_identical_at_every_budget_ids": [
+    "V2-001",
+    "V2-002",
+    "V2-003",
+    "V2-004",
+    "V2-006",
+    "V2-007",
+    "V2-008",
+    "V2-009"
+  ],
+  "profiles_with_budget_sensitivity": 6,
+  "profiles_with_budget_sensitivity_ids": [
+    "V2-001",
+    "V2-002",
+    "V2-003",
+    "V2-004",
+    "V2-006",
+    "V2-009"
+  ],
+  "distinct_budget_sweep_patterns": 7,
+  "identical_budget_sweep_groups": [
+    [
+      "V2-001",
+      "V2-002",
+      "V2-004"
+    ]
+  ],
+  "definition": "Strategy outcomes compare status, selected course IDs/credits, expected credits passed/failures, failure and W1/W2 probabilities, retake credits, graduation estimate, and risk level. Budget-sweep profiles compare the ordered outcomes over their configured three-budget grid."
+}
