@@ -46,27 +46,37 @@ REQUIRED_IMAGES = (
     ("V2-006-DLGD.png", "V2-006 · Nguy cơ & cảnh báo", "Trang cảnh báo rủi ro của hồ sơ SCENARIO."),
 )
 REPORT_FIGURES = (
-    (5, "final_confusion_matrix_test.png", "Ma trận nhầm lẫn trên tập test", "REAL (UCI-697), holdout test; được vẽ từ reports/generated/test_evaluation.json."),
-    (5, "precision_recall_validation.png", "Đường precision–recall trên tập validation", "REAL (UCI-697), validation dùng lựa chọn mô hình/ngưỡng; reports/figures/precision_recall_validation.png."),
-    (5, "calibration_validation.png", "Độ tin cậy xác suất trên tập validation", "REAL (UCI-697), validation; reports/figures/calibration_validation.png."),
-    (5, "shap_global_validation.png", "SHAP toàn cục trên tập validation", "REAL (UCI-697), validation; SHAP giải thích mô hình, không phải nhân quả; reports/figures/shap_global_validation.png."),
-    (7, "mc_graduation_distribution.png", "Phân phối kỳ tốt nghiệp theo chính sách", "SCENARIO / GIẢ ĐỊNH, artifact Monte Carlo đã lưu; reports/figures/mc_graduation_distribution.png."),
-    (7, "mc_pareto.png", "Biên Pareto theo kịch bản mô phỏng", "SCENARIO / GIẢ ĐỊNH, artifact Monte Carlo đã lưu; nhãn Pareto phụ thuộc λ; reports/figures/mc_pareto.png."),
+    (5, "final_confusion_matrix_test.png", "Ma trận nhầm lẫn trên tập test", "REAL (UCI-697) – reports/generated/test_evaluation.json (holdout test)."),
+    (5, "precision_recall_validation.png", "Đường precision–recall trên tập validation", "REAL (UCI-697) – reports/figures/precision_recall_validation.png."),
+    (5, "calibration_validation.png", "Độ tin cậy xác suất trên tập validation", "REAL (UCI-697) – reports/figures/calibration_validation.png."),
+    (5, "shap_global_validation.png", "SHAP toàn cục trên tập validation", "REAL (UCI-697) – reports/figures/shap_global_validation.png (SHAP giải thích mô hình, không phải nhân quả)."),
+    (7, "mc_graduation_distribution.png", "Phân phối kỳ tốt nghiệp theo chính sách", "SCENARIO / GIẢ ĐỊNH – reports/figures/mc_graduation_distribution.png."),
+    (7, "mc_pareto.png", "Biên Pareto theo kịch bản mô phỏng", "SCENARIO / GIẢ ĐỊNH – reports/figures/mc_pareto.png (nhãn Pareto phụ thuộc λ)."),
 )
 TABLE_SOURCES = {
-    "CTĐT — kiểm tra": "OFFICIAL (NTU), validator CTĐT đã sinh.",
-    "CTĐT — số kiểm tra và thông tin (tách riêng)": "OFFICIAL (NTU), curriculum_validation.json.",
-    "CTĐT — mã HP cần xác minh": "OFFICIAL (NTU); mã HP có tiền tố HP là mã định danh nội bộ do nhóm gán.",
-    "Quy chế — bảng giả định và trạng thái": "OFFICIAL (NTU), QĐ 753/QĐ-ĐHNT theo artifact nhóm cung cấp; diễn giải chưa xác nhận giữ UNCONFIRMED/UNKNOWN.",
-    "ML — validation ba lớp": "REAL (UCI-697), model_comparison.csv.",
-    "ML — validation nhị phân": "REAL (UCI-697), model_comparison.csv.",
-    "ML — đánh giá holdout một lần": "REAL (UCI-697), test_evaluation.json; đánh giá đã lưu, không truy cập tập test trong tác vụ này.",
-    "ML — bootstrap KTC 95% trên validation": "REAL (UCI-697), ml_validation_bootstrap_ci.json.",
-    "ML — hiệu chuẩn xác suất (metrics.json)": "REAL (UCI-697), metrics.json.",
-    "ML — SHAP toàn cục, năm đặc trưng đầu": "REAL (UCI-697), shap_global.csv; SHAP giải thích mô hình, không phải nhân quả.",
-    "ILP — ba phương án cho 9 hồ sơ": "SCENARIO; GIẢ ĐỊNH cho xác suất, ngưỡng cảnh báo và hàm mục tiêu; giới hạn CTĐT lấy từ OFFICIAL (NTU).",
-    "ILP — độ nhạy scenario V2-002": "SCENARIO / GIẢ ĐỊNH, ilp_sensitivity.csv.",
+    "CTĐT — kiểm tra": "OFFICIAL (NTU) – reports/generated/curriculum_validation.json.",
+    "CTĐT — số kiểm tra và thông tin (tách riêng)": "OFFICIAL (NTU) – reports/generated/curriculum_validation.json.",
+    "CTĐT — mã HP cần xác minh": "OFFICIAL (NTU) – reports/generated/curriculum_unverified_course_codes.csv (mã HP0xx do nhóm gán).",
+    "Quy chế — bảng giả định và trạng thái": "OFFICIAL (NTU) – QĐ 753/QĐ-ĐHNT (diễn giải chưa xác nhận giữ UNCONFIRMED/UNKNOWN).",
+    "ML — validation ba lớp": "REAL (UCI-697) – reports/generated/model_comparison.csv.",
+    "ML — validation nhị phân": "REAL (UCI-697) – reports/generated/model_comparison.csv.",
+    "ML — đánh giá holdout một lần": "REAL (UCI-697) – reports/generated/test_evaluation.json.",
+    "ML — bootstrap KTC 95% trên validation": "REAL (UCI-697) – reports/generated/ml_validation_bootstrap_ci.json.",
+    "ML — hiệu chuẩn xác suất (metrics.json)": "REAL (UCI-697) – reports/generated/metrics.json.",
+    "ML — SHAP toàn cục, năm đặc trưng đầu": "REAL (UCI-697) – reports/generated/shap_global.csv.",
+    "ILP — ba phương án cho 9 hồ sơ": "SCENARIO / GIẢ ĐỊNH – reports/generated/plans_by_student.csv.",
+    "ILP — độ nhạy scenario V2-002": "SCENARIO / GIẢ ĐỊNH – reports/generated/ilp_sensitivity.csv.",
 }
+APPENDIX_E_FULL_CSVS = {
+    "CTĐT — mã HP cần xác minh": "reports/generated/curriculum_unverified_course_codes.csv",
+    "ILP — ba phương án cho 9 hồ sơ": "reports/generated/plans_by_student.csv",
+    "So sánh kế hoạch theo ngân sách": "reports/generated/plans_by_budget.csv",
+    "Monte Carlo — kết quả từng hồ sơ, λ=0.1": "reports/generated/mc_results.csv",
+    "Monte Carlo — histogram từng hồ sơ, λ=0.1": "reports/generated/mc_grad_hist.csv",
+    "Monte Carlo — so sánh cặp từng hồ sơ, λ=0.1": "reports/generated/mc_pairwise.csv",
+    "Monte Carlo — Pareto từng hồ sơ, λ=0.1": "reports/generated/mc_pareto.csv",
+}
+REPRESENTATIVE_ILP_PROFILES = {"V2-001", "V2-003", "V2-005", "V2-006", "V2-009"}
 MC_TABLE_TITLES = {
     "Monte Carlo — kết quả từng hồ sơ, λ=0.1",
     "Monte Carlo — histogram từng hồ sơ, λ=0.1",
@@ -275,7 +285,10 @@ def _add_image(
     title: str,
     description: str,
     source: str,
+    interpretation: str,
 ) -> int:
+    if not interpretation or not interpretation.strip():
+        raise ValueError(f"Figure {chapter}.{figure_number} ({title}) requires a non-empty interpretation.")
     paragraph = document.add_paragraph()
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     paragraph.paragraph_format.keep_with_next = True
@@ -286,8 +299,164 @@ def _add_image(
         inline[0].set("descr", description)
     _add_caption(document, chapter, "figure", figure_number, title)
     _add_paragraph(document, f"Nguồn: {source}", style="Caption")
-    _add_paragraph(document, f"Hình {chapter}.{figure_number} được dùng để minh họa giao diện ở chương này.")
+    _add_paragraph(document, f"Hình {chapter}.{figure_number}: {interpretation.strip()}")
     return figure_number + 1
+
+
+def _load_team_config() -> dict[str, Any]:
+    path = ROOT / "config" / "team.yaml"
+    if not path.is_file():
+        raise FileNotFoundError(f"Required team configuration not found: {path}")
+    raw_text = path.read_text(encoding="utf-8-sig")
+    if "<" in raw_text and ">" in raw_text:
+        raise ValueError("config/team.yaml still contains placeholder markers '<...>'")
+    data = yaml.safe_load(raw_text) or {}
+    for key in ("course", "group", "advisor", "year", "members"):
+        if not data.get(key):
+            raise ValueError(f"config/team.yaml missing required key: {key}")
+    members = data["members"]
+    total = 0
+    for index, member in enumerate(members, 1):
+        for field in ("name", "student_id", "role", "contribution"):
+            if member.get(field) in (None, ""):
+                raise ValueError(f"Member #{index} in config/team.yaml missing field: {field}")
+        total += int(member["contribution"])
+    if total != 100:
+        raise ValueError(f"Total member contribution in config/team.yaml must equal 100, got {total}")
+    return data
+
+
+def _build_ml_figure_interpretations() -> dict[str, str]:
+    test_eval = _read_json("test_evaluation.json")
+    comparison = _read_csv("model_comparison.csv")
+    three = next(row for row in comparison if row["task"] == "three_class" and row["model"] == "XGBoost")
+    binary = next(row for row in comparison if row["task"] == "binary_dropout" and row["model"] == "XGBoost")
+    ml_val = _read_json("metrics.json")["ml"]["validation"]
+    three_recall = ml_val["multiclass"]["XGBoost"]["dropout_recall_at_precision_0.50"]["recall"]
+    binary_recall = ml_val["binary"]["XGBoost"]["dropout_recall_at_precision_0.50"]["recall"]
+    shap_rows = _read_csv("shap_global.csv")
+    top1, top2, top3 = shap_rows[0], shap_rows[1], shap_rows[2]
+    cm = test_eval["confusion_matrix"]
+    drop_stats = test_eval["per_class"]["Dropout"]
+    enr_stats = test_eval["per_class"]["Enrolled"]
+    grad_stats = test_eval["per_class"]["Graduate"]
+    return {
+        "final_confusion_matrix_test.png": (
+            f"Ma trận nhầm lẫn trên {test_eval['test_rows']} mẫu holdout test (XGBoost ba lớp) đạt "
+            f"accuracy {test_eval['accuracy']:.4f} và macro-F1 {test_eval['macro_f1']:.4f}. "
+            f"Lớp Dropout đạt precision {drop_stats['precision']:.4f}, recall {drop_stats['recall']:.4f} "
+            f"(đúng {cm[0][0]}/{drop_stats['support']} mẫu); lớp Graduate đạt recall {grad_stats['recall']:.4f}, "
+            f"còn lớp Enrolled chỉ đạt recall {enr_stats['recall']:.4f} do bị kiểm duyệt phải và chồng lấn với hai lớp còn lại. "
+            f"Kết quả chỉ phản ánh dữ liệu UCI-697, chưa kiểm định trên dữ liệu sinh viên NTU."
+        ),
+        "precision_recall_validation.png": (
+            f"Đường precision–recall trên tập validation cho thấy mô hình XGBoost ba lớp đạt PR-AUC Dropout "
+            f"{float(three['dropout_pr_auc']):.4f} (nhị phân {float(binary['dropout_pr_auc']):.4f}) và recall tại precision ≥ 0,50 "
+            f"đạt {three_recall:.4f} (nhị phân {binary_recall:.4f}). "
+            f"Đường cong nằm cao hơn đáng kể so với đường nền ngẫu nhiên, hỗ trợ sàng lọc nhóm nguy cơ bỏ học ở mốc T1. "
+            f"Vì validation tham gia lựa chọn mô hình/ngưỡng nên các giá trị này có thể lạc quan hơn holdout test trên UCI-697 và chưa kiểm định trên NTU."
+        ),
+        "calibration_validation.png": (
+            f"Biểu đồ hiệu chuẩn xác suất trên validation đối chiếu xác suất dự báo với tần suất thực tế cho lớp Dropout "
+            f"(Brier score ba lớp {float(three['dropout_brier']):.4f}, nhị phân {float(binary['dropout_brier']):.4f}). "
+            f"Độ lệch giữa đường thực nghiệm và đường chéo lý tưởng cho thấy mức tin cậy của xác suất sau hiệu chuẩn khi chuyển sang các ngưỡng cảnh báo. "
+            f"Kết quả chỉ hợp lệ trên tập validation của UCI-697, chưa có dữ liệu NTU để hiệu chuẩn lại."
+        ),
+        "shap_global_validation.png": (
+            f"Giá trị |SHAP| trung bình trên validation xếp hạng đóng góp toàn cục của các đặc trưng vào dự báo tại T1, "
+            f"dẫn đầu là {top1['feature']} ({float(top1['mean_abs_shap']):.4f}), {top2['feature']} ({float(top2['mean_abs_shap']):.4f}) "
+            f"và {top3['feature']} ({float(top3['mean_abs_shap']):.4f}). "
+            f"Biểu đồ cho thấy kết quả học tập HK1 và thông tin đầu vào chi phối đầu ra mô hình trên UCI-697. "
+            f"SHAP chỉ giải thích đóng góp trong mô hình dự báo, không phải quan hệ nhân quả và chưa kiểm chứng trên sinh viên NTU."
+        ),
+    }
+
+
+def _build_mc_figure_interpretations() -> dict[str, str]:
+    mc_rows = _read_csv("mc_results.csv")
+    pareto_rows = _read_csv("mc_pareto.csv")
+    by_lam_policy: dict[tuple[str, str], list[dict[str, str]]] = defaultdict(list)
+    for row in mc_rows:
+        by_lam_policy[(row["lambda"], row["policy"])].append(row)
+
+    def _mean(lam: str, policy: str, field: str) -> float:
+        vals = [float(r[field]) for r in by_lam_policy[(lam, policy)]]
+        return sum(vals) / len(vals)
+
+    b1_on_time_0 = _mean("0.0", "B1", "p_graduated_on_time")
+    b1_on_time_03 = _mean("0.3", "B1", "p_graduated_on_time")
+    ilp_on_time_0 = _mean("0.0", "ILP-matched", "p_graduated_on_time")
+    ilp_on_time_03 = _mean("0.3", "ILP-matched", "p_graduated_on_time")
+    ilp_fail_03 = _mean("0.3", "ILP-matched", "expected_failed_courses")
+    b1_fail_03 = _mean("0.3", "B1", "expected_failed_courses")
+    ilp_dom = sum(1 for r in pareto_rows if r["dominance"] == "ILP vượt trội")
+    ilp_loss = sum(1 for r in pareto_rows if r["dominance"] == "ILP bị vượt trội")
+    tradeoff = sum(1 for r in pareto_rows if r["dominance"] == "đánh đổi")
+    indiff = sum(1 for r in pareto_rows if r["dominance"] == "chưa phân biệt")
+    return {
+        "mc_graduation_distribution.png": (
+            f"Phân phối kỳ tốt nghiệp theo 5 chính sách cho thấy khi tăng λ từ 0.0 lên 0.3, xác suất tốt nghiệp đúng hạn (≤8 kỳ) trung bình "
+            f"của B1 giảm từ {b1_on_time_0:.3f} xuống {b1_on_time_03:.3f}, trong khi ILP-matched giữ mức {ilp_on_time_0:.3f} đến {ilp_on_time_03:.3f} "
+            f"với số môn trượt kỳ vọng tại λ=0.3 là {ilp_fail_03:.3f} so với {b1_fail_03:.3f} ở B1. "
+            f"Các đường phân phối phản ánh sự dịch chuyển kỳ tốt nghiệp khi tải phạt hoặc rủi ro tăng. "
+            f"Đây là kết quả phân tích kịch bản GIẢ ĐỊNH/SCENARIO từ reports/generated/mc_results.csv, không phải bằng chứng hiệu quả thực tế trên sinh viên NTU."
+        ),
+        "mc_pareto.png": (
+            f"Biểu đồ Pareto đối chiếu mục tiêu đúng hạn và số môn trượt kỳ vọng trên {len(pareto_rows)} cặp so sánh ở 3 mức λ trong mc_pareto.csv: "
+            f"nhãn nghiêng về ILP trong {ilp_dom} cặp, nghiêng về chính sách đối chiếu ở {ilp_loss} cặp, đánh đổi ở {tradeoff} cặp và chưa phân biệt ở {indiff} cặp. "
+            f"Vị trí các điểm cho thấy ILP thường giảm số môn trượt khi λ > 0 nhưng đánh đổi tốc độ tích lũy tín chỉ ở một số hồ sơ. "
+            f"Toàn bộ nhãn Pareto thuộc kịch bản GIẢ ĐỊNH/SCENARIO phụ thuộc cấu hình λ và giả định xác suất."
+        ),
+    }
+
+
+def _build_demo_interpretations() -> dict[str, str]:
+    risk_rows = {(r["student_id"], r["plan_type"]): r for r in _read_csv("final_risk_levels.csv")}
+    plan_rows = {(r["student_id"], r["plan_type"]): r for r in _read_csv("plans_by_student.csv")}
+    mc_v6 = [r for r in _read_csv("mc_results.csv") if r["student_id"] == "V2-006" and r["lambda"] == "0.1"]
+    v6_b1 = next(r for r in mc_v6 if r["policy"] == "B1")
+    v6_ilp = next(r for r in mc_v6 if r["policy"] == "ILP-matched")
+
+    v5 = risk_rows[("V2-005", "balanced")]
+    v5_plan = plan_rows[("V2-005", "balanced")]
+    v3_bal = risk_rows[("V2-003", "balanced")]
+    v3_risk = risk_rows[("V2-003", "risk_focused")]
+    v6_bal = risk_rows[("V2-006", "balanced")]
+    return {
+        "V2-005-PADK.png": (
+            f"Màn hình Phương án đăng ký của hồ sơ V2-005 (SCENARIO) hỗ trợ cố vấn rà soát phương án gợi ý {v5['selected_credits']} tín chỉ "
+            f"với trạng thái bộ giải {v5_plan['status']}. Giao diện hiển thị mức cảnh báo {v5['risk_level']} cùng số môn trượt kỳ vọng "
+            f"{float(v5['expected_failed_courses']):.4f} và P(W1) = {float(v5['p_warning_W1']):.4f}, P(W2) = {float(v5['p_warning_W2']):.4f}. "
+            f"Người dùng đọc kết hợp trạng thái bộ giải với cảnh báo cố vấn để hiểu rằng optimal chỉ tối ưu theo giả định mô hình chứ không miễn trừ rủi ro học vụ."
+        ),
+        "V2-003-PADK.png": (
+            f"Màn hình Phương án đăng ký của hồ sơ V2-003 (SCENARIO) hỗ trợ so sánh trực tiếp ba phương án theo cùng bộ lọc hồ sơ. "
+            f"Phương án Cân bằng chọn {v3_bal['selected_credits']} tín chỉ (môn trượt kỳ vọng {float(v3_bal['expected_failed_courses']):.4f}, mức {v3_bal['risk_level']}), "
+            f"trong khi Tập trung giảm rủi ro chọn {v3_risk['selected_credits']} tín chỉ (môn trượt kỳ vọng {float(v3_risk['expected_failed_courses']):.4f}, mức {v3_risk['risk_level']}). "
+            f"Người dùng dựa vào chênh lệch tải tín chỉ và mức cảnh báo để cân nhắc phương án phù hợp."
+        ),
+        "V2-003-WhatIf.png": (
+            f"Màn hình What-if của hồ sơ V2-003 (SCENARIO) hỗ trợ kiểm tra độ nhạy khi thay đổi tham số λ hoặc ngân sách tín chỉ so với mặc định. "
+            f"Bảng đối chiếu đặt cạnh nhau phương án mặc định ({v3_bal['selected_credits']} tín chỉ, {float(v3_bal['expected_failed_courses']):.4f} môn trượt kỳ vọng) "
+            f"và phương án What-if để người dùng nhận diện ngay tác động lên tín chỉ đạt kỳ vọng và xác suất cảnh báo P(W2) = {float(v3_bal['p_warning_W2']):.4f}."
+        ),
+        "V2-006-MP.png": (
+            f"Màn hình Mô phỏng của hồ sơ V2-006 (SCENARIO) hỗ trợ đánh giá quỹ đạo dài hạn theo chính sách và hệ số λ đã chọn (ví dụ tại λ = 0.1). "
+            f"Theo dữ liệu nguồn, chính sách ILP-matched đạt P(tốt nghiệp ≤8 kỳ) = {float(v6_ilp['p_graduated_on_time']):.3f} với {float(v6_ilp['expected_failed_courses']):.3f} môn trượt kỳ vọng, "
+            f"so với B1 là {float(v6_b1['p_graduated_on_time']):.3f} và {float(v6_b1['expected_failed_courses']):.3f} môn trượt kỳ vọng. "
+            f"Người dùng đọc biểu đồ kèm nhãn GIẢ ĐỊNH/SCENARIO để không diễn giải như dự báo thực tế tại NTU."
+        ),
+        "V2-006-HP.png": (
+            f"Màn hình Học phần của hồ sơ V2-006 (SCENARIO) hỗ trợ kiểm tra danh sách môn học, số tín chỉ và trạng thái đủ điều kiện tiên quyết/song hành trước khi tối ưu. "
+            f"Hồ sơ V2-006 có phương án Cân bằng chọn {v6_bal['selected_credits']} tín chỉ ở mức cảnh báo {v6_bal['risk_level']}. "
+            f"Người dùng dùng bảng trạng thái học phần để đối chiếu các môn đã đạt, môn bị chặn và danh sách môn đủ điều kiện trong kỳ."
+        ),
+        "V2-006-DLGD.png": (
+            f"Màn hình Nguy cơ & cảnh báo của hồ sơ V2-006 (SCENARIO) tổng hợp mức rủi ro tại T1 và các ngưỡng cảnh báo học vụ tương ứng. "
+            f"Trên hồ sơ V2-006, phương án Cân bằng ghi nhận P(W1) = {float(v6_bal['p_warning_W1']):.4f}, P(W2) = {float(v6_bal['p_warning_W2']):.4f} "
+            f"và mức cảnh báo {v6_bal['risk_level']}. Người dùng xem trang này để nắm lý do kích hoạt cảnh báo và ranh giới phạm vi của mô hình."
+        ),
+    }
 
 
 def _build_architecture_figure() -> Path:
@@ -788,18 +957,34 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
     title = document.add_paragraph(style="Title")
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     title.add_run("HỆ HỖ TRỢ CẢNH BÁO RỦI RO HỌC TẬP\nVÀ TỐI ƯU LỘ TRÌNH TÍN CHỈ")
+    team = _load_team_config()
     for line in (
-        "Môn học: ______________________________",
-        "Nhóm: _________________________________",
-        "Giảng viên hướng dẫn: __________________",
-        "Thời gian: _____________________________",
-        "Thành viên · Họ tên / MSSV / phân công:",
-        "1. _____________________________________",
-        "2. _____________________________________",
-        "3. _____________________________________",
-        "4. _____________________________________",
+        f"Môn học: {team['course']}",
+        f"Nhóm: {team['group']}",
+        f"Giảng viên hướng dẫn: {team['advisor']}",
+        f"Thời gian: {team['year']}",
     ):
         document.add_paragraph(line).alignment = WD_ALIGN_PARAGRAPH.CENTER
+    team_headers = ["STT", "Họ và tên", "MSSV", "Phân công", "Tỷ lệ đóng góp"]
+    team_rows = [
+        [
+            str(member.get("stt", idx)),
+            str(member["name"]),
+            str(member["student_id"]),
+            str(member["role"]),
+            f"{int(member['contribution'])}%",
+        ]
+        for idx, member in enumerate(team["members"], 1)
+    ]
+    _add_table(
+        document,
+        "Thành viên nhóm và tỷ lệ đóng góp",
+        team_headers,
+        team_rows,
+        0,
+        1,
+        "NHÓM 1 – config/team.yaml.",
+    )
     document.add_page_break()
 
     _add_heading(document, 1, "Lời mở đầu / Tóm tắt")
@@ -983,7 +1168,13 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         document, architecture_path, 4, figure_counters[4],
         "Sơ đồ kiến trúc xử lý từ dữ liệu đến giao diện",
         "Luồng ML tại T1, quy tắc học vụ, ILP, Monte Carlo và giao diện; mỗi thành phần gắn nhãn nguồn.",
-        "Tổng hợp kiến trúc thực tế; nguồn thành phần ghi trong sơ đồ, reports/generated/final_architecture.png.",
+        "HỆ THỐNG – reports/generated/final_architecture.png.",
+        (
+            "Sơ đồ minh họa luồng xử lý khép kín từ đầu vào tại mốc T1 qua mô hình ML (UCI-697), "
+            "bộ kiểm tra quy tắc học vụ (OFFICIAL NTU), bộ tối ưu ILP lập phương án đăng ký, "
+            "mô phỏng Monte Carlo đánh giá quỹ đạo dài hạn (SCENARIO / GIẢ ĐỊNH) tới giao diện Streamlit. "
+            "Mỗi khối được gắn nhãn nguồn độc lập nhằm tách bạch dữ liệu thực tế, quy chế chính thức và tham số giả định."
+        ),
     )
     _add_heading(document, 2, "Kiểm thử nghiệp vụ")
     rule_rows = [
@@ -1017,6 +1208,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         "Hình 5.1–5.4 lần lượt trình bày ma trận nhầm lẫn của holdout test, PR và hiệu chuẩn trên "
         "validation, cùng SHAP toàn cục trên validation; validation tham gia lựa chọn nên có thể lạc quan."
     )
+    ml_interpretations = _build_ml_figure_interpretations()
     for chapter, name, title, source in REPORT_FIGURES:
         if chapter != 5:
             continue
@@ -1030,7 +1222,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         if image_path.is_file():
             figure_counters[chapter] = _add_image(
                 document, image_path, chapter, figure_counters[chapter],
-                title, title, source,
+                title, title, source, ml_interpretations[name],
             )
     comparison = _read_csv("model_comparison.csv")
     three = next(row for row in comparison if row["task"] == "three_class" and row["model"] == "XGBoost")
@@ -1290,6 +1482,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         counters[7],
         "SCENARIO / GIẢ ĐỊNH, mc_pareto.csv. Nhãn Pareto là tên loại so sánh trong artifact, không phải kết luận tổng thể.",
     )
+    mc_interpretations = _build_mc_figure_interpretations()
     for chapter, name, title, source in REPORT_FIGURES:
         if chapter != 7:
             continue
@@ -1299,7 +1492,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         if image_path.is_file():
             figure_counters[chapter] = _add_image(
                 document, image_path, chapter, figure_counters[chapter],
-                title, title, source,
+                title, title, source, mc_interpretations[name],
             )
     _add_heading(document, 2, "7.6 Kiểm tra tái tạo và độ tin cậy")
     interpretation = _read_text("final_mc_reproduction.md")
@@ -1341,6 +1534,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         "Các ảnh sau được chụp từ ứng dụng Streamlit đang chạy, trên hồ sơ SCENARIO. "
         "Mức cảnh báo rủi ro hiển thị riêng với trạng thái bộ giải."
     )
+    demo_interpretations = _build_demo_interpretations()
     for name, screen, description in REQUIRED_IMAGES:
         if not (MEDIA / name).is_file():
             if final:
@@ -1349,7 +1543,8 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         figure_title = f"{screen} — {description}"
         figure_counters[8] = _add_image(
             document, MEDIA / name, 8, figure_counters[8], figure_title, description,
-            f"Ảnh chụp thật từ demo_media/{name}; hồ sơ {screen.split(' · ')[0]}, nhãn SCENARIO.",
+            f"SCENARIO – demo_media/{name}; hồ sơ {screen.split(' · ')[0]}.",
+            demo_interpretations[name],
         )
 
     _add_heading(document, 1, "Chương 9. Kiểm thử và hướng dẫn cài đặt, chạy")
@@ -1371,7 +1566,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
     )
     _add_paragraph(
         document,
-        "Không có LibreOffice/Microsoft Word renderer khả dụng; số trang thật chưa kiểm chứng. "
+        "Mục lục, danh mục bảng/hình và số trang thực tế được cập nhật qua Microsoft Word và đối chiếu trên bản PDF xuất kèm. "
         "Ước lượng độ dài theo chương được ghi trong reports/generated/report_stats.json."
     )
 
@@ -1476,20 +1671,47 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         "reports/BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx."
     )
     _add_heading(document, 1, "Phụ lục D. Phân công thành viên")
-    for index in range(1, 5):
-        _add_paragraph(document, f"{index}. Họ tên: ____________________  MSSV: ____________________  Phân công: ____________________")
+    detail_headers = ["STT", "Họ và tên", "MSSV", "Phân công", "Tỷ lệ đóng góp"]
+    detail_rows = [
+        [
+            str(member.get("stt", idx)),
+            str(member["name"]),
+            str(member["student_id"]),
+            str(member["role"]),
+            f"{int(member['contribution'])}%",
+        ]
+        for idx, member in enumerate(team["members"], 1)
+    ]
+    _add_table(
+        document,
+        "Phân công chi tiết thành viên",
+        detail_headers,
+        detail_rows,
+        "D",
+        1,
+        "NHÓM 1 – config/team.yaml.",
+    )
 
     _add_heading(document, 1, "Phụ lục E. Bảng chi tiết và artifact hỗ trợ")
     _add_paragraph(
         document,
         "Phụ lục này lưu các bảng dài và bảng chi tiết đã rút khỏi Chương 3, 6 và 7. "
-        "Giá trị giữ nguyên từ file nguồn; nhãn nguồn và giới hạn xác minh đi kèm từng bảng."
+        "Với các bảng vượt quá 25 dòng, báo cáo trình bày bảng tóm tắt đại diện và dẫn chiếu tệp CSV đầy đủ; "
+        "nhãn nguồn và giới hạn xác minh đi kèm từng bảng."
     )
+    unconfirmed_headers, unconfirmed_rows = source_tables["CTĐT — mã HP cần xác minh"]
+    unconfirmed_csv = GENERATED / "curriculum_unverified_course_codes.csv"
+    with unconfirmed_csv.open("w", encoding="utf-8-sig", newline="") as stream:
+        writer = csv.writer(stream, lineterminator="\n")
+        writer.writerow(unconfirmed_headers)
+        writer.writerows(unconfirmed_rows)
+
     appendix_tables = [
         (
             "CTĐT — mã HP cần xác minh",
-            *source_tables["CTĐT — mã HP cần xác minh"],
-            "OFFICIAL (NTU) theo nguồn nhóm cung cấp; mã HP0xx do nhóm gán; PDF 210_CNTT.pdf không có trong repository.",
+            unconfirmed_headers,
+            unconfirmed_rows,
+            "OFFICIAL (NTU) – reports/generated/curriculum_unverified_course_codes.csv (mã HP0xx do nhóm gán; PDF 210_CNTT.pdf không có trong repository).",
         ),
         (
             "ILP — ba phương án cho 9 hồ sơ",
@@ -1502,7 +1724,7 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         "So sánh kế hoạch theo ngân sách",
         budget_headers,
         [[row[key] for key in budget_headers] for row in budget_rows],
-        "SCENARIO / GIẢ ĐỊNH, reports/generated/plans_by_budget.csv; không phải giới hạn chính thức.",
+        "SCENARIO / GIẢ ĐỊNH – reports/generated/plans_by_budget.csv.",
     ))
     expulsion_profiles = saved_explanations[
         "profiles_with_expulsion_probability_at_least_0_95_under_all_rows"
@@ -1526,16 +1748,25 @@ def build_final_report(*, final: bool = False, output_path: Path = REPORT_PATH) 
         "Hồ sơ P(buộc thôi học) ≥0.95 ở mọi chính sách đã lưu",
         expulsion_headers,
         expulsion_rows,
-        "SCENARIO / GIẢ ĐỊNH, reports/generated/mc_explanations.json.",
+        "SCENARIO / GIẢ ĐỊNH – reports/generated/mc_explanations.json.",
     ))
     for title in sorted(MC_TABLE_TITLES):
         headers, rows = source_tables[title]
         appendix_tables.append((
             title, headers, rows,
-            "SCENARIO / GIẢ ĐỊNH; artifact Monte Carlo đã lưu trong reports/generated/.",
+            f"SCENARIO / GIẢ ĐỊNH – {APPENDIX_E_FULL_CSVS.get(title, 'reports/generated/mc_results.csv')}.",
         ))
     for table_title, headers, rows, source in appendix_tables:
-        _add_table(document, table_title, headers, rows, "E", counters["E"], source)
+        display_rows = rows
+        full_csv = APPENDIX_E_FULL_CSVS.get(table_title)
+        if len(rows) > 25 and full_csv:
+            if table_title == "ILP — ba phương án cho 9 hồ sơ":
+                display_rows = [r for r in rows if r[0] in REPRESENTATIVE_ILP_PROFILES][:15]
+            else:
+                display_rows = rows[:15]
+        _add_table(document, table_title, headers, display_rows, "E", counters["E"], source)
+        if len(rows) > 25 and full_csv:
+            _add_paragraph(document, f"Bảng đầy đủ: {full_csv}")
         counters["E"] += 1
         if table_title == "ILP — ba phương án cho 9 hồ sơ":
             _add_paragraph(
