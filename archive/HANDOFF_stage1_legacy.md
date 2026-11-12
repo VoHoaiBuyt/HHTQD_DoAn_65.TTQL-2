@@ -36,7 +36,7 @@ the repository-root `HANDOFF.md` and `reports/generated/`.
 Từ gốc `E:\HHTQD_DoAn`, Python 3.14:
 
 ```powershell
-python -m pip install -r requirements-stage1.txt
+python -m pip install -r archive/requirements-stage1.txt
 python src\data\validate_curriculum.py
 python src\analysis\risk_to_plan_exploration.py
 python src\optimize\plan_risk.py
@@ -44,8 +44,8 @@ python -m unittest discover -s tests -v
 python src\analysis\ilp_formulation_check.py
 python scripts\build_risk_exploration_notebook.py
 python scripts\build_ilp_formulation_notebook.py
-python -m jupyter nbconvert --to notebook --execute --inplace notebooks\02_risk_to_plan_exploration.ipynb
-python -m jupyter nbconvert --to notebook --execute --inplace notebooks\03_ilp_formulation_check.ipynb
+python -m jupyter nbconvert --to notebook --execute --inplace archive\02_risk_to_plan_exploration.ipynb
+python -m jupyter nbconvert --to notebook --execute --inplace archive\03_ilp_formulation_check.ipynb
 ```
 
 `reports/generated/` được tái tạo từ pipeline: OOF warning/restriction, calibration deciles, M3'/non-Dropout, persona scenarios, ILP scenarios và recommendation. Notebook chỉ gọi lại pipeline/script, không là mô hình cuối. Validator ghi kết quả vào `reports/curriculum_validation.txt`.
@@ -56,21 +56,21 @@ python -m jupyter nbconvert --to notebook --execute --inplace notebooks\03_ilp_f
 - Warning ngưỡng recall và restriction threshold/PPV độc lập. Restriction threshold isotonic + PPV cùng train OOF có optimistic bias; phải đánh giá trên validation độc lập trước khi áp dụng.
 - M3' pass-rate nền gộp mọi tải theo HK1; λ/difficulty/retake là **GIẢ ĐỊNH** kịch bản. `enrolled_2=0` không bị coi là Dropout/pass=0.
 - ILP objective đo tín chỉ tương đương; β=1/8, γ=1 theo quy tắc trong spec; `u_i` là downstream credits chiết khấu. Fmax là số môn trượt kỳ vọng, khác với loss tín chỉ.
-- Status ILP: `optimal`, `best_effort`, `no_eligible_courses`, `graduation_ready`, `infeasible_data_error`; xem `reports/optimization_spec.md`.
+- Status ILP: `optimal`, `best_effort`, `no_eligible_courses`, `graduation_ready`, `infeasible_data_error`; xem `docs/optimization_spec.md`.
 - Chưa có CTĐT/quy chế NTU được xác minh. Cap tín chỉ/GPA/attempts, λ, β/γ, deadline và risk policy đều có source/label/TODO trong `src/config/credit_rules.yaml`.
 
 ## Tệp chính
 
 | Nhóm | Tệp |
 |---|---|
-| Báo cáo gộp/phương pháp/spec | `reports/stage1_report.md`, `reports/risk_to_plan_methods.md`, `reports/optimization_spec.md` |
+| Báo cáo gộp/phương pháp/spec | `archive/stage1_report.md`, `docs/risk_to_plan_methods.md`, `docs/optimization_spec.md` |
 | Config, rule, plan | `src/config/credit_rules.yaml`, `src/rules/rule_engine.py`, `src/optimize/plan_risk.py` |
-| Prototype | `src/optimize/ilp_prototype.py`, `src/analysis/ilp_formulation_check.py`, `notebooks/03_ilp_formulation_check.ipynb` |
-| C exploration | `src/analysis/risk_to_plan_exploration.py`, `notebooks/02_risk_to_plan_exploration.ipynb` |
-| Persona/data/validation | `src/data/generate_simulated_data.py`, `reports/curriculum_validation.txt`, `reports/data_dictionary.csv` |
+| Prototype | `src/optimize/ilp_prototype.py`, `src/analysis/ilp_formulation_check.py`, `archive/03_ilp_formulation_check.ipynb` |
+| C exploration | `src/analysis/risk_to_plan_exploration.py`, `archive/02_risk_to_plan_exploration.ipynb` |
+| Persona/data/validation | `src/data/generate_simulated_data.py`, `reports/curriculum_validation.txt`, `archive/data_dictionary.csv` |
 | Kết quả được sinh | `reports/generated/` |
 | Tests | `tests/test_stage1_rules_and_optimizer.py` |
-| Thư gửi cô (không sửa lượt này) | `reports/cover_message_to_co_Thuy.md` |
+| Thư gửi cô (không có trong workspace) | NOT_FOUND |
 
 ## Việc cần xác nhận trước giai đoạn 2
 

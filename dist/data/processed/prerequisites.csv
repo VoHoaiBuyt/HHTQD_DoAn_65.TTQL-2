@@ -1,0 +1,16 @@
+﻿course_id,prerequisite_id,type,source_label
+POL309,POL307,tiên quyết,PDF 210_CNTT mục 7.1
+POL308,POL307,tiên quyết,PDF 210_CNTT mục 7.1
+POL333,POL309,tiên quyết,PDF 210_CNTT mục 7.1
+POL333,POL308,tiên quyết,PDF 210_CNTT mục 7.1
+POL310,POL309,tiên quyết,PDF 210_CNTT mục 7.1
+POL310,POL308,tiên quyết,PDF 210_CNTT mục 7.1
+HP029,HP024,tiên quyết,PDF 210_CNTT mục 7.1
+HP034,HP028,tiên quyết,PDF 210_CNTT mục 7.1
+HP039-SE,HP027,tiên quyết,PDF 210_CNTT mục 7.1
+HP039-NW,HP029,tiên quyết,PDF 210_CNTT mục 7.1
+HP040-NW,HP029,tiên quyết,PDF 210_CNTT mục 7.1
+HP041-NW,HP029,tiên quyết,PDF 210_CNTT mục 7.1
+HP042-NW,HP029,tiên quyết,PDF 210_CNTT mục 7.1
+HP043-NW,HP037,song hành,PDF 210_CNTT mục 7.1
+HP044-NW,HP029,tiên quyết,PDF 210_CNTT mục 7.1

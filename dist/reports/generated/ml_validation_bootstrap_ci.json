@@ -1,0 +1,31 @@
+{
+  "source_label": "REAL (UCI-697), validation-only post-hoc bootstrap; test split not accessed",
+  "model": "XGBoost",
+  "task": "three_class",
+  "validation_rows": 885,
+  "bootstrap_replicates": 1000,
+  "seed": 20261110,
+  "interval_method": "percentile bootstrap, 95%",
+  "metrics": {
+    "accuracy": {
+      "estimate": 0.7344632768361582,
+      "ci95_lower": 0.7050847457627119,
+      "ci95_upper": 0.7627118644067796
+    },
+    "macro_f1": {
+      "estimate": 0.6530962435437205,
+      "ci95_lower": 0.6183452452567836,
+      "ci95_upper": 0.6866007441883933
+    },
+    "dropout_pr_auc": {
+      "estimate": 0.8223498025400501,
+      "ci95_lower": 0.7836634385471919,
+      "ci95_upper": 0.8570368596383886
+    },
+    "dropout_brier": {
+      "estimate": 0.12103128433227539,
+      "ci95_lower": 0.10648462995886802,
+      "ci95_upper": 0.13564044795930386
+    }
+  }
+}

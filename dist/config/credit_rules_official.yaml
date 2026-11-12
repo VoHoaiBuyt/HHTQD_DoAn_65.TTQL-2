@@ -1,0 +1,317 @@
+source_label: OFFICIAL (NTU), Quyết định 753/QĐ-ĐHNT ngày 13/08/2021, áp dụng khóa 60 trở đi
+active_ruleset:
+  value: ntu_qd753_2021
+  ref: QĐ 753/QĐ-ĐHNT
+  rule_status: CONFIRMED
+  modeled: true
+credit_limits:
+  first_semester_scope:
+    value: excluded_university_plan
+    ref: Đ9.1b
+    rule_status: CONFIRMED
+    modeled: true
+  previous_semester_average_threshold:
+    value: 5.0
+    ref: Đ9.3, Đ9.4, Đ17.2
+    rule_status: CONFIRMED
+    modeled: true
+  normal:
+    minimum:
+      value: 15
+      ref: Đ9.3
+      rule_status: CONFIRMED
+      modeled: true
+    maximum:
+      value: 27
+      ref: Đ9.3
+      rule_status: CONFIRMED
+      modeled: true
+  weak_or_poor:
+    condition:
+      value: TBHK học kỳ chính liền trước < 5.00
+      ref: Đ17.2
+      rule_status: CONFIRMED
+      modeled: true
+    minimum:
+      value: 12
+      ref: Đ9.4
+      rule_status: CONFIRMED
+      modeled: true
+    maximum:
+      value: 18
+      ref: Đ9.4
+      rule_status: CONFIRMED
+      modeled: true
+  final_semester:
+    value: Không áp dụng giới hạn tối thiểu/tối đa
+    ref: Đ9.3, Đ9.4
+    recognition:
+      value: Kế hoạch đăng ký hoàn tất toàn bộ tín chỉ còn thiếu
+      ref: Đ9.3, Đ9.4
+      label: GIẢ ĐỊNH (kỳ cuối khóa nhận diện qua kế hoạch hoàn tất)
+      rule_status: UNCONFIRMED
+      modeled: true
+    rule_status: CONFIRMED
+    modeled: true
+  summer_term:
+    value: Không áp dụng giới hạn tối thiểu/tối đa
+    ref: Đ7.2b
+    rule_status: CONFIRMED
+    modeled: true
+gpa:
+  grade_scale:
+    value: 10
+    ref: Đ14.1, Đ15.2b
+    rule_status: CONFIRMED
+    modeled: true
+  course_grade_rounding_decimals:
+    value: 1
+    ref: Đ15.2b
+    rule_status: CONFIRMED
+    modeled: true
+  rounding_decimals:
+    value: 2
+    ref: Đ17.1
+    rule_status: CONFIRMED
+    modeled: true
+  semester_average:
+    value: Tất cả học phần có điểm trong học kỳ, kể cả không đạt
+    ref: Đ14.2c, Đ17.1
+    rule_status: CONFIRMED
+    modeled: true
+  cumulative_average:
+    value: Học phần đã đạt; lấy điểm cao nhất của các lần học
+    ref: Đ14.2c, Đ17.1, Đ11.4
+    rule_status: CONFIRMED
+    modeled: true
+  passing_grade_minimum:
+    value: 5.0
+    ref: Đ15.2c
+    rule_status: CONFIRMED
+    modeled: true
+  excluded_grade_codes:
+    value:
+    - I
+    - X
+    - R
+    ref: Đ15.2c
+    rule_status: CONFIRMED
+    modeled: true
+  excluded_course_groups:
+    value:
+    - GDTC và QP-AN ngoài 130 tín chỉ
+    ref: Đ6.2g, Đ21.1đ
+    rule_status: CONFIRMED
+    modeled: true
+  excluded_course_type_values:
+    value:
+    - điều kiện
+    ref: Đ6.2g, Đ21.1đ
+    rule_status: CONFIRMED
+    modeled: true
+academic_classification:
+  weak_or_poor_threshold:
+    value: 5.0
+    ref: Đ17.2
+    rule_status: CONFIRMED
+    modeled: true
+study_year:
+  credit_thresholds:
+    value:
+    - 35
+    - 70
+    - 105
+    ref: Đ18.1
+    rule_status: CONFIRMED
+    modeled: true
+  exactly_105_credits:
+    value: Đúng 105 tín chỉ gán năm thứ tư
+    ref: Đ18.1
+    rule_status: UNCONFIRMED
+    modeled: true
+    label: GIẢ ĐỊNH (xử lý biên tại 105 tín chỉ)
+academic_warnings:
+  evaluation_scope:
+    value: "Chỉ xét cảnh báo sau học kỳ chính; không xét học kỳ hè"
+    ref: Đ19.1
+    rule_status: CONFIRMED
+    modeled: true
+  W1:
+    threshold:
+      value: 24
+      comparison: '>'
+      ref: Đ19.1a
+      rule_status: CONFIRMED
+      modeled: true
+    debt_definition:
+      value: Tín chỉ các học phần đã trượt và chưa đạt lại
+      ref: Đ19.1a
+      rule_status: UNCONFIRMED
+      modeled: true
+      label: GIẢ ĐỊNH (nợ đọng tính trên môn đã trượt, chưa đạt lại)
+  W2:
+    threshold:
+      value: 0.5
+      comparison: '>'
+      ref: Đ19.1a
+      rule_status: CONFIRMED
+      modeled: true
+  W3:
+    first_semester_threshold:
+      value: 4.0
+      comparison: <
+      ref: Đ19.1b
+      rule_status: CONFIRMED
+      modeled: true
+    later_semester_threshold:
+      value: 4.5
+      comparison: <
+      ref: Đ19.1b
+      rule_status: CONFIRMED
+      modeled: true
+  W4:
+    cumulative_average_threshold_by_study_year:
+      value:
+        1: 5.2
+        2: 5.3
+        3: 5.4
+        4: 5.5
+      comparison: <
+      ref: Đ19.1c
+      rule_status: CONFIRMED
+      modeled: true
+  forced_withdrawal:
+    consecutive_warnings_strictly_greater_than:
+      value: 2
+      ref: Đ19.2a
+      rule_status: CONFIRMED
+      modeled: true
+    maximum_main_semesters:
+      value: 16
+      comparison: '>'
+      ref: Đ2.4c, Đ19.2b
+      rule_status: CONFIRMED
+      modeled: true
+    summer_terms_count:
+      value: false
+      ref: Đ19.1
+      rule_status: CONFIRMED
+      modeled: true
+  monte_carlo_scope:
+    value: Áp dụng W1/W2; W3/W4 chỉ khi có điểm
+    ref: Giới hạn dữ liệu mô phỏng
+    rule_status: MODELING_DECISION
+    modeled: true
+retake:
+  mandatory_below_grade:
+    value: 5.0
+    ref: Đ11.1
+    rule_status: CONFIRMED
+    modeled: true
+  elective_below_grade:
+    value: 5.0
+    ref: Đ11.2
+    rule_status: CONFIRMED
+    modeled: true
+  improvement_study:
+    value: not_modeled
+    ref: Đ11.3
+    rule_status: CONFIRMED
+    modeled: false
+  honors_repeat_credit_ratio:
+    value: 0.05
+    comparison: '>'
+    ref: Đ22.3a
+    rule_status: CONFIRMED
+    modeled: true
+  honors_program_credits:
+    value: 130
+    ref: 210_CNTT.pdf, mục 7.1
+    rule_status: CONFIRMED
+    modeled: true
+graduation:
+  credits_required:
+    value: 130
+    ref: 210_CNTT.pdf, mục 7.1
+    rule_status: CONFIRMED
+    modeled: true
+  cumulative_gpa_minimum:
+    value: 5.5
+    ref: Đ14.3, Đ21.1c
+    rule_status: CONFIRMED
+    modeled: true
+  required_outcomes:
+    value:
+    - qpan
+    - gdtc
+    - foreign_language
+    - informatics
+    ref: Đ21.1b, Đ21.1d, Đ21.1đ
+    label: "Danh mục điều kiện theo Đ21.1; kết quả Boolean trong kịch bản là giả định."
+    rule_status: CONFIRMED
+    modeled: true
+  outcome_details:
+    value: UNKNOWN
+    ref: NOT_FOUND
+    rule_status: UNKNOWN
+    modeled: false
+    label: Chi tiết chuẩn đầu ra chưa được nhóm cung cấp.
+limitations:
+  summer_terms:
+    value: Điều kiện mở lớp và học phần hè chưa mô hình hóa; kết quả thận trọng hơn thực tế
+    ref: Không có lịch mở lớp trong dữ liệu CTĐT
+    rule_status: UNCONFIRMED
+    modeled: true
+  course_offerings:
+    value: Lịch mở chẵn/lẻ theo cột offered_semesters do nhóm cung cấp; chưa có trong văn bản quy chế
+    ref: NOT_FOUND
+    rule_status: UNCONFIRMED
+    modeled: true
+    label: GIẢ ĐỊNH (lịch mở chẵn/lẻ theo dữ liệu nhóm)
+  corequisite_semantics:
+    value: Song hành = học cùng kỳ hoặc đã/đang học
+    ref: Chờ đối chiếu quy chế
+    rule_status: UNCONFIRMED
+    modeled: true
+    label: GIẢ ĐỊNH (song hành được thỏa nếu học cùng kỳ hoặc đã/đang học)
+  final_semester_recognition:
+    value: Kỳ cuối khóa khi kế hoạch đăng ký hoàn tất mọi tín chỉ còn thiếu
+    ref: Đ9.3, Đ9.4
+    rule_status: UNCONFIRMED
+    modeled: true
+    label: GIẢ ĐỊNH (nhận diện kỳ cuối khóa)
+  exact_105_credit_year:
+    value: Gán năm thứ tư khi đúng 105 tín chỉ tích lũy
+    ref: Đ18.1
+    rule_status: UNCONFIRMED
+    modeled: true
+    label: GIẢ ĐỊNH (đúng 105 tín chỉ thuộc năm thứ tư)
+  outcome_details:
+    value: Chi tiết chuẩn đầu ra UNKNOWN; chỉ nhận cờ Boolean trong hồ sơ kịch bản
+    ref: NOT_FOUND
+    rule_status: UNKNOWN
+    modeled: false
+    label: Chi tiết đầu ra chưa được cung cấp.
+assumptions:
+  label: GIẢ ĐỊNH (chưa được nhóm xác nhận)
+  items:
+  - name: w1_debt
+    value: Nợ đọng là tín chỉ học phần đã trượt và chưa đạt lại.
+    rule_status: UNCONFIRMED
+    modeled: true
+  - name: study_year_boundary
+    value: Đúng 105 tín chỉ gán năm thứ tư.
+    rule_status: UNCONFIRMED
+    modeled: true
+  - name: final_semester
+    value: Kỳ cuối khóa khi kế hoạch đăng ký hoàn tất mọi tín chỉ còn thiếu.
+    rule_status: UNCONFIRMED
+    modeled: true
+  - name: corequisite_semantics
+    value: Song hành được thỏa nếu học cùng kỳ hoặc đã/đang học.
+    rule_status: UNCONFIRMED
+    modeled: true
+  - name: odd_even_offerings
+    value: Lịch mở chẵn/lẻ lấy từ cột offered_semesters do nhóm cung cấp; không có trong văn bản quy chế.
+    rule_status: UNCONFIRMED
+    modeled: true

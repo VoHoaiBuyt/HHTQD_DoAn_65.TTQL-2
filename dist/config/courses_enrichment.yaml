@@ -1,0 +1,82 @@
+label: "GIẢ ĐỊNH (suy từ CTĐT)"
+source: "Fields are derived from course_id, course_type, group, and offered_semesters; courses.csv remains unchanged."
+specialization:
+  suffix_rules:
+    "-SE": SE
+    "-IS": IS
+    "-NW": NW
+  default: common
+  source: "Suffix match on the exact course_id; suffixes remain part of the course key."
+counts_toward_total:
+  false_groups:
+    - "GDTC và QP-AN ngoài 130 tín chỉ"
+  default: true
+elective_slot:
+  selection_required: 1
+  exact:
+    BUA319: HP017
+    HP017-A: HP017
+  general_elective_slot_hp017:
+    members: [HP017-A, BUA319]
+    assumption: "Both 2-credit alternatives are assigned to the same HK3 slot."
+  prefixes:
+    HP016: HP016
+    HP018: HP018
+    HP019: HP019
+    HP031: HP031
+    HP045-SE: HP045-SE
+    HP045-IS: HP045-IS
+    HP045-NW: HP045-NW
+    HP046-SE: HP046-SE
+    HP046-IS: HP046-IS
+    HP046-NW: HP046-NW
+    HP047-SE: HP047-SE
+    HP047-IS: HP047-IS
+    HP047-NW: HP047-NW
+    HP048: HP048
+slot_required_credits:
+  HP016: 2
+  HP017: 2
+  HP018: 2
+  HP019: 2
+  HP031: 3
+  HP045-SE: 3
+  HP045-IS: 3
+  HP045-NW: 3
+  HP046-SE: 3
+  HP046-IS: 3
+  HP046-NW: 3
+  HP047-SE: 3
+  HP047-IS: 3
+  HP047-NW: 3
+  HP048: 5
+graduation_slot:
+  slot: HP048
+  required_credits: 5
+  semester: 8
+  selection_required: 1
+  counts_as_mandatory: true
+code_source:
+  pdf_prefixes: [POL, SSH, BUA, MKT, PHE, QPAD]
+  unconfirmed_prefixes: [HP]
+  otherwise:
+    value: UNKNOWN
+    source: NOT_FOUND
+offering_rule:
+  column: offered_semesters
+  accepted_values: [odd, even, both]
+  odd_semester_rule: "target semester number is odd"
+  even_semester_rule: "target semester number is even"
+  both_rule: "course may be offered in any regular semester"
+  label: "GIẢ ĐỊNH (suy từ CTĐT)"
+  limitation: "Academic-term parity is only an inference; summer terms are not modeled."
+prerequisite_semantics:
+  strict_type:
+    value: "tiên quyết"
+    meaning: "prior course must be completed"
+    label: "GIẢ ĐỊNH (chờ đối chiếu quy chế)"
+  concurrent_type:
+    value: "song hành"
+    meaning: "peer must be completed, in progress, or eligible in the same target term"
+    label: "GIẢ ĐỊNH (chờ đối chiếu quy chế)"
+  completeness: UNCONFIRMED

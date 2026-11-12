@@ -1,0 +1,24 @@
+{
+  "source_label": "OFFICIAL (NTU)",
+  "specialization": "NW",
+  "strict_prerequisite_edge_count": 14,
+  "delta": 0.5,
+  "prerequisite_only_u_distribution": {
+    "0.0": 40,
+    "1.5": 1,
+    "2.0": 2,
+    "3.0": 1,
+    "5.25": 1,
+    "7.5": 1
+  },
+  "nonzero_prerequisite_unlocks": {
+    "HP024": 5.25,
+    "HP028": 1.5,
+    "HP029": 7.5,
+    "POL307": 3.0,
+    "POL308": 2.0,
+    "POL309": 2.0
+  },
+  "interpretation": "Giá trị u_i từ tiên quyết bắc cầu tập trung ở một số nút; không suy diễn rằng mọi học phần đều mở khóa chuỗi.",
+  "slot_completion_value_added_at_plan_time": true
+}

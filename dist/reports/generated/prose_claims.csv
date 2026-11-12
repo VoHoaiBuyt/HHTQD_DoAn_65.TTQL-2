@@ -1,0 +1,179 @@
+﻿location,number,source_file,key,source_value
+final_questions_for_co.md,0.8223,reports/generated/model_comparison.csv,task=three_class;model=XGBoost;field=dropout_pr_auc,0.8223498025400501
+final_questions_for_co.md,0.1210,reports/generated/model_comparison.csv,task=three_class;model=XGBoost;field=dropout_brier,0.12103128433227539
+final_questions_for_co.md,0.8266,reports/generated/model_comparison.csv,task=binary_dropout;model=XGBoost;field=dropout_pr_auc,0.8265546534553192
+final_questions_for_co.md,0.1191,reports/generated/model_comparison.csv,task=binary_dropout;model=XGBoost;field=dropout_brier,0.1190687045454979
+final_questions_for_co.md,0.9014,reports/generated/metrics.json,ml.validation.multiclass.XGBoost.dropout_recall_at_precision_0.50.recall,0.9014084507042254
+final_questions_for_co.md,0.8908,reports/generated/metrics.json,ml.validation.binary.XGBoost.dropout_recall_at_precision_0.50.recall,0.8908450704225352
+final_questions_for_co.md,0.8223,reports/generated/ml_validation_bootstrap_ci.json,metrics.dropout_pr_auc.estimate,0.8223498025400501
+final_questions_for_co.md,0.7837,reports/generated/ml_validation_bootstrap_ci.json,metrics.dropout_pr_auc.ci95_lower,0.7836634385471919
+final_questions_for_co.md,0.8570,reports/generated/ml_validation_bootstrap_ci.json,metrics.dropout_pr_auc.ci95_upper,0.8570368596383886
+final_questions_for_co.md,0.1210,reports/generated/ml_validation_bootstrap_ci.json,metrics.dropout_brier.estimate,0.12103128433227539
+final_questions_for_co.md,0.1065,reports/generated/ml_validation_bootstrap_ci.json,metrics.dropout_brier.ci95_lower,0.10648462995886802
+final_questions_for_co.md,0.1356,reports/generated/ml_validation_bootstrap_ci.json,metrics.dropout_brier.ci95_upper,0.13564044795930386
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=risk_focused;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=risk_focused;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=risk_focused;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=risk_focused;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=balanced;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=balanced;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=balanced;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=balanced;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=acceleration;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=acceleration;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=acceleration;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-001;plan_type=acceleration;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=risk_focused;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=risk_focused;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=risk_focused;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=risk_focused;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=balanced;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=balanced;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=balanced;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=balanced;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=acceleration;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=acceleration;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=acceleration;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-002;plan_type=acceleration;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,15.0000,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=risk_focused;field=selected_credits,15
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,12.2564,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=risk_focused;field=expected_credits_passed,12.256410256410255
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.9145,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=risk_focused;field=expected_failed_courses,0.9145299145299146
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0740,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=risk_focused;field=p_warning_W2,0.07396065927805472
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=balanced;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,14.7077,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=balanced;field=expected_credits_passed,14.707692307692309
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,1.0974,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=balanced;field=expected_failed_courses,1.0974358974358975
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0423,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=balanced;field=p_warning_W2,0.042292467566078004
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=acceleration;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,14.7077,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=acceleration;field=expected_credits_passed,14.707692307692309
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,1.0974,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=acceleration;field=expected_failed_courses,1.0974358974358975
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0423,reports/generated/plans_by_student.csv,student_id=V2-003;plan_type=acceleration;field=p_warning_W2,0.042292467566078004
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=risk_focused;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=risk_focused;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=risk_focused;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=risk_focused;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=balanced;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=balanced;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=balanced;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=balanced;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=acceleration;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=acceleration;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=acceleration;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0028,reports/generated/plans_by_student.csv,student_id=V2-004;plan_type=acceleration;field=p_warning_W2,0.0027633495102908764
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,15.0000,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=risk_focused;field=selected_credits,15
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,4.4013,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=risk_focused;field=expected_credits_passed,4.401303538175046
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,3.5430,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=risk_focused;field=expected_failed_courses,3.5430167597765365
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.9670,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=risk_focused;field=p_warning_W1,0.967005238341048
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.8089,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=risk_focused;field=p_warning_W2,0.8088536977976569
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,15.0000,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=balanced;field=selected_credits,15
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,4.4013,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=balanced;field=expected_credits_passed,4.401303538175046
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,3.5430,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=balanced;field=expected_failed_courses,3.5430167597765365
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.9670,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=balanced;field=p_warning_W1,0.967005238341048
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.8089,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=balanced;field=p_warning_W2,0.8088536977976569
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,15.0000,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=acceleration;field=selected_credits,15
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,4.4013,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=acceleration;field=expected_credits_passed,4.401303538175046
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,3.5430,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=acceleration;field=expected_failed_courses,3.5430167597765365
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.9670,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=acceleration;field=p_warning_W1,0.967005238341048
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.8089,reports/generated/plans_by_student.csv,student_id=V2-005;plan_type=acceleration;field=p_warning_W2,0.8088536977976569
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,15.0000,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=risk_focused;field=selected_credits,15
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,13.9553,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=risk_focused;field=expected_credits_passed,13.955277026064664
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4179,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=risk_focused;field=expected_failed_courses,0.4178891895741348
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0030,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=risk_focused;field=p_warning_W2,0.003035413628317745
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=balanced;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=balanced;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4875,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=balanced;field=expected_failed_courses,0.4875373878364906
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0006,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=balanced;field=p_warning_W2,0.0006179528581675961
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=acceleration;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=acceleration;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.4875,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=acceleration;field=expected_failed_courses,0.4875373878364906
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0006,reports/generated/plans_by_student.csv,student_id=V2-006;plan_type=acceleration;field=p_warning_W2,0.0006179528581675961
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,3.0000,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=risk_focused;field=selected_credits,3
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,2.5119,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=risk_focused;field=expected_credits_passed,2.511949864691639
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.1627,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=risk_focused;field=expected_failed_courses,0.16268337843612024
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.1627,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=risk_focused;field=p_warning_W2,0.16268337843612024
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,3.0000,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=balanced;field=selected_credits,3
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,2.5119,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=balanced;field=expected_credits_passed,2.511949864691639
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.1627,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=balanced;field=expected_failed_courses,0.16268337843612024
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.1627,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=balanced;field=p_warning_W2,0.16268337843612024
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,3.0000,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=acceleration;field=selected_credits,3
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,2.5119,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=acceleration;field=expected_credits_passed,2.511949864691639
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.1627,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=acceleration;field=expected_failed_courses,0.16268337843612024
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.1627,reports/generated/plans_by_student.csv,student_id=V2-007;plan_type=acceleration;field=p_warning_W2,0.16268337843612024
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=risk_focused;field=selected_credits,0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=risk_focused;field=expected_credits_passed,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=risk_focused;field=expected_failed_courses,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=risk_focused;field=p_warning_W2,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=balanced;field=selected_credits,0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=balanced;field=expected_credits_passed,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=balanced;field=expected_failed_courses,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=balanced;field=p_warning_W2,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=acceleration;field=selected_credits,0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=acceleration;field=expected_credits_passed,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=acceleration;field=expected_failed_courses,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-008;plan_type=acceleration;field=p_warning_W2,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,15.0000,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=risk_focused;field=selected_credits,15
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,13.9553,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=risk_focused;field=expected_credits_passed,13.955277026064664
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.2786,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=risk_focused;field=expected_failed_courses,0.2785927930494232
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=risk_focused;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0139,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=risk_focused;field=p_warning_W2,0.013876905640670815
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=balanced;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=balanced;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.3482,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=balanced;field=expected_failed_courses,0.348240991311779
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=balanced;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0027,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=balanced;field=p_warning_W2,0.00274298218730938
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,18.0000,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=acceleration;field=selected_credits,18
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,16.7463,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=acceleration;field=expected_credits_passed,16.746332431277594
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.3482,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=acceleration;field=expected_failed_courses,0.348240991311779
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0000,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=acceleration;field=p_warning_W1,0.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / plan table,0.0027,reports/generated/plans_by_student.csv,student_id=V2-009;plan_type=acceleration;field=p_warning_W2,0.00274298218730938
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx,3.0000,reports/generated/plans_by_student.csv,derived:identical_profile_count,3
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx,7.0000,reports/generated/plans_by_student.csv,derived:distinct_plan_signatures,7
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx,9,reports/generated/plans_by_student.csv,derived:profile_count,9
+final_cover_message.md,3.0000,reports/generated/plans_by_student.csv,derived:identical_profile_count,3
+final_cover_message.md,7.0000,reports/generated/plans_by_student.csv,derived:distinct_plan_signatures,7
+final_cover_message.md,9,reports/generated/plans_by_student.csv,derived:profile_count,9
+final_requirements_matrix.md,27,reports/generated/plans_by_student.csv,derived:plan_row_count,27
+final_requirements_matrix.md,9,reports/generated/plans_by_student.csv,derived:profile_count,9
+final_requirements_matrix.md,9,reports/generated/mc_results.csv,derived:mc_profile_count,9
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / executive summary,5,reports/generated/plans_by_student.csv,derived:high_risk_plan_count,5
+final_requirements_matrix.md,101.0000,reports/generated/curriculum_validation.json,summary.course_counts.total_rows,101
+final_requirements_matrix.md,15.0000,reports/generated/curriculum_validation.json,summary.prerequisite_graph.edge_count,15
+final_requirements_matrix.md,885.0000,reports/generated/metrics.json,ml.protocol.split_counts.validation,885
+final_requirements_matrix.md,885.0000,reports/generated/metrics.json,ml.protocol.split_counts.test,885
+final_requirements_matrix.md,1.0000,reports/generated/metrics.json,ml.protocol.test_evaluations,1
+final_requirements_matrix.md,13.0000,reports/generated/curriculum_validation.json,n_checks,13
+final_requirements_matrix.md,10.0000,reports/generated/curriculum_validation.json,n_pass,10
+final_requirements_matrix.md,3.0000,reports/generated/curriculum_validation.json,n_warn,3
+final_questions_for_co.md,0.0000,config/monte_carlo_scenario.yaml,monte_carlo.default_lambdas.0,0.0
+final_questions_for_co.md,0.1000,config/monte_carlo_scenario.yaml,monte_carlo.default_lambdas.1,0.1
+final_questions_for_co.md,0.3000,config/monte_carlo_scenario.yaml,monte_carlo.default_lambdas.2,0.3
+final_questions_for_co.md,15.0000,config/optimizer_scenario_v2.yaml,optimizer.scenario_budgets.NORMAL.0,15
+final_questions_for_co.md,18.0000,config/optimizer_scenario_v2.yaml,optimizer.scenario_budgets.NORMAL.1,18
+final_questions_for_co.md,21.0000,config/optimizer_scenario_v2.yaml,optimizer.scenario_budgets.NORMAL.2,21
+final_questions_for_co.md,12.0000,config/optimizer_scenario_v2.yaml,optimizer.scenario_budgets.WEAK_OR_POOR.0,12
+final_questions_for_co.md,15.0000,config/optimizer_scenario_v2.yaml,optimizer.scenario_budgets.WEAK_OR_POOR.1,15
+final_questions_for_co.md,18.0000,config/optimizer_scenario_v2.yaml,optimizer.scenario_budgets.WEAK_OR_POOR.2,18
+final_questions_for_co.md,95.0000,config/monte_carlo_scenario.yaml,derived:confidence_level_percent,95.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / risk thresholds,1.0000,reports/generated/final_risk_thresholds.json,high_expected_failed_courses_gte,1.0
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / risk thresholds,0.5000,reports/generated/final_risk_thresholds.json,high_warning_probability_gte,0.5
+BaoCao_Nhom1_HTTQD_65.TTQL-Final.docx / risk thresholds,0.5000,reports/generated/final_risk_thresholds.json,medium_expected_failed_courses_gte,0.5

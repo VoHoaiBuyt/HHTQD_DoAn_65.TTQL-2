@@ -1,0 +1,4 @@
+﻿tier,n_students_with_hk2,approved_units_hk2,enrolled_units_hk2,pooled_pass_rate,warning
+Thấp,535,2392,3242,0.7378161628624306,P1 sensitivity only; survivorship bias because later Dropout students are removed.
+Trung bình,238,1732,1965,0.8814249363867684,P1 sensitivity only; survivorship bias because later Dropout students are removed.
+Cao,970,6078,6424,0.9461394769613948,P1 sensitivity only; survivorship bias because later Dropout students are removed.

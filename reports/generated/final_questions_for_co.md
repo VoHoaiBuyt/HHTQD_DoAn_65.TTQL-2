@@ -1,0 +1,7 @@
+1. Cảnh báo nên trình bày ba lớp (Dropout/Enrolled/Graduate) hay nhị phân? Validation XGBoost: PR-AUC Dropout ba lớp=0.8223, nhị phân=0.8266; recall tại precision ≥ 0,50 ba lớp=0.9014, nhị phân=0.8908; Brier ba lớp=0.1210, nhị phân=0.1191. KTC ghép cặp 95% cho chênh lệch giữa hai bài toán không có trong `ml_validation_bootstrap_ci.json` (tệp chỉ lưu KTC validation của mô hình ba lớp). Vì vậy chưa đủ cơ sở để kết luận hai cách tiếp cận phân biệt được về mặt thống kê. **Mặc định:** giữ ba lớp để không gộp Enrolled bị kiểm duyệt phải vào nhãn khác.
+2. Báo cáo Monte Carlo nên trình bày cả λ=0 và λ>0? **Mặc định:** trình bày λ=0.0 và λ=0.1 làm lát cắt chính; λ=0.3 là độ nhạy, tất cả gắn nhãn GIẢ ĐỊNH.
+3. Có dùng lưới kịch bản [15, 18, 21] cho sinh viên thường và [12, 15, 18] tín chỉ cho hồ sơ yếu/kém không? **Mặc định:** có, nhưng đây là lưới phân tích, không thay giới hạn QĐ 753.
+4. Trong Monte Carlo có giới hạn buộc thôi học ở W1/W2 do không có chuỗi điểm để đánh giá W3/W4 không? **Mặc định:** chỉ W1/W2; ghi rõ W3/W4 chưa mô phỏng.
+5. Cô duyệt tiêu chí Pareto hiện tại và KTC bootstrap ghép cặp 95% không? **Mặc định:** chỉ kết luận trội khi tiêu chí chính và KTC cùng ủng hộ; nếu không thì ghi chưa phân biệt.
+6. Có cần bổ sung OULAD hay mô hình hóa học kỳ hè? **Mặc định:** chưa thêm nguồn hoặc giả định ngoài dữ liệu được nhóm cung cấp; OULAD chưa sử dụng, hè chưa mô hình hóa.
+7. Cô xác nhận cách trình bày ba nhãn “Ưu tiên giảm rủi ro”, “Cân bằng”, “Tăng tốc” và mức cảnh báo rủi ro GIẢ ĐỊNH tách biệt với trạng thái bộ giải không?

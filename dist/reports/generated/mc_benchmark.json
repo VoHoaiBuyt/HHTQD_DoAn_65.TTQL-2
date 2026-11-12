@@ -1,0 +1,15 @@
+{
+  "n_runs": 200,
+  "profiles": 9,
+  "policies": 4,
+  "lambdas": [
+    0.1
+  ],
+  "workers": 4,
+  "elapsed_seconds": 685.4799749999997,
+  "estimated_seconds_at_1000": 3427.3998749999987,
+  "results_rows": 36,
+  "pairwise_rows": 27,
+  "pareto_rows": 27,
+  "seed": 20261108
+}
