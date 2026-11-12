@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import fnmatch
 import hashlib
 import json
 import shutil
@@ -24,8 +25,35 @@ EXCLUDED_GENERATED = {
     "final_mismatch_disposition.md",
     "final_cover_message.md",
     "scenario_v1_defects.json",
-    "mc_interpretation.md",
+    # audit logs
+    "final_prose_numbers.csv",
+    "final_phrase_scan.csv",
+    "final_report_phrase_scan.csv",
+    "final_hash_check.csv",
+    # examples
+    "run_dss_example.json",
+    "regulation_evaluation_example.json",
+    "evaluate_student_test_fixture.json",
+    # unreferenced exploratory / diagnostic tables
+    "mc_d1_loads.csv",
+    "mc_regime_counts.csv",
+    "mc_d4c_ilp_vs_b2_lambda_0_3.csv",
+    "risk_warning_tier_oof.csv",
+    "risk_restriction_threshold_oof.csv",
+    "pass_rate_calibration_deciles.csv",
+    "risk_to_plan_persona_scenarios.csv",
 }
+# lambda sensitivity raw (keeps mc_planner_lambda_sensitivity.csv)
+EXCLUDED_GENERATED_PATTERNS = (
+    "mc_*_lambda_0*.csv",
+    "mc_runtime_lambda_*.json",
+)
+
+
+def _is_excluded_generated(name: str) -> bool:
+    return name in EXCLUDED_GENERATED or any(
+        fnmatch.fnmatch(name, pattern) for pattern in EXCLUDED_GENERATED_PATTERNS
+    )
 IGNORED_NAMES = {
     ".git",
     ".venv",
@@ -123,7 +151,7 @@ def build_dist() -> list[Path]:
     generated_dest = DIST / "reports" / "generated"
     generated_dest.mkdir(parents=True, exist_ok=True)
     for path in (ROOT / "reports" / "generated").iterdir():
-        if path.is_file() and path.name not in EXCLUDED_GENERATED:
+        if path.is_file() and not _is_excluded_generated(path.name):
             shutil.copy2(path, generated_dest / path.name)
     shutil.copy2(REPORT, DIST / "reports" / REPORT.name)
     _copy_tree(ROOT / "demo_media", DIST / "demo_media")
