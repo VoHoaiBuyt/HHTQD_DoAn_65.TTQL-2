@@ -29,6 +29,7 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
   - `config/monte_carlo_scenario.yaml`
   - `config/optimizer_scenario_v2.yaml`
   - `config/program_official.yaml`
+  - `config/team.yaml`
 - `core/`
   - `core/data/`
   - `core/__init__.py`
@@ -92,6 +93,8 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
   - `scripts/README.md`
   - `scripts/run_monte_carlo.py`
   - `scripts/test_prose_claims.py`
+  - `scripts/update_word_fields.ps1`
+  - `scripts/write_dist_validation.py`
 - `tests/`
   - `tests/__init__.py`
   - `tests/README.md`

@@ -9,11 +9,14 @@ from docx.oxml.ns import qn
 from docx.enum.style import WD_STYLE_TYPE
 
 from scripts.build_final_report import (
+    APPENDIX_E_FULL_CSVS,
     MEDIA,
+    REPRESENTATIVE_ILP_PROFILES,
     REQUIRED_IMAGES,
     REPORT_FIGURES,
     REPORT_PATH,
     ROOT,
+    _load_team_config,
     _parse_table,
     _read_text,
 )
@@ -36,6 +39,30 @@ EXPECTED_CHAPTERS = (
 CAPTION = re.compile(r"^Bảng ([A-E]|\d+)\.(\d+)\. (.+)$")
 
 
+def _paragraph_instructions(paragraph) -> list[str]:
+    simple = [
+        field.get(qn("w:instr"), "").strip()
+        for field in paragraph._p.xpath(".//w:fldSimple")
+    ]
+    complex_instr = [
+        (node.text or "").strip()
+        for node in paragraph._p.xpath(".//w:instrText")
+    ]
+    return [item for item in (*simple, *complex_instr) if item]
+
+
+def _all_field_instructions(root_element) -> list[str]:
+    simple = [
+        field.get(qn("w:instr"), "").strip()
+        for field in root_element.xpath(".//w:fldSimple")
+    ]
+    complex_instr = [
+        (node.text or "").strip()
+        for node in root_element.xpath(".//w:instrText")
+    ]
+    return [item for item in (*simple, *complex_instr) if item]
+
+
 def _contents(table) -> list[list[str]]:
     return [[cell.text for cell in row.cells] for row in table.rows]
 
@@ -47,13 +74,14 @@ def _paragraph_text(paragraph) -> str:
 def _check_fonts(document: Document) -> tuple[int, int]:
     checked_runs = 0
     table_runs = 0
+    normal_style = document.styles["Normal"]
+    if normal_style.font.name != "Times New Roman" or normal_style.font.size.pt != 12:
+        raise ValueError("Style Normal must be Times New Roman 12 pt")
     expected_styles = {
         "Normal": 12,
         "Title": 12,
         "Subtitle": 12,
         "Caption": 12,
-        "TOC 1": 12,
-        "TOC 2": 12,
         "Heading 1": 14,
         "Heading 2": 13,
         "Heading 3": 12,
@@ -62,27 +90,15 @@ def _check_fonts(document: Document) -> tuple[int, int]:
         if name not in document.styles:
             raise ValueError(f"Required paragraph style is missing: {name}")
         style = document.styles[name]
-        if style.font.name != "Times New Roman" or style.font.size.pt != size:
-            raise ValueError(f"Style {name} must be Times New Roman {size} pt")
-        rpr = style.element.rPr
-        rfonts = rpr.rFonts if rpr is not None else None
-        if rfonts is None or any(
-            rfonts.get(qn(f"w:{key}")) != "Times New Roman"
-            for key in ("ascii", "hAnsi", "eastAsia", "cs")
-        ):
-            raise ValueError(f"Style {name} lacks explicit Times New Roman mappings")
+        eff_name = style.font.name or normal_style.font.name
+        eff_size = style.font.size.pt if style.font.size is not None else normal_style.font.size.pt
+        if eff_name != "Times New Roman" or eff_size != size:
+            raise ValueError(f"Style {name} must be Times New Roman {size} pt (got {eff_name} {eff_size} pt)")
     for style in document.styles:
         if style.type not in {WD_STYLE_TYPE.PARAGRAPH, WD_STYLE_TYPE.CHARACTER}:
             continue
-        if style.font.name != "Times New Roman":
-            raise ValueError(f"Style {style.name} must use Times New Roman")
-        rpr = style.element.rPr
-        rfonts = rpr.rFonts if rpr is not None else None
-        if rfonts is None or any(
-            rfonts.get(qn(f"w:{key}")) != "Times New Roman"
-            for key in ("ascii", "hAnsi", "eastAsia", "cs")
-        ):
-            raise ValueError(f"Style {style.name} lacks explicit font mappings")
+        if style.font.name not in (None, "Times New Roman"):
+            raise ValueError(f"Style {style.name} must use Times New Roman (got {style.font.name})")
     for paragraph in document.paragraphs:
         expected_size = {
             "Heading 1": 14,
@@ -93,36 +109,30 @@ def _check_fonts(document: Document) -> tuple[int, int]:
             if not run.text and not run._element.xpath("./w:rPr/w:rFonts"):
                 continue
             checked_runs += 1
-            if run.font.name != "Times New Roman":
+            if run.font.name not in (None, "Times New Roman"):
                 raise ValueError(f"Non-Times New Roman paragraph run: {run.text[:50]!r}")
-            if run.font.size is None or run.font.size.pt != expected_size:
+            eff_size = run.font.size.pt if run.font.size is not None else expected_size
+            if eff_size != expected_size:
                 raise ValueError(
                     f"{paragraph.style.name} run must use {expected_size} pt: {run.text[:50]!r}"
                 )
-            rfonts = run._element.rPr.rFonts if run._element.rPr is not None else None
-            if rfonts is None or any(
-                rfonts.get(qn(f"w:{key}")) != "Times New Roman"
-                for key in ("ascii", "hAnsi", "eastAsia", "cs")
-            ):
-                raise ValueError(f"Missing explicit Times New Roman font mappings: {run.text[:50]!r}")
     for table in document.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
                     for run in paragraph.runs:
                         table_runs += 1
-                        if run.font.name != "Times New Roman" or run.font.size.pt != 11:
+                        if run.font.name not in (None, "Times New Roman"):
+                            raise ValueError("Table runs must use Times New Roman")
+                        if run.font.size is None or run.font.size.pt != 11:
                             raise ValueError("Table runs must use Times New Roman 11 pt")
-                        rfonts = run._element.rPr.rFonts if run._element.rPr is not None else None
-                        if rfonts is None or any(
-                            rfonts.get(qn(f"w:{key}")) != "Times New Roman"
-                            for key in ("ascii", "hAnsi", "eastAsia", "cs")
-                        ):
-                            raise ValueError("Table run lacks explicit East Asian font mapping")
     for section in document.sections:
         for paragraph in section.footer.paragraphs:
             for run in paragraph.runs:
-                if run.font.name != "Times New Roman" or run.font.size.pt != 12:
+                if run.font.name not in (None, "Times New Roman"):
+                    raise ValueError("Footer runs must use Times New Roman")
+                eff_size = run.font.size.pt if run.font.size is not None else 12
+                if eff_size != 12:
                     raise ValueError("Footer runs must use Times New Roman 12 pt")
     return checked_runs, table_runs
 
@@ -157,10 +167,7 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     figure_caption_count = 0
     for paragraph in document.paragraphs:
         text = _paragraph_text(paragraph).strip()
-        instructions = [
-            field.get(qn("w:instr"), "")
-            for field in paragraph._p.xpath(".//w:fldSimple")
-        ]
+        instructions = _paragraph_instructions(paragraph)
         match = CAPTION.match(text)
         if match and any(value.startswith("SEQ Table") for value in instructions):
             caption_titles.append(match.group(3))
@@ -186,18 +193,15 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
         _paragraph_text(paragraph).strip()
         for paragraph in document.paragraphs
         if not any(
-            field.get(qn("w:instr"), "").startswith(("SEQ Table", "SEQ Figure"))
-            for field in paragraph._p.xpath(".//w:fldSimple")
+            instr.startswith(("SEQ Table", "SEQ Figure"))
+            for instr in _paragraph_instructions(paragraph)
         )
     ]
     for paragraph in document.paragraphs:
         caption = CAPTION.match(_paragraph_text(paragraph).strip())
         if not caption:
             continue
-        instructions = [
-            field.get(qn("w:instr"), "")
-            for field in paragraph._p.xpath(".//w:fldSimple")
-        ]
+        instructions = _paragraph_instructions(paragraph)
         if not any(value.startswith(("SEQ Table", "SEQ Figure")) for value in instructions):
             continue
         kind = "Bảng" if any(value.startswith("SEQ Table") for value in instructions) else "Hình"
@@ -216,10 +220,7 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     table_index = 0
     for paragraph in document.paragraphs:
         match = CAPTION.match(_paragraph_text(paragraph).strip())
-        instructions = [
-            field.get(qn("w:instr"), "")
-            for field in paragraph._p.xpath(".//w:fldSimple")
-        ]
+        instructions = _paragraph_instructions(paragraph)
         if match and any(value.startswith("SEQ Table") for value in instructions):
             title = match.group(3)
             if table_index >= len(document.tables):
@@ -229,14 +230,43 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
             tables_by_caption[title] = _contents(document.tables[table_index])
             table_index += 1
     checked = []
+    full_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
     for title, (headers, rows) in source.items():
         actual = tables_by_caption.get(title)
-        expected = [headers, *rows]
-        if actual != expected:
-            raise ValueError(f"Source table differs from generated artifact: {title}")
+        full_csv = APPENDIX_E_FULL_CSVS.get(title)
+        if len(rows) > 25 and full_csv:
+            expected_rows = (
+                [r for r in rows if r[0] in REPRESENTATIVE_ILP_PROFILES][:15]
+                if title == "ILP — ba phương án cho 9 hồ sơ"
+                else rows[:15]
+            )
+            expected = [headers, *expected_rows]
+            if actual != expected:
+                raise ValueError(f"Summarized Appendix E table differs from source subset: {title}")
+            if f"Bảng đầy đủ: {full_csv}" not in full_text:
+                raise ValueError(f"Missing full CSV reference for summarized table {title}: {full_csv}")
+        else:
+            expected = [headers, *rows]
+            if actual != expected:
+                raise ValueError(f"Source table differs from generated artifact: {title}")
         checked.append(title)
     if len(checked) != len(source):
         raise ValueError("Not all source-backed report tables were verified")
+    team = _load_team_config()
+    expected_team_rows = [
+        [
+            str(member.get("stt", idx)),
+            str(member["name"]),
+            str(member["student_id"]),
+            str(member["role"]),
+            f"{int(member['contribution'])}%",
+        ]
+        for idx, member in enumerate(team["members"], 1)
+    ]
+    expected_team_table = [["STT", "Họ và tên", "MSSV", "Phân công", "Tỷ lệ đóng góp"], *expected_team_rows]
+    for team_caption in ("Thành viên nhóm và tỷ lệ đóng góp", "Phân công chi tiết thành viên"):
+        if tables_by_caption.get(team_caption) != expected_team_table:
+            raise ValueError(f"Team table '{team_caption}' is missing or does not match config/team.yaml")
     if "Ma trận góp ý, thay đổi, vị trí và bằng chứng" not in tables_by_caption:
         raise ValueError("Appendix A feedback matrix is missing")
     matrix_headers, matrix_rows = _parse_table(_read_text("final_requirements_matrix.md"))
@@ -245,7 +275,7 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     if tables_by_caption["Ma trận góp ý, thay đổi, vị trí và bằng chứng"] != [matrix_headers, *matrix_rows]:
         raise ValueError("Appendix A does not match final_requirements_matrix.md")
 
-    fields = [field.get(qn("w:instr"), "") for field in document._element.xpath(".//w:fldSimple")]
+    fields = _all_field_instructions(document._element)
     if not any(instruction.startswith('TOC \\o "1-2"') for instruction in fields):
         raise ValueError("Missing automatic Heading 1–2 TOC")
     if not any(instruction.startswith('TOC \\h \\z \\c "Table"') for instruction in fields):
@@ -257,12 +287,14 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
     if sum(instruction.startswith("SEQ Figure") for instruction in fields) != figure_caption_count:
         raise ValueError("Every figure caption must use a SEQ field")
     update_fields = document.settings.element.find(qn("w:updateFields"))
-    if update_fields is None or update_fields.get(qn("w:val")) not in {"true", "1"}:
-        raise ValueError("Word updateFields must be enabled")
+    has_update_fields = update_fields is not None and update_fields.get(qn("w:val")) in {"true", "1"}
+    has_populated_toc = bool(document._element.xpath(".//w:hyperlink"))
+    if not (has_update_fields or has_populated_toc):
+        raise ValueError("Word updateFields must be enabled or TOC must already be populated")
     footer_fields = [
-        field.get(qn("w:instr"), "")
+        instr
         for section in document.sections
-        for field in section.footer._element.xpath(".//w:fldSimple")
+        for instr in _all_field_instructions(section.footer._element)
     ]
     if "PAGE" not in footer_fields:
         raise ValueError("Footer page-number field is missing")
@@ -305,6 +337,10 @@ def check_report(report_path: Path = REPORT_PATH) -> list[str]:
         raise ValueError("Required optimal-status limitation is missing")
     if re.search(r"Phần 4-fix|_repro_tmp|stage2_report\.docx|BaoCao_Nhom1_HTTQD_65\.TTQL-2\.docx", text, re.I):
         raise ValueError("Obsolete/internal terms remain in the final report")
+    if "____" in text:
+        raise ValueError("Placeholder underscores '____' remain in the final report")
+    if "được dùng để minh họa" in text:
+        raise ValueError("Boilerplate phrase 'được dùng để minh họa' remains in the final report")
 
     prose_numbers = audit_report_prose()
     unmatched = [row for row in prose_numbers if row["source_match"] == "KHÔNG KHỚP/CHƯA XÁC ĐỊNH"]

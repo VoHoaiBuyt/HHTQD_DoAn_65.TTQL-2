@@ -1,0 +1,20 @@
+course: "Hệ hỗ trợ quyết định"
+group: "Nhóm 1"
+advisor: "Phạm Thị Thu Thúy"
+year: "2026"
+members:
+  - stt: 1
+    name: "Võ Hoài Buýt"
+    student_id: "65130249"
+    role: "Xây dựng bộ dữ liệu; phát triển hệ thống; thực hiện phân tích."
+    contribution: 60
+  - stt: 2
+    name: "Võ Thanh Tòng"
+    student_id: "65133702"
+    role: "Lên ý tưởng; viết báo cáo; trình bày và demo hệ thống."
+    contribution: 20
+  - stt: 3
+    name: "Nguyễn Ngọc Tuyển"
+    student_id: "65134159"
+    role: "Kiểm thử; rà soát kết quả; hoàn thiện tài liệu; đóng gói hồ sơ nộp."
+    contribution: 20

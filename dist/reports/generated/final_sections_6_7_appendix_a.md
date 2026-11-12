@@ -26,7 +26,7 @@ Bảng 6.1 trình bày dữ liệu theo nguồn đã ghi.
 | 0.125 | 1.0 | 0.1 | 0.5 | 18 | 18 | 16.746332431277594 | 0.5571855860988464 | optimal |
 | 0.125 | 1.0 | 0.3 | 0.5 | 18 | 18 | 16.746332431277594 | 0.5571855860988464 | optimal |
 
-Nguồn: SCENARIO / GIẢ ĐỊNH, ilp_sensitivity.csv.
+Nguồn: SCENARIO / GIẢ ĐỊNH – reports/generated/ilp_sensitivity.csv.
 
 Bảng các phương án cho chín hồ sơ và so sánh ngân sách dài được chuyển sang Phụ lục E, Bảng E.2–E.3. Ngân sách ở đó là kịch bản so sánh, không phải giới hạn chính thức. V2-001, V2-002, V2-004 có bộ ba phương án trùng hoàn toàn với hồ sơ khác do kế hoạch đã lưu có cùng học phần, tín chỉ và chỉ số đầu ra dưới các đầu vào/ràng buộc hiện hành. 6/9 hồ sơ có kết quả khác nhau ở ít nhất hai mức ngân sách (V2-001: 15, 18, 21; V2-002: 15, 18, 21; V2-003: 12, 15, 18; V2-004: 15, 18, 21; V2-006: 15, 18, 21; V2-009: 15, 18, 21). Các giá trị giống nhau khi ngân sách tăng chỉ phản ánh kết quả artifact hiện có.
 
@@ -158,15 +158,15 @@ Nguồn: SCENARIO / GIẢ ĐỊNH, mc_pareto.csv. Nhãn Pareto là tên loại s
 
 Hình 7.1. Phân phối kỳ tốt nghiệp theo chính sách
 
-Nguồn: SCENARIO / GIẢ ĐỊNH, artifact Monte Carlo đã lưu; reports/figures/mc_graduation_distribution.png.
+Nguồn: SCENARIO / GIẢ ĐỊNH – reports/figures/mc_graduation_distribution.png.
 
-Hình 7.1 được dùng để minh họa giao diện ở chương này.
+Hình 7.1: Phân phối kỳ tốt nghiệp theo 5 chính sách cho thấy khi tăng λ từ 0.0 lên 0.3, xác suất tốt nghiệp đúng hạn (≤8 kỳ) trung bình của B1 giảm từ 0.542 xuống 0.114, trong khi ILP-matched giữ mức 0.410 đến 0.282 với số môn trượt kỳ vọng tại λ=0.3 là 4.062 so với 17.700 ở B1. Các đường phân phối phản ánh sự dịch chuyển kỳ tốt nghiệp khi tải phạt hoặc rủi ro tăng. Đây là kết quả phân tích kịch bản GIẢ ĐỊNH/SCENARIO từ reports/generated/mc_results.csv, không phải bằng chứng hiệu quả thực tế trên sinh viên NTU.
 
 Hình 7.2. Biên Pareto theo kịch bản mô phỏng
 
-Nguồn: SCENARIO / GIẢ ĐỊNH, artifact Monte Carlo đã lưu; nhãn Pareto phụ thuộc λ; reports/figures/mc_pareto.png.
+Nguồn: SCENARIO / GIẢ ĐỊNH – reports/figures/mc_pareto.png (nhãn Pareto phụ thuộc λ).
 
-Hình 7.2 được dùng để minh họa giao diện ở chương này.
+Hình 7.2: Biểu đồ Pareto đối chiếu mục tiêu đúng hạn và số môn trượt kỳ vọng trên 108 cặp so sánh ở 3 mức λ trong mc_pareto.csv: nhãn nghiêng về ILP trong 50 cặp, nghiêng về chính sách đối chiếu ở 12 cặp, đánh đổi ở 7 cặp và chưa phân biệt ở 39 cặp. Vị trí các điểm cho thấy ILP thường giảm số môn trượt khi λ > 0 nhưng đánh đổi tốc độ tích lũy tín chỉ ở một số hồ sơ. Toàn bộ nhãn Pareto thuộc kịch bản GIẢ ĐỊNH/SCENARIO phụ thuộc cấu hình λ và giả định xác suất.
 
 ### 7.6 Kiểm tra tái tạo và độ tin cậy
 
