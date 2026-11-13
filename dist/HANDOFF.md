@@ -25,7 +25,7 @@ Chạy từ thư mục gốc bằng PowerShell:
 python -m pytest
 python -m scripts.check_report_consistency
 python -m scripts.check_dist_links
-python -m streamlit run app/main.py
+.\run_web_app.ps1
 ```
 
 Sau khi dựng `dist/`, kiểm tra cài đặt, pytest, health, các liên kết nội bộ và report consistency từ bản sao sạch. Kết quả mới nhất cần ghi trong `reports/generated/final_dist_validation.md` và `reports/generated/pytest_summary.txt`. Notebook EDA được chạy từ đầu trong môi trường sạch; bản trong gói không chứa output. Không tạo tag bàn giao trước khi được duyệt.

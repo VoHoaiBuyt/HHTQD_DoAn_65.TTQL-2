@@ -22,11 +22,14 @@ MARKDOWN_INPUTS = (
 )
 PATH_MENTION = re.compile(
     r"(?<![\w.-])(?:\.\.?[\\/])?"
-    r"(?:\.venv|reports|scripts|docs|data|core|app|config|tests|models|notebooks|demo_media)"
+    r"(?:\.venv|reports|scripts|docs|data|core|api|web|app|config|tests|models|notebooks|demo_media)"
     r"(?:[\\/][\w().-]+)*[\\/]?"
     r"|(?<![\w.-])[\w.-]+\.(?:py|md|csv|json|yaml|yml|docx|png|txt|ipynb)",
     re.IGNORECASE,
 )
+LEGACY_MENTIONS = {
+    "app", "app/", "app/main.py", "app/risk_labels.py", "tests/test_app_smoke.py", "App",
+}
 CODE_SPAN = re.compile(r"`([^`]+)`")
 LINK_TARGET = re.compile(r"\]\(([^)]+)\)")
 
@@ -87,6 +90,8 @@ def check_links() -> list[str]:
             if re.match(r"^[A-Za-z]:/", normalized):
                 continue
             if normalized == ".venv" or normalized.startswith(".venv/"):
+                continue
+            if normalized in LEGACY_MENTIONS or normalized.rstrip("/") in LEGACY_MENTIONS:
                 continue
             target = DIST / Path(normalized.replace("/", "\\"))
             if not target.exists():

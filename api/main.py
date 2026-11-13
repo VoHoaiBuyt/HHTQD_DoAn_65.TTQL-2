@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from app.view_data import (
+from core.view_data import (
     MC_GRAD_HIST_PATH,
     MC_INTERPRETATION_PATH,
     MC_PAIRWISE_PATH,

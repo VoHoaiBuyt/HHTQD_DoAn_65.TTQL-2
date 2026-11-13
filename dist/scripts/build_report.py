@@ -21,7 +21,7 @@ from scripts.final_claims import (
     write_final_artifacts,
     write_risk_levels,
 )
-from app.risk_labels import RISK_THRESHOLD_NOTE
+from core.risk_labels import RISK_THRESHOLD_NOTE
 
 
 ROOT = Path(__file__).resolve().parents[1]

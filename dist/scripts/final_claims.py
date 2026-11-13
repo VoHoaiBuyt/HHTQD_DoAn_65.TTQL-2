@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from app.risk_labels import PLAN_DISPLAY_LABELS, RISK_THRESHOLDS, risk_level as _risk_level
+from core.risk_labels import PLAN_DISPLAY_LABELS, RISK_THRESHOLDS, risk_level as _risk_level
 
 ROOT = Path(__file__).resolve().parents[1]
 GENERATED = ROOT / "reports" / "generated"
