@@ -62,6 +62,7 @@ IGNORED_NAMES = {
     ".ipynb_checkpoints",
     "_repro_tmp",
     "archive",
+    "node_modules",
 }
 
 
@@ -138,10 +139,12 @@ def build_dist() -> list[Path]:
         else:
             child.unlink()
 
-    for name in ("README.md", "HANDOFF.md", "requirements.txt", "deliverables.md"):
-        shutil.copy2(ROOT / name, DIST / name)
-    for name in ("core", "app", "config", "tests", "scripts", "notebooks", "models"):
-        _copy_tree(ROOT / name, DIST / name)
+    for name in ("README.md", "HANDOFF.md", "requirements.txt", "deliverables.md", "run_web_app.ps1"):
+        if (ROOT / name).is_file():
+            shutil.copy2(ROOT / name, DIST / name)
+    for name in ("core", "api", "web", "config", "tests", "scripts", "notebooks", "models"):
+        if (ROOT / name).is_dir():
+            _copy_tree(ROOT / name, DIST / name)
     _clear_notebook_outputs()
     for name in ("raw", "official", "scenarios", "processed"):
         _copy_tree(ROOT / "data" / name, DIST / "data" / name)

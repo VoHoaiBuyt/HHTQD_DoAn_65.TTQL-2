@@ -22,7 +22,7 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Inches, Pt
 from docx.text.paragraph import Paragraph
 
-from app.risk_labels import RISK_THRESHOLDS
+from core.risk_labels import RISK_THRESHOLDS
 from scripts.build_report import (
     _markdown_table,
     _read_text,

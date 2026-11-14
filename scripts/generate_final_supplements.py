@@ -9,7 +9,7 @@ from typing import Any
 
 import yaml
 
-from app.risk_labels import PLAN_DISPLAY_LABELS, RISK_THRESHOLDS, risk_level
+from core.risk_labels import PLAN_DISPLAY_LABELS, RISK_THRESHOLDS, risk_level
 from core.run_dss import _context, run_dss
 
 

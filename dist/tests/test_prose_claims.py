@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from app.risk_labels import risk_level
+from core.risk_labels import risk_level
 from scripts.final_claims import build_risk_rows, plan_signatures
 
 

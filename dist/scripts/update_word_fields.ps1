@@ -42,3 +42,4 @@ finally {
     [GC]::Collect()
     [GC]::WaitForPendingFinalizers()
 }
+

@@ -4,7 +4,8 @@
 - `reports/generated/pytest_summary.txt` — tóm tắt pytest đã loại đường dẫn máy cá nhân.
 - `reports/generated/` — metrics, kết quả ML/ILP/Monte Carlo đã lưu, ma trận phản hồi và bằng chứng kiểm tra cần thiết.
 - `reports/generated/report_stats.json` — số từ, bảng, hình và ước lượng số trang theo chương (không tính phụ lục trong tổng thân).
-- `core/`, `app/`, `config/`, `scripts/`, `tests/`, `models/` — logic, giao diện, cấu hình, scripts, kiểm thử và mô hình.
+- `core/`, `api/`, `web/`, `config/`, `scripts/`, `tests/`, `models/` — logic, backend FastAPI, frontend React, cấu hình, scripts, kiểm thử và mô hình.
+- `run_web_app.ps1` — script khởi chạy một lệnh toàn bộ hệ thống Web.
 - `data/` — nguồn UCI, dữ liệu CTĐT nhóm cung cấp, hồ sơ SCENARIO và dữ liệu xử lý.
 - `notebooks/` — notebook phân tích được giữ trong whitelist.
 - `docs/` — giao thức ML, nguồn mã học phần, hướng dẫn và giới hạn.
@@ -18,11 +19,9 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
 ## Cây thư mục dist/ (2 cấp)
 
 <!-- DIST_TREE_START -->
-- `app/`
-  - `app/__init__.py`
-  - `app/main.py`
-  - `app/risk_labels.py`
-  - `app/view_data.py`
+- `api/`
+  - `api/__init__.py`
+  - `api/main.py`
 - `config/`
   - `config/courses_enrichment.yaml`
   - `config/credit_rules_official.yaml`
@@ -35,6 +34,7 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
   - `core/__init__.py`
   - `core/curriculum.py`
   - `core/curriculum_validation.py`
+  - `core/dag.py`
   - `core/gpa.py`
   - `core/ilp.py`
   - `core/metrics.py`
@@ -44,11 +44,14 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
   - `core/pass_prob.py`
   - `core/plan_risk.py`
   - `core/regulation.py`
+  - `core/risk_labels.py`
   - `core/rules.py`
   - `core/run_dss.py`
   - `core/scenario_v2.py`
   - `core/simulation.py`
   - `core/train_models.py`
+  - `core/view_data.py`
+  - `core/xai.py`
 - `data/`
   - `data/official/`
   - `data/processed/`
@@ -80,11 +83,8 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
 - `scripts/`
   - `scripts/audit_report_prose.py`
   - `scripts/build_final_report.py`
-  - `scripts/build_ilp_formulation_notebook.py`
   - `scripts/build_report.py`
-  - `scripts/build_risk_exploration_notebook.py`
   - `scripts/check_dist_links.py`
-  - `scripts/check_final_hash_baseline.py`
   - `scripts/check_report_consistency.py`
   - `scripts/final_claims.py`
   - `scripts/generate_final_supplements.py`
@@ -98,7 +98,7 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
 - `tests/`
   - `tests/__init__.py`
   - `tests/README.md`
-  - `tests/test_app_smoke.py`
+  - `tests/test_api.py`
   - `tests/test_core_rules.py`
   - `tests/test_curriculum_validation.py`
   - `tests/test_data_consistency.py`
@@ -111,9 +111,18 @@ Thư gửi giảng viên được lưu riêng ngoài gói phân phối.
   - `tests/test_optimizer_v2.py`
   - `tests/test_prose_claims.py`
   - `tests/test_scenario_v2.py`
+  - `tests/test_view_data.py`
+- `web/`
+  - `web/dist/`
+  - `web/src/`
+  - `web/index.html`
+  - `web/package-lock.json`
+  - `web/package.json`
+  - `web/vite.config.js`
 - `deliverables.md`
 - `HANDOFF.md`
 - `README.md`
 - `requirements.txt`
+- `run_web_app.ps1`
 - `SHA256SUMS.txt`
 <!-- DIST_TREE_END -->

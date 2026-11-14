@@ -90,6 +90,12 @@ def _normalise_options(options: Mapping[str, Any] | None) -> tuple[dict[str, Any
     load_lambda = float(raw.get("lambda", DEFAULT_LAMBDA))
     if load_lambda < 0:
         raise ValueError("lambda must be non-negative")
+    beta = float(raw.get("beta", DEFAULT_BETA))
+    if beta < 0:
+        raise ValueError("beta must be non-negative")
+    gamma = float(raw.get("gamma", DEFAULT_GAMMA))
+    if gamma < 0:
+        raise ValueError("gamma must be non-negative")
     mode = str(raw.get("risk_cap_mode", DEFAULT_RISK_CAP_MODE))
     if mode not in {"off", "soft", "hard"}:
         raise ValueError("risk_cap_mode must be off, soft, or hard")
@@ -110,6 +116,8 @@ def _normalise_options(options: Mapping[str, Any] | None) -> tuple[dict[str, Any
         "budget": budget,
         "fmax": fmax,
         "lambda": load_lambda,
+        "beta": beta,
+        "gamma": gamma,
         "risk_cap_mode": mode,
         "scenario_set": scenario_set,
         "profile_override": profile_override,
@@ -243,8 +251,8 @@ def run_dss(
             prerequisites=ctx["curriculum"]["prerequisites"],
             progress=progress,
             unlock_values=unlock,
-            beta=DEFAULT_BETA,
-            gamma=DEFAULT_GAMMA,
+            beta=normalized["beta"],
+            gamma=normalized["gamma"],
             load_lambda=normalized["lambda"],
             budgets=budgets,
             current_debt_credits=current_debt,
