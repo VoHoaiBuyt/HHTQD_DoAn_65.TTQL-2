@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-11-14T04:34:09.030882+00:00",
+  "data_label": "SIMULATED curriculum + Bernoulli course outcomes; REAL prior = UCI-697 M3' pass rates; ASSUMPTION difficulty/load/retake",
+  "not_ntu_evidence": true,
+  "runs_per_student_per_strategy": 1000,
+  "students": [
+    "S001",
+    "S002",
+    "S003",
+    "S004",
+    "S005",
+    "S006",
+    "S007"
+  ],
+  "strategies": {
+    "ILP": "build_plans, risk-aware PuLP, 18-credit budget",
+    "B1": "planned-semester + failed retakes, cap 18",
+    "B2": "any eligible course, cap 18",
+    "B3": "any eligible course, cap 15"
+  },
+  "pass_probability": "p_pass = M3'(HK1 ability tier) × difficulty_factor(group) × load_multiplier × retake_multiplier; clipped to [0,1]",
+  "load_multiplier": "exp(-lambda × max(0, units - 6)), lambda=0.1, units=round(selected_credits / mean_credits_per_course)",
+  "retake_multiplier": 1.0,
+  "deadline_semester": 8,
+  "horizon_semester": 16,
+  "dropout_assumption": "P(Dropout) chỉ dùng cho cảnh báo/tier; không mô phỏng dropout như hazard từng học kỳ.",
+  "common_random_numbers": true,
+  "bootstrap_repetitions": 1000,
+  "ci": "95% percentile bootstrap over runs",
+  "pareto": "min mean_simulated_failures, max on_time_rate",
+  "caveats": [
+    "Đây là phân tích kịch bản, không phải bằng chứng từ dữ liệu NTU.",
+    "M3' là tỷ lệ đạt gộp theo tầng năng lực từ UCI-697, không phải hiệu ứng nhân quả.",
+    "Difficulty/load/retake là giả định; thay đổi giả định có thể đổi xếp hạng.",
+    "Kết quả phụ thuộc CTĐT SIMULATED 48 học phần/128 tín chỉ."
+  ],
+  "artifacts": {
+    "runs": "reports/generated/monte_carlo_runs.csv",
+    "summary": "reports/generated/monte_carlo_summary.csv",
+    "by_student": "reports/generated/monte_carlo_by_student.csv",
+    "paired": "reports/generated/monte_carlo_paired_differences.csv",
+    "pareto_plot": "reports/generated/monte_carlo_pareto.png",
+    "rates_plot": "reports/generated/monte_carlo_rates.png"
+  }
+}

@@ -20,6 +20,7 @@ from src.analysis.risk_to_plan_exploration import (
 from src.optimize.ilp_prototype import compute_unlock_values, solve_plan
 from src.optimize.plan_risk import M3_ABILITY_ORDER, m3_prime_probability
 from src.rules.rule_engine import evaluate_student, load_rules
+from src.services.input_validation import InputError
 
 ROOT = Path(__file__).resolve().parents[2]
 BUNDLE_PATH = ROOT / "artifacts" / "risk_bundle.joblib"
@@ -123,6 +124,23 @@ def assess_student(
     *,
     use_ml: bool,
 ) -> dict[str, Any]:
+    profile_student_id = str(profile.get("student_id", "")).strip()
+    if not profile_student_id:
+        raise InputError("Mã sinh viên: không được để trống.")
+    foreign_ids = sorted(
+        {
+            str(row.get("student_id", "")).strip()
+            for row in progress_rows
+            if str(row.get("student_id", "")).strip()
+            not in {"", profile_student_id}
+        }
+    )
+    if foreign_ids:
+        raise InputError(
+            f"Hồ sơ {profile_student_id} nhưng tiến độ thuộc sinh viên "
+            f"{', '.join(foreign_ids)}. Kiểm tra lại tệp/bảng tiến độ."
+        )
+
     if use_ml:
         p_dropout, p_calibrated = predict_dropout(profile, bundle)
     else:
@@ -184,6 +202,8 @@ def build_plans(
     budgets: list[int] | None = None,
     load_lambda: float = 0.1,
     retake_multiplier: float = 1.0,
+    expected_fail_cap_override: float | None = None,
+    enforce_cap_override: bool | None = None,
 ) -> list[dict[str, Any]]:
     budgets = budgets or [
         int(value) for value in rules["scenario_credit_targets"]["values"]
@@ -215,7 +235,14 @@ def build_plans(
     }
     tier = assessment["planning_tier"]
     expected_fail_cap = float(
-        rules["rule_engine"]["risk_tiers"]["expected_failed_course_caps"][tier]
+        expected_fail_cap_override
+        if expected_fail_cap_override is not None
+        else rules["rule_engine"]["risk_tiers"]["expected_failed_course_caps"][tier]
+    )
+    enforce_cap = bool(
+        enforce_cap_override
+        if enforce_cap_override is not None
+        else rule_result["enforce_cap"]
     )
     graduation_ready = any(
         flag.get("code") == "GRADUATION_CREDITS_MET"
@@ -225,7 +252,7 @@ def build_plans(
     results: list[dict[str, Any]] = []
     for budget in budgets:
         scenario_max = budget
-        if rule_result["enforce_cap"] and rule_result["load_restriction_recommended"]:
+        if enforce_cap and rule_result["load_restriction_recommended"]:
             scenario_max = min(
                 scenario_max, int(rule_result["recommended_credit_cap"])
             )
@@ -256,7 +283,7 @@ def build_plans(
             require_blocking_retakes=bool(
                 rules["optimization"]["required_retake_courses"]["value"]
             ),
-            enforce_cap=bool(rule_result["enforce_cap"]),
+            enforce_cap=enforce_cap,
             risk_cap_slack_penalty=float(
                 rules["optimization"]["risk_cap_slack_penalty"]["value"]
             ),

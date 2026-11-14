@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-11-14T04:09:32.965894+00:00",
+  "seed": 20261105,
+  "data_label": "REAL (UCI-697)",
+  "target_label": "Target (Dropout/Enrolled/Graduate), dự đoán tại T1",
+  "feature_count": 24,
+  "features": [
+    "Marital status",
+    "Application mode",
+    "Application order",
+    "Course",
+    "Daytime/evening attendance",
+    "Previous qualification",
+    "Previous qualification (grade)",
+    "Nacionality",
+    "Mother's qualification",
+    "Father's qualification",
+    "Mother's occupation",
+    "Father's occupation",
+    "Admission grade",
+    "Displaced",
+    "Educational special needs",
+    "Gender",
+    "Age at enrollment",
+    "International",
+    "Curricular units 1st sem (credited)",
+    "Curricular units 1st sem (enrolled)",
+    "Curricular units 1st sem (evaluations)",
+    "Curricular units 1st sem (approved)",
+    "Curricular units 1st sem (grade)",
+    "Curricular units 1st sem (without evaluations)"
+  ],
+  "split": {
+    "train": 2654,
+    "validation": 885,
+    "test": 885,
+    "strategy": "stratified 60/20/20 on 3-class target"
+  },
+  "cross_validation": "5-fold stratified on train only",
+  "calibration": "isotonic fitted on validation predictions only",
+  "threshold": "selected on validation macro-F1 (tie-break dropout F1); test never used",
+  "metrics": "accuracy, macro-F1, per-class P/R/F1, dropout PR-AUC/ROC-AUC, Brier, log-loss, confusion matrix",
+  "caveats": [
+    "Enrolled là trạng thái quan sát tại T1, không phải kết cục cuối.",
+    "SHAP mô tả đóng góp vào dự đoán của mô hình, không phải nhân quả.",
+    "Dữ liệu REAL của UCI-697; CTĐT và kịch bản ILP là SIMULATED/ASSUMPTION."
+  ],
+  "versions": {
+    "lightgbm": "4.7.0",
+    "shap": "0.54.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.4"
+  },
+  "shap_plot_lightgbm": "reports/generated/shap_dropout_top15.png",
+  "shap_plot_logistic": "reports/generated/shap_dropout_top15_lr.png"
+}

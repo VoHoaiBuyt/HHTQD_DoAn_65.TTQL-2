@@ -1,0 +1,4 @@
+task,model,enrolled_support,enrolled_recall,enrolled_predicted_as_dropout,enrolled_predicted_as_graduate,note
+3-class,LogisticRegression,159,0.5471698113207547,28,44,"Enrolled là trạng thái quan sát tại T1, không phải kết cục cuối; recall thấp là kỳ vọng và không dùng làm chỉ số an toàn."
+3-class,RandomForest,159,0.4276729559748428,44,47,"Enrolled là trạng thái quan sát tại T1, không phải kết cục cuối; recall thấp là kỳ vọng và không dùng làm chỉ số an toàn."
+3-class,LightGBM,159,0.46540880503144655,30,55,"Enrolled là trạng thái quan sát tại T1, không phải kết cục cuối; recall thấp là kỳ vọng và không dùng làm chỉ số an toàn."

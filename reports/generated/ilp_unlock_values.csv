@@ -1,0 +1,24 @@
+﻿student_id,course_id,course_name,credits,status,unlock_value
+S001,EL506,Tự chọn chuyên ngành kỳ 5 (placeholder),2,not_taken,0
+S001,IT501,Thiết kế phần mềm,3,not_taken,4.75
+S001,IT502,Kho dữ liệu,3,not_taken,0
+S001,IT503,Điện toán đám mây và DevOps,3,not_taken,1.5
+S001,IT504,Lập trình an toàn,3,not_taken,0
+S001,IT505,Thiết kế giao diện người dùng,2,not_taken,0
+S001,EL706,Tự chọn chuyên ngành kỳ 7 (placeholder),2,not_taken,0
+S001,IT705,Chuẩn bị thực tập,2,not_taken,0
+S003,IT104,Kỹ năng học tập đại học,3,failed,0
+S003,EL506,Tự chọn chuyên ngành kỳ 5 (placeholder),2,not_taken,0
+S003,IT501,Thiết kế phần mềm,3,not_taken,4.75
+S003,IT502,Kho dữ liệu,3,not_taken,0
+S003,IT503,Điện toán đám mây và DevOps,3,not_taken,1.5
+S003,IT504,Lập trình an toàn,3,not_taken,0
+S003,IT505,Thiết kế giao diện người dùng,2,not_taken,0
+S003,EL706,Tự chọn chuyên ngành kỳ 7 (placeholder),2,not_taken,0
+S003,IT705,Chuẩn bị thực tập,2,not_taken,0
+S005,EL506,Tự chọn chuyên ngành kỳ 5 (placeholder),2,not_taken,0
+S005,IT502,Kho dữ liệu,3,not_taken,0
+S005,IT503,Điện toán đám mây và DevOps,3,not_taken,1.5
+S005,IT504,Lập trình an toàn,3,not_taken,0
+S005,IT505,Thiết kế giao diện người dùng,2,not_taken,0
+S005,EL706,Tự chọn chuyên ngành kỳ 7 (placeholder),2,not_taken,0

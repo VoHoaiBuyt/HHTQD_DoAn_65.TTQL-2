@@ -5,7 +5,6 @@ from pathlib import Path
 from src.optimize.ilp_prototype import solve_plan
 from src.rules.rule_engine import evaluate_student, load_rules
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -95,6 +94,30 @@ class RuleEngineTests(unittest.TestCase):
         self.assertTrue(not_offered_flags)
         self.assertIn("IT202", not_offered_flags[0]["message"])
 
+    def test_course_at_max_attempts_is_not_eligible(self) -> None:
+        courses = [
+            {
+                "course_id": "A",
+                "course_name": "Môn A",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "bắt buộc",
+                "offered_semesters": "both",
+            }
+        ]
+        result = evaluate_student(
+            self.profiles["S001"],
+            courses,
+            [],
+            [{"course_id": "A", "status": "failed", "attempt_count": "3"}],
+            next_semester=5,
+            p_dropout=0.1,
+            rules=self.rules,
+        )
+        self.assertEqual(result["eligible_courses"], [])
+        self.assertEqual(result["failed_courses"][0]["course_id"], "A")
+        self.assertEqual(result["failed_courses"][0]["attempt_count"], 3)
+
     def test_graduation_and_no_eligible_course_edges_are_reported(self) -> None:
         graduated = evaluate_student(
             self.profiles["S008"],
@@ -145,6 +168,123 @@ class RuleEngineTests(unittest.TestCase):
         self.assertFalse(result["enforce_cap"])
         self.assertEqual(result["credit_cap"], 18)
         self.assertEqual(result["recommended_credit_cap"], 12)
+
+
+    def test_concurrent_partner_must_itself_be_eligible(self) -> None:
+        courses = [
+            {
+                "course_id": "A",
+                "course_name": "Môn A",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+            {
+                "course_id": "B",
+                "course_name": "Môn B",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+            {
+                "course_id": "C",
+                "course_name": "Môn C",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+        ]
+        prerequisites = [
+            {"course_id": "A", "prerequisite_id": "B", "type": "song hành"},
+            {"course_id": "B", "prerequisite_id": "C", "type": "tiên quyết"},
+        ]
+        result = evaluate_student(
+            {"student_id": "T-CO-1", "current_semester": 1, "gpa": 3.0,
+             "failed_courses_count": 0},
+            courses,
+            prerequisites,
+            [],
+            next_semester=1,
+            p_dropout=0.1,
+            rules=self.rules,
+        )
+        eligible_ids = {row["course_id"] for row in result["eligible_courses"]}
+        self.assertNotIn("B", eligible_ids)
+        self.assertNotIn("A", eligible_ids)
+        blocked_ids = {row["course_id"] for row in result["blocked_courses"]}
+        self.assertIn("A", blocked_ids)
+        self.assertIn("B", blocked_ids)
+
+    def test_mutual_concurrent_pair_is_allowed_when_both_eligible(self) -> None:
+        courses = [
+            {
+                "course_id": "A",
+                "course_name": "Môn A",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+            {
+                "course_id": "B",
+                "course_name": "Môn B",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+        ]
+        prerequisites = [
+            {"course_id": "A", "prerequisite_id": "B", "type": "song hành"},
+            {"course_id": "B", "prerequisite_id": "A", "type": "song hành"},
+        ]
+        result = evaluate_student(
+            {"student_id": "T-CO-2", "current_semester": 1, "gpa": 3.0,
+             "failed_courses_count": 0},
+            courses,
+            prerequisites,
+            [],
+            next_semester=1,
+            p_dropout=0.1,
+            rules=self.rules,
+        )
+        eligible_ids = {row["course_id"] for row in result["eligible_courses"]}
+        self.assertEqual(eligible_ids, {"A", "B"})
+
+    def test_completed_concurrent_partner_unblocks_course(self) -> None:
+        courses = [
+            {
+                "course_id": "A",
+                "course_name": "Môn A",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+            {
+                "course_id": "B",
+                "course_name": "Môn B",
+                "credits": "3",
+                "planned_semester": "1",
+                "course_type": "tự chọn",
+                "offered_semesters": "both",
+            },
+        ]
+        result = evaluate_student(
+            {"student_id": "T-CO-3", "current_semester": 1, "gpa": 3.0,
+             "failed_courses_count": 0},
+            courses,
+            [{"course_id": "A", "prerequisite_id": "B", "type": "song hành"}],
+            [{"course_id": "B", "status": "completed", "attempt_count": 1}],
+            next_semester=1,
+            p_dropout=0.1,
+            rules=self.rules,
+        )
+        eligible_ids = {row["course_id"] for row in result["eligible_courses"]}
+        self.assertIn("A", eligible_ids)
 
 
 class OptimizerPrototypeTests(unittest.TestCase):
@@ -277,6 +417,37 @@ class OptimizerPrototypeTests(unittest.TestCase):
         self.assertTrue(result["risk_cap_exceeded"])
         self.assertEqual(result["selected_credits"], 6)
 
+    def test_load_multiplier_uses_actual_selected_credits(self) -> None:
+        courses = [
+            {"course_id": "A", "credits": 3, "course_type": "tự chọn"},
+            {"course_id": "B", "credits": 3, "course_type": "tự chọn"},
+        ]
+        result = solve_plan(
+            courses,
+            p_student_m3_prime=0.8,
+            load_lambda=0.5,
+            risk_tier="medium",
+            scenario_credit_max=18,
+            expected_fail_cap=10.0,
+            average_credits_per_unit=3.0,
+            median_real_load_units=2,
+            unlock_values={},
+            beta=0.0,
+            gamma=0.0,
+            minimum_credits=6,
+            relaxed_minimum_credits=6,
+            require_blocking_retakes=False,
+        )
+        self.assertEqual(result["status"], "optimal")
+        self.assertEqual(result["selected_credits"], 6)
+        self.assertEqual(result["load_basis_credits"], 6)
+        self.assertEqual(result["load_basis_units"], 2)
+        self.assertAlmostEqual(result["load_multiplier"], 1.0)
+        self.assertLess(result["scenario_load_multiplier"], 0.2)
+        self.assertFalse(result["load_basis_mismatch"])
+        for probability in result["p_pass_by_course"].values():
+            self.assertAlmostEqual(probability, 0.8)
+
     def test_hard_cap_retries_with_relaxed_credit_minimum(self) -> None:
         result = solve_plan(
             [
@@ -304,7 +475,7 @@ class OptimizerPrototypeTests(unittest.TestCase):
         self.assertEqual(result["selected_credits"], 3)
         self.assertFalse(result["risk_cap_exceeded"])
 
-    def test_infeasible_after_fallback_has_standard_error_state(self) -> None:
+    def test_impossible_hard_fail_cap_falls_back_to_best_effort(self) -> None:
         result = solve_plan(
             [
                 {"course_id": "A", "credits": 3, "status": "not_taken"},
@@ -326,8 +497,13 @@ class OptimizerPrototypeTests(unittest.TestCase):
             require_blocking_retakes=False,
         )
 
-        self.assertEqual(result["status"], "infeasible_data_error")
-        self.assertEqual(result["selected_course_ids"], [])
+        self.assertEqual(result["status"], "best_effort")
+        self.assertEqual(result["fallback_mode"], "relaxed_fail_cap")
+        self.assertNotEqual(result["selected_course_ids"], [])
+        self.assertTrue(result["risk_cap_exceeded"])
+        self.assertGreater(
+            result["expected_failed_courses"], result["expected_fail_cap"]
+        )
         self.assertTrue(result["suggested_action"])
 
 

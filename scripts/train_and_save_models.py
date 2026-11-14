@@ -15,8 +15,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.analysis.risk_to_plan_exploration import (  # noqa: E402
-    HK1_APPROVED,
-    HK1_ENROLLED,
     HK2_APPROVED,
     HK2_ENROLLED,
     SEED,

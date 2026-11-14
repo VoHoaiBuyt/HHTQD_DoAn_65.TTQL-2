@@ -147,45 +147,57 @@ def solve_plan(
             "suggested_action": "Kiểm tra lịch mở và môn tiên quyết; gặp cố vấn nếu cần.",
         }
     effective_max = scenario_credit_max
-    units = credits_to_curricular_units(
-        effective_max,
-        average_credits_per_unit,
-    )
-    load_multiplier = min(
-        1.0,
-        max(
-            0.0,
-            exp(-load_lambda * max(0, units - median_real_load_units)),
-        ),
-    )
     by_id = {str(course["course_id"]): course for course in items}
     credits = {course_id: int(by_id[course_id]["credits"]) for course_id in ids}
     unlock = {course_id: float(unlock_values.get(course_id, 0.0)) for course_id in ids}
     if any(value < 0 for value in unlock.values()):
         raise ValueError("Unlock values must be non-negative credit-equivalents")
     factors = course_factors or {}
-    p_by_course: dict[str, float] = {}
-    for course_id in ids:
-        factor = float(factors.get(course_id, 1.0))
-        if factor < 0:
-            raise ValueError(f"course factor for {course_id} must be non-negative")
-        repeated = (
-            status.get(course_id) == "failed"
-            or int(by_id[course_id].get("attempt_count", 0) or 0) > 1
+
+    def load_multiplier_for(basis_credits: float) -> float:
+        units = credits_to_curricular_units(
+            basis_credits,
+            average_credits_per_unit,
         )
-        retake_factor = retake_multiplier if repeated else 1.0
-        p_by_course[course_id] = min(
+        return min(
             1.0,
             max(
                 0.0,
-                p_student_m3_prime
-                * factor
-                * retake_factor
-                * load_multiplier,
+                exp(-load_lambda * max(0, units - median_real_load_units)),
             ),
         )
 
-    def solve_with_minimum(minimum: int) -> tuple[Any, Any, Any, Any]:
+    def probabilities_for(load_multiplier: float) -> dict[str, float]:
+        probabilities: dict[str, float] = {}
+        for course_id in ids:
+            factor = float(factors.get(course_id, 1.0))
+            if factor < 0:
+                raise ValueError(f"course factor for {course_id} must be non-negative")
+            repeated = (
+                status.get(course_id) == "failed"
+                or int(by_id[course_id].get("attempt_count", 0) or 0) > 1
+            )
+            retake_factor = retake_multiplier if repeated else 1.0
+            probabilities[course_id] = min(
+                1.0,
+                max(
+                    0.0,
+                    p_student_m3_prime
+                    * factor
+                    * retake_factor
+                    * load_multiplier,
+                ),
+            )
+        return probabilities
+
+    def solve_with_minimum(
+        minimum: int,
+        p_by_course: Mapping[str, float],
+        *,
+        force_retakes: bool = True,
+        require_at_least_one: bool = False,
+        soft_fail_cap: bool = False,
+    ) -> tuple[Any, Any, Any, Any]:
         model = pulp.LpProblem("stage1_plan_prototype", pulp.LpMaximize)
         selected = {
             course_id: model.add_variable(
@@ -213,7 +225,7 @@ def solve_plan(
                 (1.0 - p_by_course[course_id]) * selected[course_id]
                 for course_id in ids
             )
-            if enforce_cap:
+            if enforce_cap and not soft_fail_cap:
                 model += expected_failures <= expected_fail_cap
             else:
                 slack = model.add_variable(
@@ -229,6 +241,8 @@ def solve_plan(
         model += pulp.lpSum(
             credits[course_id] * selected[course_id] for course_id in ids
         ) <= effective_max
+        if require_at_least_one:
+            model += pulp.lpSum(selected[course_id] for course_id in ids) >= 1
 
         id_set = set(ids)
         for relation in prerequisite_rows:
@@ -243,7 +257,7 @@ def solve_plan(
             ):
                 model += selected[course_id] <= selected[prerequisite_id]
 
-        if require_blocking_retakes:
+        if require_blocking_retakes and force_retakes:
             for course_id in ids:
                 if status.get(course_id) != "failed":
                     continue
@@ -270,17 +284,108 @@ def solve_plan(
         )
         return model, solve_stats, chosen, slack_value
 
-    model, solve_stats, chosen, slack_value = solve_with_minimum(minimum_credits)
-    solver_status = solve_stats.status.name
-    used_minimum = minimum_credits
-    reduced_load_advised = False
-    if not solve_stats.has_solution and relaxed_minimum_credits < minimum_credits:
-        model, solve_stats, chosen, slack_value = solve_with_minimum(
-            relaxed_minimum_credits
+    def solve_for_basis(basis_credits: float) -> dict[str, Any]:
+        load_multiplier = load_multiplier_for(basis_credits)
+        p_by_course = probabilities_for(load_multiplier)
+        model, stats, chosen, slack = solve_with_minimum(
+            minimum_credits,
+            p_by_course,
         )
-        solver_status = solve_stats.status.name
-        used_minimum = relaxed_minimum_credits
-        reduced_load_advised = solve_stats.has_solution
+        used_minimum = minimum_credits
+        reduced = False
+        fallback_mode = "normal"
+        if not stats.has_solution and relaxed_minimum_credits < minimum_credits:
+            model, stats, chosen, slack = solve_with_minimum(
+                relaxed_minimum_credits,
+                p_by_course,
+            )
+            used_minimum = relaxed_minimum_credits
+            reduced = stats.has_solution
+            fallback_mode = "relaxed_minimum"
+        if not stats.has_solution and relaxed_minimum_credits > 0:
+            model, stats, chosen, slack = solve_with_minimum(
+                0, p_by_course, require_at_least_one=True
+            )
+            used_minimum = 0
+            reduced = stats.has_solution
+            fallback_mode = "minimum_zero"
+        if not stats.has_solution and require_blocking_retakes:
+            model, stats, chosen, slack = solve_with_minimum(
+                0,
+                p_by_course,
+                force_retakes=False,
+                require_at_least_one=True,
+            )
+            used_minimum = 0
+            reduced = stats.has_solution
+            fallback_mode = "no_forced_retakes"
+        if not stats.has_solution:
+            model, stats, chosen, slack = solve_with_minimum(
+                0,
+                p_by_course,
+                force_retakes=False,
+                require_at_least_one=True,
+            )
+            used_minimum = 0
+            reduced = stats.has_solution
+            fallback_mode = "at_least_one_course"
+        if not stats.has_solution and enforce_cap:
+            model, stats, chosen, slack = solve_with_minimum(
+                0,
+                p_by_course,
+                force_retakes=False,
+                require_at_least_one=True,
+                soft_fail_cap=True,
+            )
+            used_minimum = 0
+            reduced = stats.has_solution
+            fallback_mode = "relaxed_fail_cap"
+        return {
+            "basis_credits": basis_credits,
+            "load_multiplier": load_multiplier,
+            "p_by_course": p_by_course,
+            "model": model,
+            "stats": stats,
+            "chosen": chosen,
+            "slack": slack,
+            "used_minimum": used_minimum,
+            "reduced": reduced,
+            "fallback_mode": fallback_mode,
+        }
+
+    scenario_load_multiplier = load_multiplier_for(effective_max)
+    basis_credits = effective_max
+    solved: dict[str, Any] | None = None
+    last_feasible: dict[str, Any] | None = None
+    refinement_iterations = 0
+    for _ in range(3):
+        refinement_iterations += 1
+        solved = solve_for_basis(basis_credits)
+        if not solved["stats"].has_solution:
+            break
+        last_feasible = solved
+        actual = sum(credits[course_id] for course_id in solved["chosen"])
+        if actual == basis_credits or actual == 0:
+            break
+        basis_credits = actual
+    load_refinement_failed = bool(
+        last_feasible is not None
+        and solved is not None
+        and not solved["stats"].has_solution
+    )
+    final = last_feasible or solved
+    assert final is not None
+    model = final["model"]
+    solve_stats = final["stats"]
+    chosen = final["chosen"]
+    slack_value = final["slack"]
+    used_minimum = final["used_minimum"]
+    reduced_load_advised = final["reduced"]
+    fallback_mode = final["fallback_mode"]
+    p_by_course = final["p_by_course"]
+    load_multiplier = final["load_multiplier"]
+    load_basis_credits = final["basis_credits"]
+    solver_status = solve_stats.status.name
     if not solve_stats.has_solution:
         return {
             "solver": "PuLP/HiGHS",
@@ -297,13 +402,14 @@ def solve_plan(
             "expected_fail_cap": expected_fail_cap,
             "risk_cap_exceeded": False,
             "reduced_load_advised": False,
+            "fallback_mode": fallback_mode,
             "message": "Không tìm thấy phương án hợp lệ sau chuỗi dự phòng.",
             "suggested_action": "Rà dữ liệu eligibility, prerequisite, giới hạn tín chỉ và cấu hình.",
         }
     risk_cap_exceeded = enable_expected_fail_cap and slack_value > 1e-7
     status_name = (
         "best_effort"
-        if risk_cap_exceeded or reduced_load_advised
+        if risk_cap_exceeded or reduced_load_advised or fallback_mode != "normal"
         else "optimal"
     )
     actual_credits = sum(credits[course_id] for course_id in chosen)
@@ -321,6 +427,15 @@ def solve_plan(
         "effective_credit_max": effective_max,
         "load_lambda": load_lambda,
         "load_multiplier": load_multiplier,
+        "load_basis_credits": load_basis_credits,
+        "load_basis_units": credits_to_curricular_units(
+            load_basis_credits,
+            average_credits_per_unit,
+        ),
+        "scenario_load_multiplier": scenario_load_multiplier,
+        "load_basis_mismatch": actual_credits != load_basis_credits,
+        "load_refinement_iterations": refinement_iterations,
+        "load_refinement_failed": load_refinement_failed,
         "p_pass_by_course": p_by_course,
         "selected_course_ids": chosen,
         "selected_credits": actual_credits,
@@ -330,12 +445,15 @@ def solve_plan(
         "risk_cap_slack": slack_value,
         "risk_cap_exceeded": risk_cap_exceeded,
         "reduced_load_advised": reduced_load_advised,
+        "fallback_mode": fallback_mode,
         "minimum_credits_used": used_minimum,
         "message": (
             "Phương án có phần expected failures vượt mức khuyến nghị mềm."
             if risk_cap_exceeded
             else "Đã đề xuất giảm tải theo mức sàn dự phòng."
             if reduced_load_advised
+            else "Phương án dự phòng đã bỏ ràng buộc học lại bắt buộc."
+            if fallback_mode != "normal"
             else "Tìm được phương án tối ưu trong các ràng buộc."
         ),
         "suggested_action": (

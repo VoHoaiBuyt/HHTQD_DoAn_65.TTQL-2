@@ -370,19 +370,6 @@ def make_student_fixtures() -> None:
             if status_by_course[course_id] in {"completed", "failed"}
         ]
         gpa = round((sum(attempted_grades) / len(attempted_grades)) * 0.4, 2) if attempted_grades else ""
-        first_semester = [course for course in COURSES if course[3] == 1]
-        first_semester_completed = [
-            course for course in first_semester
-            if status_by_course[course[0]] == "completed"
-        ]
-        first_semester_grades = [
-            course_grade[course[0]] for course in first_semester_completed
-        ]
-        first_semester_mean_20 = (
-            round(sum(first_semester_grades) / len(first_semester_grades) * 2, 2)
-            if first_semester_grades else 0
-        )
-
         profile_features, template_source = feature_templates[persona["feature_tier"]]
         profile_rows.append(
             {

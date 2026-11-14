@@ -8,3 +8,5 @@ nbconvert>=7.16
 ipykernel>=6.29
 pulp>=4.2
 highspy>=1.15
+lightgbm>=4.3
+shap>=0.46

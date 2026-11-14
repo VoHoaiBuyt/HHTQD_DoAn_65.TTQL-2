@@ -68,9 +68,12 @@ class AssessmentServiceTest(unittest.TestCase):
                 "hk1_grade": profile["Curricular units 1st sem (grade)"],
             }
         )
-        manual_rows = normalize_progress_rows(
-            rows, known_course_ids=self.curriculum["course_by_id"].keys()
-        )
+        manual_rows = [
+            {**row, "student_id": "MANUAL-01"}
+            for row in normalize_progress_rows(
+                rows, known_course_ids=self.curriculum["course_by_id"].keys()
+            )
+        ]
         assessment = assess_student(
             manual_profile,
             manual_rows,
@@ -109,6 +112,32 @@ class AssessmentServiceTest(unittest.TestCase):
         self.assertEqual(result["status"], "optimal")
         self.assertEqual(result["selected_credits"], 12)
         self.assertAlmostEqual(result["expected_failed_courses"], 0.018, places=3)
+
+    def test_s003_all_budgets_are_best_effort_not_safe(self) -> None:
+        profile, rows = persona_payload(self.curriculum, "S003")
+        assessment = assess_student(
+            profile,
+            rows,
+            self.curriculum,
+            self.bundle,
+            self.rules,
+            use_ml=True,
+        )
+        plans = build_plans(
+            assessment,
+            self.curriculum,
+            self.bundle,
+            self.rules,
+            budgets=[12, 15, 18],
+            load_lambda=0.1,
+        )
+        self.assertEqual([plan["budget"] for plan in plans], [12, 15, 18])
+        for plan in plans:
+            result = plan["result"]
+            self.assertEqual(result["status"], "best_effort", plan["budget"])
+            self.assertTrue(result["risk_cap_exceeded"])
+            self.assertAlmostEqual(result["expected_failed_courses"], 2.98, places=2)
+            self.assertEqual(result["expected_fail_cap"], 1.0)
 
     def test_comma_decimal_and_range_validation(self) -> None:
         profile = normalize_profile(
@@ -168,6 +197,19 @@ class AssessmentServiceTest(unittest.TestCase):
         self.assertEqual(profile["hk1_enrolled"], 7)
         self.assertEqual(profile["hk1_approved"], 6)
         self.assertAlmostEqual(profile["hk1_grade"], 13.5)
+
+    def test_progress_rows_from_another_student_are_rejected(self) -> None:
+        profile, rows = persona_payload(self.curriculum, "S001")
+        foreign_rows = [{**row, "student_id": "S002"} for row in rows]
+        with self.assertRaises(InputError):
+            assess_student(
+                profile,
+                foreign_rows,
+                self.curriculum,
+                self.bundle,
+                self.rules,
+                use_ml=False,
+            )
 
     def test_progress_validation_rejects_unknown_and_duplicate(self) -> None:
         with self.assertRaises(InputError):

@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -12,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.services.assessment import (  # noqa: E402
+from src.services.assessment import (
     assess_student,
     build_plans,
     default_rules,
@@ -20,7 +21,7 @@ from src.services.assessment import (  # noqa: E402
     load_curriculum,
     persona_payload,
 )
-from src.services.input_validation import (  # noqa: E402
+from src.services.input_validation import (
     ALLOWED_STATUSES,
     InputError,
     normalize_profile,
@@ -31,6 +32,14 @@ st.set_page_config(
     page_title="DSS cảnh báo rủi ro & lộ trình tín chỉ",
     layout="wide",
 )
+
+REPORTS_DIR = ROOT / "reports" / "generated"
+STRATEGY_LABELS = {
+    "ILP": "ILP (PuLP)",
+    "B1": "B1 — đúng kỳ + học lại",
+    "B2": "B2 — tối đa tín chỉ",
+    "B3": "B3 — cố định 15 tín chỉ",
+}
 
 
 @st.cache_resource
@@ -48,8 +57,72 @@ def get_rules() -> dict:
     return default_rules()
 
 
-def profile_frame(profile: dict, index: int = 0) -> pd.DataFrame:
-    return pd.DataFrame([profile], index=[index])
+@st.cache_resource(show_spinner=False)
+def get_shap_context() -> dict | None:
+    """LinearExplainer for the serving LR pipeline on a REAL UCI-697 background."""
+    try:
+        import shap
+    except ImportError:
+        return None
+    from src.analysis.risk_to_plan_exploration import _load_real_data
+
+    bundle = get_bundle()
+    data, features, _, _ = _load_real_data()
+    background = data[features].sample(
+        n=min(120, len(data)), random_state=int(bundle["seed"])
+    )
+    pipeline = bundle["dropout_model"]
+    preprocessor = pipeline.named_steps["columntransformer"]
+    model = pipeline.named_steps["logisticregression"]
+    transformed = preprocessor.transform(background)
+    if hasattr(transformed, "toarray"):
+        transformed = transformed.toarray()
+    explainer = shap.LinearExplainer(
+        model, shap.maskers.Independent(transformed, max_samples=200)
+    )
+    return {
+        "explainer": explainer,
+        "preprocessor": preprocessor,
+        "feature_names": [str(name) for name in preprocessor.get_feature_names_out()],
+        "dropout_index": list(model.classes_).index("Dropout"),
+    }
+
+
+def _clean_feature_name(name: str) -> str:
+    short = name.split("__", 1)[-1]
+    if name.startswith("categorical__"):
+        base, _, value = short.rpartition("_")
+        return f"{base} = {value}" if base else short
+    return short
+
+
+def explain_dropout(profile: dict, top_n: int = 10) -> pd.DataFrame | None:
+    context = get_shap_context()
+    if context is None:
+        return None
+    features = get_bundle()["features"]
+    frame = pd.DataFrame(
+        [{feature: profile[feature] for feature in features}], columns=features
+    )
+    transformed = context["preprocessor"].transform(frame)
+    if hasattr(transformed, "toarray"):
+        transformed = transformed.toarray()
+    raw = context["explainer"].shap_values(transformed)
+    if isinstance(raw, list):
+        raw = np.asarray(raw[context["dropout_index"]])
+    values = np.asarray(raw)
+    if values.ndim == 3:
+        values = values[:, :, context["dropout_index"]]
+    contributions = pd.DataFrame(
+        {
+            "feature": [
+                _clean_feature_name(name) for name in context["feature_names"]
+            ],
+            "shap_value": values[0],
+        }
+    )
+    contributions["abs_shap"] = contributions["shap_value"].abs()
+    return contributions.sort_values("abs_shap", ascending=False).head(top_n)
 
 
 def progress_frame(rows: list[dict]) -> pd.DataFrame:
@@ -220,10 +293,13 @@ def render_inputs(curriculum: dict):
                 "hk1_grade": hk1_grade,
             }
         )
-        progress_rows = normalize_progress_rows(
-            edited.to_dict("records"),
-            known_course_ids=curriculum["course_by_id"].keys(),
-        )
+        progress_rows = [
+            {**row, "student_id": profile["student_id"]}
+            for row in normalize_progress_rows(
+                edited.to_dict("records"),
+                known_course_ids=curriculum["course_by_id"].keys(),
+            )
+        ]
     except InputError as error:
         st.error(str(error))
         return mode, None, None, None, False
@@ -300,21 +376,96 @@ def render_assessment(assessment: dict) -> None:
             width="stretch",
             hide_index=True,
         )
+
+    failed = pd.DataFrame(rule_result.get("failed_courses", []))
+    if not failed.empty:
+        st.markdown("**Học phần chưa đạt (cần học lại)**")
+        st.dataframe(
+            failed[["course_id", "course_name", "credits", "attempt_count"]],
+            width="stretch",
+            hide_index=True,
+        )
+
+    blocked_rows = [
+        {
+            "course_id": course["course_id"],
+            "course_name": course.get("course_name", ""),
+            "credits": course["credits"],
+            "unmet_prerequisites": ", ".join(
+                f"{item['prerequisite_id']} ({item['type']}, {item['status']})"
+                for item in course.get("unmet_prerequisites", [])
+            ),
+        }
+        for course in rule_result.get("blocked_courses", [])
+    ]
+    if blocked_rows:
+        st.markdown("**Học phần bị chặn bởi tiên quyết**")
+        st.dataframe(
+            pd.DataFrame(blocked_rows), width="stretch", hide_index=True
+        )
+
+    render_shap(assessment)
     st.caption(
         "Cảnh báo rủi ro chỉ để hiển thị/cố vấn; cap tín chỉ và Fmax là "
         "khuyến nghị mềm (`enforce_cap=false`), không phải quy chế."
     )
 
 
+def render_shap(assessment: dict) -> None:
+    st.markdown("**Vì sao mô hình dự đoán rủi ro? (SHAP · LR đang phục vụ)**")
+    if not assessment["risk_estimated"]:
+        st.info(
+            "Chế độ nhập tay/CSV thiếu 24 feature T0/T1-known nên không tính SHAP."
+        )
+        return
+    try:
+        with st.spinner("Đang tính SHAP..."):
+            table = explain_dropout(assessment["profile"])
+    except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as error:
+        st.warning(f"Không tính được SHAP: {error}")
+        return
+    if table is None:
+        st.info("Chưa cài `shap` nên không hiển thị giải thích.")
+        return
+    table = table.assign(shap_value=table["shap_value"].round(4))
+    st.dataframe(
+        table[["feature", "shap_value"]], width="stretch", hide_index=True
+    )
+    st.caption(
+        "SHAP dương làm tăng P(Dropout), âm làm giảm. Đây là đóng góp vào "
+        "**dự đoán** của mô hình, **không phải quan hệ nhân quả**."
+    )
+
+
+def _plan_signature(
+    assessment: dict,
+    budgets: list[int],
+    load_lambda: float,
+    fmax: float,
+    enforce_cap: bool,
+) -> tuple:
+    profile = assessment["profile"]
+    return (
+        str(profile.get("student_id")),
+        int(profile.get("current_semester", 0)),
+        round(float(load_lambda), 4),
+        tuple(sorted(budgets)),
+        round(float(fmax), 4),
+        bool(enforce_cap),
+    )
+
+
 def render_plan(assessment: dict, curriculum: dict) -> None:
-    st.subheader("3. Lộ trình học phần")
-    col1, col2 = st.columns([1, 2])
+    st.subheader("3. Lộ trình học phần: so sánh nhiều ngân sách tín chỉ")
+    rule_result = assessment["rule_result"]
+    targets = [int(value) for value in get_rules()["scenario_credit_targets"]["values"]]
+    col1, col2, col3, col4 = st.columns([1.4, 1.4, 1, 1])
     with col1:
-        budget = st.selectbox(
-            "Ngân sách tín chỉ",
-            [int(value) for value in get_rules()["scenario_credit_targets"]["values"]],
-            index=0,
-            key="budget",
+        budgets = st.multiselect(
+            "Ngân sách tín chỉ (so sánh cùng lúc)",
+            targets,
+            default=targets,
+            key="plan_budgets",
         )
     with col2:
         load_lambda = st.slider(
@@ -325,27 +476,95 @@ def render_plan(assessment: dict, curriculum: dict) -> None:
             step=0.05,
             key="load_lambda",
         )
-    if st.button("Lập lộ trình", key="run_plan", type="primary"):
+    with col3:
+        fmax = st.number_input(
+            "Fmax (môn trượt kỳ vọng)",
+            min_value=0.0,
+            max_value=6.0,
+            value=float(rule_result["expected_failed_course_cap"]),
+            step=0.5,
+            key="plan_fmax",
+        )
+    with col4:
+        enforce_cap = st.checkbox(
+            "Áp trần tín chỉ khuyến nghị",
+            value=bool(rule_result["enforce_cap"]),
+            key="plan_enforce_cap",
+            help="Mặc định TẮT: P(Dropout) chỉ là cảnh báo mềm, không tự chặn đăng ký.",
+        )
+
+    st.caption(
+        "Mục tiêu ILP: `Σ credits×p_pass + β×unlock − γ×credits×(1−p_pass)`; "
+        "β/γ/λ là **GIẢ ĐỊNH kịch bản**, không phải ước lượng nhân quả. "
+        "Fmax mặc định lấy theo tầng cảnh báo."
+    )
+
+    if not budgets:
+        st.warning("Chọn ít nhất một ngân sách tín chỉ.")
+        return
+    signature = _plan_signature(assessment, budgets, load_lambda, fmax, enforce_cap)
+    if st.button("Lập & so sánh lộ trình", key="run_plan", type="primary"):
         try:
-            with st.spinner("Đang giải ILP..."):
+            with st.spinner("Đang giải ILP cho các ngân sách..."):
                 plans = build_plans(
                     assessment,
                     curriculum,
                     get_bundle(),
                     get_rules(),
-                    budgets=[budget],
+                    budgets=sorted(budgets),
                     load_lambda=load_lambda,
+                    expected_fail_cap_override=fmax,
+                    enforce_cap_override=enforce_cap,
                 )
-            st.session_state["plan"] = plans[0]
+            st.session_state["plan_results"] = plans
+            st.session_state["plan_signature"] = signature
         except (InputError, ValueError, KeyError) as error:
             st.error(str(error))
+            return
 
-    plan = st.session_state.get("plan")
-    if not plan:
-        st.info("Bấm **Lập lộ trình** để chạy ILP cho ngân sách đã chọn.")
+    plans = st.session_state.get("plan_results")
+    if not plans:
+        st.info(
+            "Bấm **Lập & so sánh lộ trình** để giải ILP cho 12/15/18 tín chỉ."
+        )
         return
+    if st.session_state.get("plan_signature") != signature:
+        st.warning(
+            "Tham số đã thay đổi nhưng bảng dưới vẫn là kết quả lần chạy trước. "
+            "Bấm lại nút để cập nhật."
+        )
 
+    comparison = pd.DataFrame(
+        [
+            {
+                "Ngân sách": plan["budget"],
+                "Trần áp dụng": plan["scenario_credit_max"],
+                "Trạng thái": plan["result"].get("status", "—"),
+                "Tín chỉ chọn": plan["result"].get("selected_credits", 0),
+                "Tín chỉ đạt kỳ vọng": round(
+                    float(plan["result"].get("expected_credits_passed", 0.0)), 2
+                ),
+                "Môn trượt kỳ vọng": round(
+                    float(plan["result"].get("expected_failed_courses", 0.0)), 2
+                ),
+                "Fmax": round(float(plan["result"].get("expected_fail_cap", 0.0)), 2),
+                "Vượt Fmax": "CÓ" if plan["result"].get("risk_cap_exceeded") else "không",
+                "Fallback": plan["result"].get("fallback_mode", "normal"),
+            }
+            for plan in plans
+        ]
+    )
+    st.markdown("**So sánh các ngân sách**")
+    st.dataframe(comparison, width="stretch", hide_index=True)
+
+    detail_budget = st.selectbox(
+        "Xem chi tiết ngân sách",
+        [plan["budget"] for plan in plans],
+        key="plan_detail_budget",
+    )
+    plan = next(item for item in plans if item["budget"] == detail_budget)
     result = plan["result"]
+
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Trạng thái", result.get("status", "—"))
     col2.metric("Tín chỉ chọn", result.get("selected_credits", 0))
@@ -357,34 +576,217 @@ def render_plan(assessment: dict, curriculum: dict) -> None:
         "Số môn trượt kỳ vọng",
         f"{result.get('expected_failed_courses', 0.0):.2f}",
     )
-    if result.get("risk_cap_exceeded"):
-        st.warning(
-            f"Vượt Fmax mềm {result.get('risk_cap_slack', 0.0):.2f} môn. "
+
+    status = result.get("status")
+    if status == "infeasible_data_error":
+        st.error(
+            "**Không tìm được phương án hợp lệ.** "
             + result.get("suggested_action", "")
         )
+    elif status == "best_effort":
+        st.error(
+            f"**best_effort — KHÔNG phải phương án an toàn.** "
+            f"Môn trượt kỳ vọng {result.get('expected_failed_courses', 0.0):.2f} "
+            f"vượt Fmax {result.get('expected_fail_cap', 0.0):.2f} "
+            f"(slack {result.get('risk_cap_slack', 0.0):.2f}). "
+            f"{result.get('suggested_action', 'Trao đổi với cố vấn học tập.')} "
+            "P(Dropout) chỉ là cảnh báo mềm, không tự động chặn đăng ký."
+        )
     elif result.get("reduced_load_advised"):
-        st.warning(result.get("message", ""))
+        st.warning(result.get("message", "Đã đề xuất giảm tải."))
     else:
-        st.success(result.get("message", ""))
+        st.success(result.get("message", "Phương án tối ưu."))
+
+    st.caption(
+        f"Tín chỉ chọn {result.get('selected_credits', 0)} / ngân sách "
+        f"{plan['budget']} · hệ số tải tính trên "
+        f"{result.get('load_basis_credits', 0)} tín chỉ (λ={load_lambda:.2f}, "
+        f"{result.get('load_refinement_iterations', 0)} vòng tinh chỉnh). "
+        "Chọn ít hơn ngân sách là bình thường: tín chỉ môn học rời rạc, "
+        "Cmin chỉ là sàn mềm."
+    )
 
     selected = pd.DataFrame(plan["selected_courses"])
-    if not selected.empty:
-        st.dataframe(
-            selected[
-                ["course_id", "course_name", "credits", "group", "status", "p_pass"]
+    if selected.empty:
+        st.warning("Phương án không chọn học phần nào.")
+    else:
+        display = selected[
+            ["course_id", "course_name", "credits", "group", "status", "p_pass"]
+        ].copy()
+        display["p_pass"] = (display["p_pass"] * 100).round(1)
+        display = display.rename(columns={"p_pass": "P(đạt) %"})
+        st.dataframe(display, width="stretch", hide_index=True)
+
+    combined = pd.DataFrame(
+        [
+            {"budget": plan["budget"], **course}
+            for plan in plans
+            for course in plan["selected_courses"]
+        ]
+    )
+    if not combined.empty:
+        st.download_button(
+            "Tải kế hoạch tất cả ngân sách (CSV)",
+            combined.to_csv(index=False).encode("utf-8-sig"),
+            file_name=f"plans_{assessment['profile']['student_id']}.csv",
+            key="download_plans",
+        )
+    st.caption(
+        "Kết quả từ prototype PuLP/HiGHS; persona/CTĐT **SIMULATED**, "
+        "λ/β/γ/retake là **GIẢ ĐỊNH**, không phải dự báo nhân quả."
+    )
+
+
+def _pct(value: float) -> str:
+    return f"{float(value):.1%}"
+
+
+def render_simulation() -> None:
+    st.subheader("4. Mô phỏng Monte Carlo: ILP vs B1/B2/B3")
+    st.caption(
+        "**SIMULATED**: 1.000 lượt/sinh viên/chiến lược với common random numbers; "
+        "P(đạt) = M3′ **REAL (UCI-697)** × hệ số độ khó và λ **GIẢ ĐỊNH**. "
+        "Đây là phân tích kịch bản, không phải bằng chứng thực nghiệm tại NTU."
+    )
+    summary_path = REPORTS_DIR / "monte_carlo_summary.csv"
+    by_student_path = REPORTS_DIR / "monte_carlo_by_student.csv"
+    paired_path = REPORTS_DIR / "monte_carlo_paired_differences.csv"
+    if not summary_path.exists():
+        st.info(
+            "Chưa có kết quả mô phỏng. Chạy: "
+            "`.venv/bin/python scripts/monte_carlo_strategies.py --runs 1000`"
+        )
+        return
+
+    aggregate = pd.read_csv(summary_path)
+    aggregate = aggregate[aggregate["scope"] == "ALL"]
+    display = pd.DataFrame(
+        {
+            "Chiến lược": [
+                STRATEGY_LABELS.get(value, value)
+                for value in aggregate["strategy"]
             ],
+            "Tốt nghiệp (95% CI)": [
+                f"{_pct(row.graduation_rate)} "
+                f"[{_pct(row.graduation_rate_ci_low)}, "
+                f"{_pct(row.graduation_rate_ci_high)}]"
+                for row in aggregate.itertuples()
+            ],
+            "Đúng hạn (95% CI)": [
+                f"{_pct(row.on_time_rate)} "
+                f"[{_pct(row.on_time_rate_ci_low)}, "
+                f"{_pct(row.on_time_rate_ci_high)}]"
+                for row in aggregate.itertuples()
+            ],
+            "Khả thi": [_pct(value) for value in aggregate["feasibility_rate"]],
+            "Môn trượt TB (95% CI)": [
+                f"{row.mean_simulated_failures:.2f} "
+                f"[{row.mean_simulated_failures_ci_low:.2f}, "
+                f"{row.mean_simulated_failures_ci_high:.2f}]"
+                for row in aggregate.itertuples()
+            ],
+            "Tín chỉ TB": aggregate["mean_credits_earned"].round(1),
+            "HK TB": aggregate["mean_semesters_to_graduation"].round(2),
+            "Pareto": aggregate["pareto_frontier"].map(
+                {True: "Có", False: "Không"}
+            ),
+        }
+    )
+    st.markdown("**Tổng hợp toàn bộ persona (7 sinh viên × 1.000 lượt)**")
+    st.dataframe(display, width="stretch", hide_index=True)
+
+    image_columns = st.columns(2)
+    for column, name, caption in (
+        (
+            image_columns[0],
+            "monte_carlo_pareto.png",
+            "Pareto: tối thiểu môn trượt vs tối đa tỷ lệ đúng hạn",
+        ),
+        (
+            image_columns[1],
+            "monte_carlo_rates.png",
+            "Tỷ lệ tốt nghiệp / đúng hạn / khả thi theo chiến lược",
+        ),
+    ):
+        path = REPORTS_DIR / name
+        if path.exists():
+            with column:
+                st.image(str(path), caption=caption, width="stretch")
+
+    if by_student_path.exists():
+        by_student = pd.read_csv(by_student_path)
+        students = sorted(by_student["student_id"].unique())
+        strategies = [
+            value
+            for value in by_student["strategy"].unique()
+            if value in STRATEGY_LABELS
+        ]
+        col1, col2 = st.columns(2)
+        with col1:
+            picked_students = st.multiselect(
+                "Lọc sinh viên", students, default=students, key="mc_students"
+            )
+        with col2:
+            picked_strategies = st.multiselect(
+                "Lọc chiến lược",
+                strategies,
+                default=strategies,
+                format_func=lambda value: STRATEGY_LABELS[value],
+                key="mc_strategies",
+            )
+        filtered = by_student[
+            by_student["student_id"].isin(picked_students)
+            & by_student["strategy"].isin(picked_strategies)
+        ]
+        st.markdown("**Kết quả theo sinh viên**")
+        st.dataframe(
+            pd.DataFrame(
+                {
+                    "Sinh viên": filtered["student_id"],
+                    "Chiến lược": [
+                        STRATEGY_LABELS.get(value, value)
+                        for value in filtered["strategy"]
+                    ],
+                    "Tốt nghiệp": [_pct(value) for value in filtered["graduation_rate"]],
+                    "Đúng hạn": [_pct(value) for value in filtered["on_time_rate"]],
+                    "Khả thi": [_pct(value) for value in filtered["feasibility_rate"]],
+                    "Môn trượt TB": filtered["mean_simulated_failures"].round(2),
+                    "Tín chỉ TB": filtered["mean_credits_earned"].round(1),
+                    "HK TB": filtered["mean_semesters_to_graduation"].round(2),
+                }
+            ),
             width="stretch",
             hide_index=True,
         )
-        st.download_button(
-            "Tải kế hoạch CSV",
-            selected.to_csv(index=False).encode("utf-8-sig"),
-            file_name=f"plan_{assessment['profile']['student_id']}_{budget}.csv",
-            key="download_plan",
+
+    if paired_path.exists():
+        paired = pd.read_csv(paired_path)
+        st.markdown("**Chênh lệch bắt cặp so với ILP**")
+        st.dataframe(
+            pd.DataFrame(
+                {
+                    "So sánh": paired["comparison"],
+                    "Chỉ số": paired["metric"],
+                    "Chênh lệch TB": paired["mean_difference"].round(4),
+                    "95% CI": [
+                        f"[{low:.4f}, {high:.4f}]"
+                        for low, high in zip(paired["ci_low"], paired["ci_high"])
+                    ],
+                    "CI loại 0": paired["ci_excludes_zero"].map(
+                        {True: "Có", False: "Không"}
+                    ),
+                }
+            ),
+            width="stretch",
+            hide_index=True,
+        )
+        st.caption(
+            "Đọc trung thực: ILP giảm số môn trượt và tăng khả thi so với B1, "
+            "nhưng B1 có tỷ lệ đúng hạn cao hơn; ILP không thắng mọi chỉ số."
         )
     st.caption(
-        "Kết quả từ prototype PuLP/HiGHS; person/CTĐT SIMULATED, λ là GIẢ ĐỊNH, "
-        "không phải dự báo nhân quả."
+        "Tái lập: `.venv/bin/python scripts/monte_carlo_strategies.py --runs 1000` · "
+        "chi tiết trong `reports/generated/monte_carlo_meta.json`."
     )
 
 
@@ -398,9 +800,11 @@ def main() -> None:
         st.error(str(error))
         st.stop()
 
-    tab1, tab2, tab3 = st.tabs(["Nhập hồ sơ", "Đánh giá", "Lộ trình"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["Nhập hồ sơ", "Đánh giá", "Lộ trình", "Mô phỏng"]
+    )
     with tab1:
-        mode, persona_id, profile, progress_rows, use_ml = render_inputs(curriculum)
+        mode, _persona_id, profile, progress_rows, use_ml = render_inputs(curriculum)
         if st.button("Đánh giá", key="assess", type="primary"):
             if profile is None or progress_rows is None:
                 st.error("Chưa có đủ dữ liệu để đánh giá.")
@@ -418,6 +822,8 @@ def main() -> None:
                     st.session_state["assessment"] = assessment
                     st.session_state["assessment_mode"] = mode
                     st.session_state.pop("plan", None)
+                    st.session_state.pop("plan_results", None)
+                    st.session_state.pop("plan_signature", None)
                     st.success(
                         f"Đã đánh giá {profile['student_id']} "
                         f"({mode}). Chuyển sang tab Đánh giá."
@@ -442,10 +848,13 @@ def main() -> None:
         else:
             render_plan(assessment, curriculum)
 
+    with tab4:
+        render_simulation()
+
     with st.expander("Giới hạn và nhãn dữ liệu"):
         st.markdown(
             "- **REAL (UCI-697)**: mô hình exploratory; domain shift sang NTU chưa kiểm định.\n"
-            "- **SIMULATED**: CTĐT, tiến độ, persona, độ khó nhóm môn.\n"
+            "- **SIMULATED**: CTĐT, tiến độ, persona, độ khó nhóm môn, mô phỏng Monte Carlo.\n"
             "- **GIẢ ĐỊNH**: λ, retake, β/γ, trần tín chỉ/Fmax; `enforce_cap=false`.\n"
             "- Nhập tay/CSV không có đủ 24 feature nên **không** chạy ML risk; "
             "lộ trình dùng M3′ và tầng trung bình.\n"

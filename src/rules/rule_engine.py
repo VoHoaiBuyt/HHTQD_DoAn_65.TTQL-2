@@ -34,7 +34,7 @@ def _course_prerequisites_met(
     course_id: str,
     prerequisite_rows: Sequence[Mapping[str, Any]],
     status_by_course: Mapping[str, str],
-    candidate_ids: set[str],
+    eligible_ids: set[str],
     rules: Mapping[str, Any],
 ) -> bool:
     policy = rules["rule_engine"]["prerequisite_policy"]
@@ -51,11 +51,79 @@ def _course_prerequisites_met(
             if status not in {"completed", "failed", "in_progress"}:
                 return False
         elif relation_type == policy["concurrent_type"]["value"]:
-            if status not in {"completed", "in_progress"} and prerequisite_id not in candidate_ids:
+            if status not in {"completed", "in_progress"} and prerequisite_id not in eligible_ids:
                 return False
         else:
             raise ValueError(f"Unknown prerequisite relation type: {relation_type}")
     return True
+
+
+def _unmet_prerequisites(
+    course_id: str,
+    prerequisite_rows: Sequence[Mapping[str, Any]],
+    status_by_course: Mapping[str, str],
+    eligible_ids: set[str],
+    rules: Mapping[str, Any],
+) -> list[dict[str, str]]:
+    policy = rules["rule_engine"]["prerequisite_policy"]
+    unmet: list[dict[str, str]] = []
+    for relation in prerequisite_rows:
+        if str(relation["course_id"]) != course_id:
+            continue
+        prerequisite_id = str(relation["prerequisite_id"])
+        relation_type = str(relation["type"])
+        status = status_by_course.get(prerequisite_id, "not_taken")
+        if relation_type == policy["strict_type"]["value"]:
+            met = status == "completed"
+        elif relation_type == policy["prior_study_type"]["value"]:
+            met = status in {"completed", "failed", "in_progress"}
+        elif relation_type == policy["concurrent_type"]["value"]:
+            met = (
+                status in {"completed", "in_progress"}
+                or prerequisite_id in eligible_ids
+            )
+        else:
+            raise ValueError(f"Unknown prerequisite relation type: {relation_type}")
+        if not met:
+            unmet.append(
+                {
+                    "prerequisite_id": prerequisite_id,
+                    "type": relation_type,
+                    "status": status,
+                }
+            )
+    return unmet
+
+
+def _eligible_course_ids(
+    base_candidate_ids: set[str],
+    prerequisite_rows: Sequence[Mapping[str, Any]],
+    status_by_course: Mapping[str, str],
+    rules: Mapping[str, Any],
+) -> set[str]:
+    """Return the greatest fixed point of courses meeting all prerequisites.
+
+    A concurrent partner must itself be eligible, not merely offered. Starting
+    from all candidates and repeatedly removing blocked courses lets valid
+    concurrent pairs (including mutual pairs) pass while propagating blockages
+    through chains such as ``A || B`` and ``B`` requires ``C``.
+    """
+    eligible = set(base_candidate_ids)
+    while True:
+        blocked = {
+            course_id
+            for course_id in eligible
+            if not _course_prerequisites_met(
+                course_id,
+                prerequisite_rows,
+                status_by_course,
+                eligible,
+                rules,
+            )
+        }
+        if not blocked:
+            return eligible
+        eligible -= blocked
 
 
 def _longest_strict_prerequisite_chain(
@@ -171,16 +239,49 @@ def evaluate_student(
         )
 
     candidate_ids = {item["course_id"] for item in base_candidates}
+    eligible_ids = _eligible_course_ids(
+        candidate_ids,
+        prerequisites,
+        status_by_course,
+        active_rules,
+    )
     eligible_courses = [
-        course
-        for course in base_candidates
-        if _course_prerequisites_met(
+        course for course in base_candidates if course["course_id"] in eligible_ids
+    ]
+    blocked_courses = []
+    for course in base_candidates:
+        if course["course_id"] in eligible_ids:
+            continue
+        unmet = _unmet_prerequisites(
             course["course_id"],
             prerequisites,
             status_by_course,
-            candidate_ids,
+            eligible_ids,
             active_rules,
         )
+        if unmet:
+            blocked_courses.append(
+                {
+                    "course_id": course["course_id"],
+                    "course_name": course.get("course_name", ""),
+                    "credits": course["credits"],
+                    "unmet_prerequisites": unmet,
+                }
+            )
+    failed_courses = [
+        {
+            "course_id": str(course["course_id"]),
+            "course_name": course.get("course_name", ""),
+            "credits": int(course["credits"]),
+            "attempt_count": int(
+                progress_by_course.get(str(course["course_id"]), {}).get(
+                    "attempt_count", 0
+                )
+                or 0
+            ),
+        }
+        for course in courses
+        if status_by_course.get(str(course["course_id"])) == "failed"
     ]
     eligible_courses.sort(
         key=lambda item: (
@@ -271,7 +372,7 @@ def evaluate_student(
             course_id,
             prerequisites,
             status_by_course,
-            candidate_ids,
+            eligible_ids,
             active_rules,
         ):
             blocked_required_courses.append(course_id)
@@ -308,7 +409,7 @@ def evaluate_student(
         )
     credits_behind = max(
         0,
-        int(round(current_semester * expected_per_semester - completed_credits)),
+        round(current_semester * expected_per_semester - completed_credits),
     )
     if credits_behind >= int(academic["credits_behind_expected"]["value"]):
         academic_flags.append(
@@ -368,6 +469,8 @@ def evaluate_student(
             tier_config["expected_failed_course_caps"][tier]
         ),
         "eligible_courses": eligible_courses,
+        "blocked_courses": blocked_courses,
+        "failed_courses": failed_courses,
         "progress_stats": progress_stats,
         "academic_flags": academic_flags,
         "edge_case_flags": edge_case_flags,
