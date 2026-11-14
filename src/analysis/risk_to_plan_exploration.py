@@ -38,10 +38,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.optimize.plan_risk import (  # noqa: E402
+    M3_ABILITY_ORDER,
     credits_to_curricular_units,
     m3_prime_probability,
     plan_risk,
 )
+from src.rules.rule_engine import evaluate_student, load_rules  # noqa: E402
 
 SEED = 20261105
 DATA_PATH = ROOT / "data" / "raw" / "uci_697" / "data.csv"
@@ -84,7 +86,7 @@ UNVERIFIED_FEATURES = {
     "GDP",
 }
 LOAD_BANDS = ["0", "1-5", "6-7", "8+"]
-ABILITY_LABELS = ["Thấp", "Trung bình", "Cao"]
+ABILITY_LABELS = list(M3_ABILITY_ORDER)
 
 def _load_exploration_config() -> dict[str, Any]:
     with CONFIG_PATH.open(encoding="utf-8") as file:
@@ -866,67 +868,6 @@ def _difficulty_factors() -> tuple[dict[str, float], pd.DataFrame]:
     return factors, table
 
 
-def _next_semester_courses(
-    student_id: str,
-    profile: pd.Series,
-    courses: pd.DataFrame,
-    progress: pd.DataFrame,
-    prerequisites: pd.DataFrame,
-) -> list[dict[str, Any]]:
-    student_progress = progress[progress["student_id"] == student_id].set_index("course_id")
-    status_by_course = student_progress["status"].to_dict()
-    current_semester = int(profile["current_semester"])
-    next_semester = current_semester + 1
-    offered = "odd" if next_semester % 2 else "even"
-    prerequisite_map: dict[str, list[dict[str, str]]] = {}
-    for row in prerequisites.to_dict("records"):
-        prerequisite_map.setdefault(row["course_id"], []).append(row)
-
-    eligible = []
-    for course in courses.to_dict("records"):
-        course_id = course["course_id"]
-        status = status_by_course.get(course_id, "not_taken")
-        if status not in {"failed", "not_taken"}:
-            continue
-        offerings = set(course["offered_semesters"].split(","))
-        if "both" not in offerings and offered not in offerings:
-            continue
-        prerequisites_met = True
-        for requirement in prerequisite_map.get(course_id, []):
-            prerequisite_status = status_by_course.get(
-                requirement["prerequisite_id"], "not_taken"
-            )
-            if requirement["type"] == "tiên quyết" and prerequisite_status != "completed":
-                prerequisites_met = False
-            elif requirement["type"] == "học trước" and prerequisite_status not in {
-                "completed",
-                "failed",
-            }:
-                prerequisites_met = False
-        if not prerequisites_met:
-            continue
-        eligible.append(
-            {
-                **course,
-                "credits": int(course["credits"]),
-                "status": status,
-                "attempt_count": int(
-                    student_progress.loc[course_id, "attempt_count"]
-                    if course_id in student_progress.index
-                    else 0
-                ),
-            }
-        )
-    eligible.sort(
-        key=lambda item: (
-            0 if item["status"] == "failed" else 1,
-            int(item["planned_semester"]),
-            item["course_id"],
-        )
-    )
-    return eligible
-
-
 def _choose_plan(candidates: list[dict[str, Any]], credit_budget: int) -> list[dict[str, Any]]:
     states: dict[int, tuple[int, ...]] = {0: ()}
     for index, course in enumerate(candidates):
@@ -992,6 +933,7 @@ def _persona_sanity(
     progress = _read_csv(PROGRESS_PATH)
     profiles = _read_csv(PROFILE_PATH)
     prerequisites = _read_csv(PREREQUISITES_PATH)
+    rules = load_rules()
     average_credits = float(pd.to_numeric(courses["credits"]).mean())
     real_load_median = float(
         data.loc[data[HK2_ENROLLED] > 0, HK2_ENROLLED].median()
@@ -1032,13 +974,15 @@ def _persona_sanity(
         hk1_approved = int(profile[HK1_APPROVED])
         ability_rate = hk1_approved / hk1_enrolled if hk1_enrolled > 0 else 0.0
         ability = _ability_for_profile(ability_rate, stratified["ability_cut_points"])
-        candidates = _next_semester_courses(
-            student_id,
-            profile,
-            courses,
-            progress,
-            prerequisites,
-        )
+        candidates = evaluate_student(
+            profile.to_dict(),
+            courses.to_dict("records"),
+            prerequisites.to_dict("records"),
+            progress.loc[progress["student_id"] == student_id].to_dict("records"),
+            next_semester=int(profile["current_semester"]) + 1,
+            p_dropout=0.0,
+            rules=rules,
+        )["eligible_courses"]
         nested_plans = _choose_nested_plans(
             candidates,
             exploration_config["scenario_credits"],
@@ -1209,7 +1153,6 @@ def _persona_sanity(
         "sensitivity_raw": sensitivity_raw,
         "sensitivity_summary": sensitivity_summary,
         "load_sensitivity": pd.DataFrame(load_sensitivity_rows),
-        "difficulty_factors_table": None,
         "average_credits_per_unit": average_credits,
         "real_median_hk2_enrolled": real_load_median,
         "real_pooled_pass_rate": real_pooled_pass_rate,

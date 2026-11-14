@@ -1,0 +1,3 @@
+-r requirements-stage1.txt
+streamlit>=1.40
+joblib>=1.4

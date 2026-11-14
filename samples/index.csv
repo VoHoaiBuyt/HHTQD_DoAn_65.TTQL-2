@@ -1,0 +1,9 @@
+﻿sample,profile_file,progress_file,persona_goc,mo_ta,nang_luc_hk1,so_mon_du_dieu_kien,ke_hoach_12tc,tin_chi_dat_ky_vong,mon_truot_ky_vong
+S001,samples/profile_S001.csv,samples/progress_S001.csv,"Giỏi, đúng tiến độ","Kiểm thử lộ trình đạt tốt, tải học tập ổn định.",Cao,8,optimal,11.95,0.02
+S002,samples/profile_S002.csv,samples/progress_S002.csv,"Trung bình, đúng tiến độ",Kiểm thử đề xuất cân bằng cho kết quả trung bình.,Trung bình,8,optimal,10.11,0.78
+S003,samples/profile_S003.csv,samples/progress_S003.csv,"Yếu, chậm tiến độ",Kiểm thử giảm tải và ưu tiên học lại học phần chưa đạt.,Thấp,9,best_effort,3.06,2.98
+S004,samples/profile_S004.csv,samples/progress_S004.csv,Có nhiều môn nợ,Kiểm thử nhiều học phần chưa đạt và tác động lên tín chỉ còn thiếu.,Thấp,6,best_effort,2.96,3.01
+S005,samples/profile_S005.csv,samples/progress_S005.csv,Nợ môn chặn chuỗi tiên quyết,Kiểm thử học lại IT202 trước các học phần phụ thuộc IT203/IT304.,Trung bình,6,optimal,9.84,0.9
+S006,samples/profile_S006.csv,samples/progress_S006.csv,"Gần tốt nghiệp, còn một môn nợ",Kiểm thử lập kế hoạch hoàn tất số tín chỉ cuối và học phần nợ.,Trung bình,1,infeasible_data_error,0.0,0.0
+S007,samples/profile_S007.csv,samples/progress_S007.csv,Nguy cơ chậm do trượt môn nền tảng,Kiểm thử học phần nền tảng chưa đạt chặn học phần lập trình kế tiếp.,Thấp,5,best_effort,3.16,3.67
+S008,samples/profile_S008.csv,samples/progress_S008.csv,"Giỏi, tích lũy gần hoàn tất",Kiểm thử sinh viên tiến độ tốt ở kỳ cuối.,Cao,0,graduation_ready,0.0,0.0

@@ -123,12 +123,11 @@ def evaluate_student(
         else float(p_dropout)
     )
     restriction_config = active_rules["rule_engine"]["risk_restriction"]
-    restriction_threshold = float(
-        restriction_config.get(
-            "selected_probability_threshold",
-            restriction_config["minimum_probability"],
-        )["value"]
+    threshold_entry = (
+        restriction_config.get("selected_probability_threshold")
+        or restriction_config["minimum_probability"]
     )
+    restriction_threshold = float(threshold_entry["value"])
     load_restriction_recommended = (
         restriction_probability >= restriction_threshold
     )

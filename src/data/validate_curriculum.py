@@ -89,7 +89,6 @@ def main() -> int:
         )
     )
 
-    missing_course_references = sorted(set(course_ids) - set(course_by_id))
     missing_prerequisites = [
         row for row in prerequisites if row["prerequisite_id"] not in course_by_id
     ]

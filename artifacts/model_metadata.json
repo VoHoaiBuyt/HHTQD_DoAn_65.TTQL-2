@@ -1,0 +1,122 @@
+{
+  "bundle_version": 1,
+  "trained_at": "2026-11-14T03:01:16.389564+00:00",
+  "seed": 20261105,
+  "data_label": "REAL (UCI-697)",
+  "curriculum_label": "SIMULATED",
+  "feature_count": 24,
+  "features": [
+    "Marital status",
+    "Application mode",
+    "Application order",
+    "Course",
+    "Daytime/evening attendance",
+    "Previous qualification",
+    "Previous qualification (grade)",
+    "Nacionality",
+    "Mother's qualification",
+    "Father's qualification",
+    "Mother's occupation",
+    "Father's occupation",
+    "Admission grade",
+    "Displaced",
+    "Educational special needs",
+    "Gender",
+    "Age at enrollment",
+    "International",
+    "Curricular units 1st sem (credited)",
+    "Curricular units 1st sem (enrolled)",
+    "Curricular units 1st sem (evaluations)",
+    "Curricular units 1st sem (approved)",
+    "Curricular units 1st sem (grade)",
+    "Curricular units 1st sem (without evaluations)"
+  ],
+  "categories": [
+    "Marital status",
+    "Application mode",
+    "Application order",
+    "Course",
+    "Daytime/evening attendance",
+    "Previous qualification",
+    "Nacionality",
+    "Mother's qualification",
+    "Father's qualification",
+    "Mother's occupation",
+    "Father's occupation",
+    "Displaced",
+    "Educational special needs",
+    "Gender",
+    "International"
+  ],
+  "numeric": [
+    "Previous qualification (grade)",
+    "Admission grade",
+    "Age at enrollment",
+    "Curricular units 1st sem (credited)",
+    "Curricular units 1st sem (enrolled)",
+    "Curricular units 1st sem (evaluations)",
+    "Curricular units 1st sem (approved)",
+    "Curricular units 1st sem (grade)",
+    "Curricular units 1st sem (without evaluations)"
+  ],
+  "risk_metrics": {
+    "cv_accuracy_mean": 0.7140463804249675,
+    "cv_f1_macro_mean": 0.616391776186978,
+    "cv_f1_dropout_mean": 0.7093352872122374,
+    "holdout_precision_dropout": 0.7034482758620689,
+    "holdout_recall_dropout": 0.7183098591549296,
+    "holdout_f1_dropout": 0.710801393728223,
+    "brier_dropout": 0.12114862877428044
+  },
+  "pass_rate_metrics": {
+    "holdout_mae": 0.1239885302725062,
+    "holdout_rmse": 0.19344449551994727,
+    "eligible_students": 4244,
+    "excluded_zero_enrollment": 180
+  },
+  "ability_cut_points": [
+    0.6666666666666666,
+    1.0
+  ],
+  "pooled_strata": {
+    "Thấp": {
+      "students": 1169,
+      "approved_units": 1683,
+      "enrolled_units": 6776
+    },
+    "Trung bình": {
+      "students": 1347,
+      "approved_units": 7349,
+      "enrolled_units": 9429
+    },
+    "Cao": {
+      "students": 1728,
+      "approved_units": 10592,
+      "enrolled_units": 11366
+    }
+  },
+  "difficulty_factors": {
+    "An toàn thông tin": 1.0,
+    "Cơ sở toán học": 0.8802816901408451,
+    "Dữ liệu": 1.0985915492957747,
+    "Hệ thống": 0.9507042253521127,
+    "Hệ thống thông tin": 1.1690140845070425,
+    "Kỹ nghệ phần mềm": 1.0563380281690142,
+    "Lập trình": 1.0140845070422535,
+    "Phát triển ứng dụng": 1.0704225352112675,
+    "Quản lý": 1.1408450704225352,
+    "Thực tập": 1.0985915492957747,
+    "Trí tuệ nhân tạo": 1.0,
+    "Tự chọn chuyên ngành 1": 1.0845070422535212,
+    "Tự chọn chuyên ngành 2": 1.1690140845070425,
+    "Tự chọn chuyên ngành 3": 1.0070422535211268,
+    "Tự chọn chuyên ngành 4": 1.1690140845070425,
+    "Tự chọn cơ sở 1": 0.9225352112676057,
+    "Tự chọn cơ sở 2": 0.8802816901408451,
+    "Tự chọn cơ sở 3": 0.8802816901408451,
+    "Tự chọn đại cương 1": 0.9859154929577465,
+    "Đại cương": 0.9225352112676057,
+    "Đồ án": 1.1549295774647887
+  },
+  "average_credits_per_unit": 2.6666666666666665
+}
