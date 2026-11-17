@@ -1,4 +1,10 @@
-"""Minimal PuLP model used only to verify the Stage 1 objective formulation."""
+"""PuLP/HiGHS ILP model for single-semester course-selection optimisation.
+
+Three public entry points:
+  compute_unlock_values  — prerequisite-chain unlock scoring.
+  solve_plan             — single-budget optimisation with iterative load refinement.
+  solve_plan_variants    — three objective-profile variants (safe / progress / balanced).
+"""
 
 from __future__ import annotations
 
@@ -56,6 +62,36 @@ def compute_unlock_values(
     return unlock
 
 
+def _objective_contributions(
+    chosen: list[str],
+    credits: dict[str, int],
+    p_by_course: dict[str, float],
+    unlock: dict[str, float],
+    beta: float,
+    gamma: float,
+) -> list[dict[str, Any]]:
+    """Per-course breakdown of the three objective terms (pass / failure-penalty / unlock).
+
+    Returned list preserves the order of ``chosen`` for reproducible display.
+    """
+    result: list[dict[str, Any]] = []
+    for course_id in chosen:
+        cr = credits.get(course_id, 0)
+        p = p_by_course.get(course_id, 0.0)
+        u = unlock.get(course_id, 0.0)
+        pass_term = cr * p
+        fail_penalty = -gamma * cr * (1.0 - p)
+        unlock_term = beta * u
+        result.append({
+            "course_id": course_id,
+            "pass_term": round(pass_term, 4),
+            "fail_penalty": round(fail_penalty, 4),
+            "unlock_term": round(unlock_term, 4),
+            "total_contribution": round(pass_term + fail_penalty + unlock_term, 4),
+        })
+    return result
+
+
 def solve_plan(
     eligible_courses: Sequence[Mapping[str, Any]],
     *,
@@ -82,11 +118,22 @@ def solve_plan(
     risk_cap_slack_penalty: float = 1000.0,
     graduation_ready: bool = False,
 ) -> dict[str, Any]:
-    """Solve one prototype semester plan with scenario-fixed load probability.
+    """Solve one prototype semester plan with iterative load-basis refinement.
 
-    The load multiplier is fixed using the maximum load of this risk-tier
-    scenario before solving. This keeps the formulation linear; it is a
-    conservative scenario approximation, not the exact plan-dependent model.
+    The load multiplier starts from ``scenario_credit_max`` and is iteratively
+    re-computed from the actual selected credits (up to 3 iterations).  The final
+    probability vector therefore reflects the real plan load, not the scenario
+    ceiling.  ``load_basis_mismatch`` in the result is True only when the
+    refinement loop did not converge (a rare edge case).
+
+    Status semantics
+    ----------------
+    ``optimal``   — feasible, all soft constraints satisfied.
+    ``best_effort`` — feasible but expected failures exceed ``expected_fail_cap``,
+                      load was reduced, or a fallback constraint was relaxed.
+                      **Never automatically restricts student enrolment.**
+    ``no_eligible_courses`` / ``graduation_ready`` / ``infeasible_data_error``
+                   — terminal states; no plan is returned.
     """
     if not 0 <= p_student_m3_prime <= 1:
         raise ValueError("p_student_m3_prime must be in [0, 1]")
@@ -125,8 +172,10 @@ def solve_plan(
             "expected_credits_passed": 0.0,
             "expected_failed_courses": 0.0,
             "expected_fail_cap": expected_fail_cap,
+            "expected_fail_exceeded": False,
             "risk_cap_exceeded": False,
             "reduced_load_advised": False,
+            "objective_contributions": [],
             "message": "Sinh viên đã đạt ngưỡng tín chỉ tốt nghiệp.",
             "suggested_action": "Đối chiếu các điều kiện tốt nghiệp còn lại với cố vấn.",
         }
@@ -141,8 +190,10 @@ def solve_plan(
             "expected_credits_passed": 0.0,
             "expected_failed_courses": 0.0,
             "expected_fail_cap": expected_fail_cap,
+            "expected_fail_exceeded": False,
             "risk_cap_exceeded": False,
             "reduced_load_advised": False,
+            "objective_contributions": [],
             "message": "Không có học phần đủ điều kiện trong kỳ này.",
             "suggested_action": "Kiểm tra lịch mở và môn tiên quyết; gặp cố vấn nếu cần.",
         }
@@ -400,23 +451,37 @@ def solve_plan(
             "expected_credits_passed": 0.0,
             "expected_failed_courses": 0.0,
             "expected_fail_cap": expected_fail_cap,
+            "expected_fail_exceeded": False,
             "risk_cap_exceeded": False,
             "reduced_load_advised": False,
             "fallback_mode": fallback_mode,
+            "objective_contributions": [],
             "message": "Không tìm thấy phương án hợp lệ sau chuỗi dự phòng.",
             "suggested_action": "Rà dữ liệu eligibility, prerequisite, giới hạn tín chỉ và cấu hình.",
         }
+
     risk_cap_exceeded = enable_expected_fail_cap and slack_value > 1e-7
-    status_name = (
-        "best_effort"
-        if risk_cap_exceeded or reduced_load_advised or fallback_mode != "normal"
-        else "optimal"
-    )
     actual_credits = sum(credits[course_id] for course_id in chosen)
     expected_credits_passed = sum(
         credits[course_id] * p_by_course[course_id] for course_id in chosen
     )
     expected_failed = sum(1.0 - p_by_course[course_id] for course_id in chosen)
+
+    # Direct post-hoc check: flag best_effort whenever expected failures exceed
+    # the cap regardless of solver slack precision (guards floating-point edge cases).
+    expected_fail_exceeded = (
+        enable_expected_fail_cap and expected_failed > expected_fail_cap + 1e-7
+    )
+
+    is_risky = risk_cap_exceeded or expected_fail_exceeded
+    status_name = (
+        "best_effort"
+        if is_risky or reduced_load_advised or fallback_mode != "normal"
+        else "optimal"
+    )
+
+    contributions = _objective_contributions(chosen, credits, p_by_course, unlock, beta, gamma)
+
     return {
         "solver": "PuLP/HiGHS",
         "prototype": True,
@@ -442,24 +507,27 @@ def solve_plan(
         "expected_credits_passed": expected_credits_passed,
         "expected_failed_courses": expected_failed,
         "expected_fail_cap": expected_fail_cap,
+        "expected_fail_exceeded": expected_fail_exceeded,
         "risk_cap_slack": slack_value,
         "risk_cap_exceeded": risk_cap_exceeded,
         "reduced_load_advised": reduced_load_advised,
         "fallback_mode": fallback_mode,
         "minimum_credits_used": used_minimum,
+        "objective_contributions": contributions,
+        # Human-readable advisory — this system NEVER automatically restricts enrolment.
         "message": (
-            "Phương án có phần expected failures vượt mức khuyến nghị mềm."
-            if risk_cap_exceeded
-            else "Đã đề xuất giảm tải theo mức sàn dự phòng."
+            "Không phải phương án an toàn — Khuyến nghị trao đổi với Cố vấn học tập."
+            if is_risky
+            else "Đề xuất giảm tải; kiểm tra lại tải học kỳ với cố vấn."
             if reduced_load_advised
-            else "Phương án dự phòng đã bỏ ràng buộc học lại bắt buộc."
+            else "Phương án dự phòng: đã nới ràng buộc học lại hoặc tín chỉ tối thiểu."
             if fallback_mode != "normal"
             else "Tìm được phương án tối ưu trong các ràng buộc."
         ),
         "suggested_action": (
-            "Trao đổi với cố vấn về tải học và môn học lại."
-            if risk_cap_exceeded or reduced_load_advised
-            else "Xem xét phương án cùng các kịch bản tải khác."
+            "Trao đổi với cố vấn học tập; hệ thống KHÔNG tự động hạn chế quyền đăng ký sinh viên."
+            if is_risky or reduced_load_advised
+            else "Xem xét phương án với các kịch bản tải khác."
         ),
         "objective_value": (
             float(pulp.value(model.objective))
@@ -472,3 +540,133 @@ def solve_plan(
         "expected_fail_cap_enabled": enable_expected_fail_cap,
         "enforce_cap": enforce_cap,
     }
+
+
+# ── Multi-variant planning ────────────────────────────────────────────────────
+
+_VARIANT_PROFILES: list[dict[str, Any]] = [
+    {
+        "variant_key": "safe",
+        "variant_label": "An toàn — Tối thiểu hóa rủi ro trượt môn",
+        "beta_scale": 0.0,
+        "gamma_scale": 2.5,
+        "objective_note": (
+            "β=0 (bỏ qua mở khóa), γ×2.5 (phạt nặng môn trượt) "
+            "→ ưu tiên chọn môn có P(đạt) cao nhất trong kỳ."
+        ),
+    },
+    {
+        "variant_key": "progress",
+        "variant_label": "Tiến độ — Tối đa hóa mở khóa môn tiên quyết",
+        "beta_scale": 4.0,
+        "gamma_scale": 0.3,
+        "objective_note": (
+            "β×4 (mở khóa chuỗi tiên quyết có trọng số cao), γ×0.3 "
+            "→ ưu tiên môn chiến lược mở nhiều chuỗi kỳ tiếp theo."
+        ),
+    },
+    {
+        "variant_key": "balanced",
+        "variant_label": "Cân bằng — Tối ưu đa mục tiêu theo cấu hình",
+        "beta_scale": 1.0,
+        "gamma_scale": 1.0,
+        "objective_note": (
+            "β và γ dùng giá trị cấu hình chuẩn "
+            "→ kết hợp tối ưu hóa tín chỉ đạt, mở khóa và phòng rủi ro."
+        ),
+    },
+]
+
+
+def solve_plan_variants(
+    eligible_courses: Sequence[Mapping[str, Any]],
+    *,
+    p_student_m3_prime: float,
+    load_lambda: float,
+    risk_tier: str,
+    scenario_credit_max: int,
+    expected_fail_cap: float,
+    average_credits_per_unit: float,
+    median_real_load_units: int,
+    unlock_values: Mapping[str, float],
+    beta: float,
+    gamma: float,
+    minimum_credits: int = 12,
+    relaxed_minimum_credits: int = 6,
+    course_factors: Mapping[str, float] | None = None,
+    retake_multiplier: float = 1.0,
+    enable_unlock_value: bool = True,
+    enable_expected_fail_cap: bool = True,
+    status_by_course: Mapping[str, str] | None = None,
+    prerequisite_rows: Sequence[Mapping[str, Any]] = (),
+    require_blocking_retakes: bool = True,
+    enforce_cap: bool = False,
+    risk_cap_slack_penalty: float = 1000.0,
+    graduation_ready: bool = False,
+) -> list[dict[str, Any]]:
+    """Return exactly three objective-profile variants: safe, progress, balanced.
+
+    Each variant rescales ``beta`` and ``gamma`` to emphasise a different planning
+    priority; all other constraints are identical.  The safe variant enforces a
+    minimum effective gamma so it always penalises failures meaningfully even when
+    the configured ``gamma`` is small.  The progress variant ensures a non-trivial
+    beta even if the configured ``beta`` is near-zero.
+
+    Returns
+    -------
+    list[dict]  — length always 3, ordered [safe, progress, balanced].
+        Each dict contains:
+        ``variant_key``  : str  — "safe" | "progress" | "balanced"
+        ``variant_label``: str  — human-readable Vietnamese label
+        ``objective_note``: str — explanation of β/γ trade-offs for this variant
+        ``beta``         : float — effective beta used
+        ``gamma``        : float — effective gamma used
+        ``result``       : dict — full solve_plan result
+    """
+    variants: list[dict[str, Any]] = []
+    for profile in _VARIANT_PROFILES:
+        scaled_beta = beta * profile["beta_scale"]
+        scaled_gamma = gamma * profile["gamma_scale"]
+
+        # Ensure safe variant penalises failures even when configured gamma is small.
+        if profile["variant_key"] == "safe":
+            scaled_gamma = max(scaled_gamma, 2.0)
+
+        # Ensure progress variant has a non-trivial unlock incentive.
+        if profile["variant_key"] == "progress" and beta < 0.01:
+            scaled_beta = 0.5
+
+        result = solve_plan(
+            eligible_courses,
+            p_student_m3_prime=p_student_m3_prime,
+            load_lambda=load_lambda,
+            risk_tier=risk_tier,
+            scenario_credit_max=scenario_credit_max,
+            expected_fail_cap=expected_fail_cap,
+            average_credits_per_unit=average_credits_per_unit,
+            median_real_load_units=median_real_load_units,
+            unlock_values=unlock_values,
+            beta=scaled_beta,
+            gamma=scaled_gamma,
+            minimum_credits=minimum_credits,
+            relaxed_minimum_credits=relaxed_minimum_credits,
+            course_factors=course_factors,
+            retake_multiplier=retake_multiplier,
+            enable_unlock_value=enable_unlock_value,
+            enable_expected_fail_cap=enable_expected_fail_cap,
+            status_by_course=status_by_course,
+            prerequisite_rows=prerequisite_rows,
+            require_blocking_retakes=require_blocking_retakes,
+            enforce_cap=enforce_cap,
+            risk_cap_slack_penalty=risk_cap_slack_penalty,
+            graduation_ready=graduation_ready,
+        )
+        variants.append({
+            "variant_key": profile["variant_key"],
+            "variant_label": profile["variant_label"],
+            "objective_note": profile["objective_note"],
+            "beta": scaled_beta,
+            "gamma": scaled_gamma,
+            "result": result,
+        })
+    return variants

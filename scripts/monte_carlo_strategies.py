@@ -69,6 +69,36 @@ HORIZON_SEMESTER = 16
 GRADUATION_CREDITS = 128
 BOOTSTRAP_REPETITIONS = 1000
 
+# ── SCENARIO PARAMETERS (ASSUMED / SIMULATED — not NTU evidence) ────────────
+# Cite these values verbatim in Section 4 of the report when describing the
+# simulation protocol.  Change them to run sensitivity analyses.
+#
+# λ — tải học tập (load-penalty exponent)
+#   Giá trị thực tế đọc từ credit_rules.yaml → risk_to_plan_exploration →
+#   base_load_lambda.  Mặc định: 0.1.
+#   Công thức: load_multiplier = exp(−λ × max(0, units − MEDIAN_LOAD_UNITS))
+#   Nguồn: ASSUMED dựa trên quy tắc kinh nghiệm OR; chưa hiệu chỉnh với dữ liệu NTU.
+ASSUMED_LOAD_LAMBDA_DEFAULT: float = 0.1  # overridden by credit_rules.yaml
+
+# Retake multiplier — xác suất thi lại so với lần đầu
+#   1.0 = thi lại không có lợi thế so với lần thi đầu (conservative assumption).
+#   Nguồn: ASSUMED — không có dữ liệu retry từ NTU; điều chỉnh nếu có số liệu thực.
+ASSUMED_RETAKE_MULTIPLIER: float = 1.0    # hardcoded in _course_probability call
+
+# Difficulty factors — hệ số độ khó theo nhóm học phần
+#   Đọc từ risk_bundle.joblib → difficulty_factors.  Dải điển hình: 0.7 – 1.3.
+#   Giá trị > 1.0: nhóm dễ (p_pass nhân lên); < 1.0: nhóm khó (p_pass giảm xuống).
+#   Nguồn: SIMULATED — không dựa trên điểm thi thực tế của NTU.
+ASSUMED_DIFFICULTY_RANGE: tuple[float, float] = (0.7, 1.3)  # nhóm khó → dễ
+
+# P(Dropout) — xác suất bỏ học
+#   Dùng DUY NHẤT để phân tầng cảnh báo rủi ro (Thấp/Trung bình/Cao).
+#   KHÔNG được mô phỏng như tỷ lệ nguy hại (hazard) từng học kỳ — sinh viên
+#   không bỏ học trong vòng lặp mô phỏng.
+#   Nguồn: REAL (ước lượng M3' từ UCI-697), nhưng cơ chế tác động là ASSUMED.
+ASSUMED_DROPOUT_IS_HAZARD: bool = False   # Dropout = cảnh báo, không phải attrition
+# ── END SCENARIO PARAMETERS ─────────────────────────────────────────────────
+
 
 def _course_credits(curriculum: dict[str, Any]) -> dict[str, int]:
     return {
@@ -407,7 +437,7 @@ def _simulate_path(
                 difficulty_factors=difficulty_factors,
                 p_pass_m3=p_pass_m3,
                 load_multiplier=load_multiplier,
-                retake_multiplier=1.0,
+                retake_multiplier=ASSUMED_RETAKE_MULTIPLIER,
             )
             uniform = uniforms[semester, course_indices[course_id]]
             attempts[course_id] = attempts.get(course_id, 0) + 1
@@ -497,6 +527,7 @@ def _summarize(
     failures_ci = _bootstrap_mean_ci(failures, rng=rng)
     credits_ci = _bootstrap_mean_ci(credits, rng=rng)
     semesters_ci = _bootstrap_mean_ci(semesters, rng=rng)
+    feasibility_ci = _bootstrap_mean_ci(feasible, rng=rng)
     return {
         "scope": scope,
         "student_id": student_id or "ALL",
@@ -509,6 +540,8 @@ def _summarize(
         "on_time_rate_ci_low": on_time_ci[0],
         "on_time_rate_ci_high": on_time_ci[1],
         "feasibility_rate": float(feasible.mean()),
+        "feasibility_rate_ci_low": feasibility_ci[0],
+        "feasibility_rate_ci_high": feasibility_ci[1],
         "plan_success_rate": float(plan_success.mean()),
         "mean_semesters_to_graduation": (
             float(np.nanmean(semesters)) if np.isfinite(semesters).any() else np.nan
@@ -841,10 +874,14 @@ def main() -> None:
             "load_multiplier × retake_multiplier; clipped to [0,1]"
         ),
         "load_multiplier": (
-            "exp(-lambda × max(0, units - 6)), lambda=0.1, "
+            f"exp(-lambda × max(0, units - {MEDIAN_LOAD_UNITS})), "
+            f"lambda={ASSUMED_LOAD_LAMBDA_DEFAULT} (ASSUMED, see credit_rules.yaml), "
             "units=round(selected_credits / mean_credits_per_course)"
         ),
-        "retake_multiplier": 1.0,
+        "retake_multiplier": ASSUMED_RETAKE_MULTIPLIER,
+        "retake_multiplier_note": (
+            f"ASSUMED={ASSUMED_RETAKE_MULTIPLIER} — thi lại không có lợi thế so với lần đầu"
+        ),
         "deadline_semester": deadline,
         "horizon_semester": HORIZON_SEMESTER,
         "dropout_assumption": (

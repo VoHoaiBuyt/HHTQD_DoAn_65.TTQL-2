@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-14T04:34:09.030882+00:00",
+  "generated_at": "2026-11-17T17:09:06.225231+00:00",
   "data_label": "SIMULATED curriculum + Bernoulli course outcomes; REAL prior = UCI-697 M3' pass rates; ASSUMPTION difficulty/load/retake",
   "not_ntu_evidence": true,
-  "runs_per_student_per_strategy": 1000,
+  "runs_per_student_per_strategy": 100,
   "students": [
     "S001",
     "S002",
@@ -19,8 +19,9 @@
     "B3": "any eligible course, cap 15"
   },
   "pass_probability": "p_pass = M3'(HK1 ability tier) × difficulty_factor(group) × load_multiplier × retake_multiplier; clipped to [0,1]",
-  "load_multiplier": "exp(-lambda × max(0, units - 6)), lambda=0.1, units=round(selected_credits / mean_credits_per_course)",
+  "load_multiplier": "exp(-lambda × max(0, units - 6)), lambda=0.1 (ASSUMED, see credit_rules.yaml), units=round(selected_credits / mean_credits_per_course)",
   "retake_multiplier": 1.0,
+  "retake_multiplier_note": "ASSUMED=1.0 — thi lại không có lợi thế so với lần đầu",
   "deadline_semester": 8,
   "horizon_semester": 16,
   "dropout_assumption": "P(Dropout) chỉ dùng cho cảnh báo/tier; không mô phỏng dropout như hazard từng học kỳ.",

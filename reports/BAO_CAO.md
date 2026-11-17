@@ -26,7 +26,7 @@ Prototype PuLP/HiGHS xác nhận mô hình nhỏ có nghiệm khác nhau theo pe
 
 **Trạng thái (2026-11-14):**
 
-- **Đã xong:** A/B (dữ liệu, CTĐT SIMULATED, validator), C (benchmark ML LR/RF/LightGBM 3 lớp + nhị phân, CV, calibration/threshold trên validation, SHAP), D (rule engine + sửa lỗi song hành, ILP + độ nhạy β/γ/λ, Monte Carlo 7 persona × 4 chiến lược, UI 4 tab), bộ 25 unit/smoke test.
+- **Đã xong:** A/B (dữ liệu, CTĐT SIMULATED, validator), C (benchmark ML LR/RF/LightGBM 3 lớp + nhị phân, CV, calibration/threshold trên validation, SHAP), D (rule engine + sửa lỗi song hành, ILP + độ nhạy β/γ/λ, Monte Carlo 7 persona × 4 chiến lược, UI 4 tab), bộ 25 unit/smoke test, phụ lục bảo vệ §13 (kịch bản demo Streamlit + giải thích thuật toán + Q&A).
 - **Còn phụ thuộc bên ngoài:** CTĐT và quy chế chính thức của NTU; dữ liệu NTU được phê duyệt để đánh giá domain shift; duyệt nhãn/mốc T1 và cách dùng P(Dropout).
 - **Kết luận trung thực:** trên dữ liệu UCI-697 và CTĐT SIMULATED, ILP giảm số môn trượt kỳ vọng so với B1/B2/B3 trong mô phỏng, nhưng **không** vượt B1 về tỷ lệ tốt nghiệp đúng hạn và không có bằng chứng hiệu quả tại NTU. Báo cáo không khẳng định mô hình tốt hơn baseline.
 
@@ -625,6 +625,8 @@ flowchart LR
 | 3. Lộ trình | So sánh **12/15/18** tín chỉ; what-if λ, Fmax và checkbox áp trần cứng; bảng trạng thái/tín chỉ chọn/tín chỉ đạt kỳ vọng/môn trượt/Fmax/fallback; **best_effort hiển thị đỏ** “KHÔNG phải phương án an toàn” + khuyến nghị cố vấn; chi tiết từng kế hoạch với P(đạt) từng môn; cảnh báo kết quả cũ khi đổi tham số |
 | 4. Mô phỏng | Bảng ILP/B1/B2/B3 với 95% CI, biểu đồ rates và Pareto, lọc theo sinh viên/chiến lược, bảng paired difference, nguồn tái lập |
 
+Giao diện theo phong cách dashboard light (nền xám nhạt, thẻ KPI trắng bo góc, chip màu REAL/SIMULATED/GIẢ ĐỊNH, bảng viền mảnh) qua `.streamlit/config.toml` và CSS tùy biến trong `app/streamlit_app.py`.
+
 Ảnh chụp (headless Chrome, viewport 1440 px, lưu tại `reports/ui/`):
 
 | Tệp | Nội dung |
@@ -854,6 +856,71 @@ Chạy: `.venv/bin/python -m unittest discover -s tests -v`. Test dùng fixture 
 ### 12.5. Giới hạn kết luận
 
 Chưa có mô hình triển khai tại NTU. Giao diện Streamlit là **prototype hoàn chỉnh 4 tab** (persona/nhập tay/CSV; SHAP; so sánh 12/15/18; Monte Carlo), chưa phải hệ thống production và chưa có xác thực/audit log; nhập tay/CSV chỉ dùng rule engine + M3′. Benchmark ML và Monte Carlo đã chạy đầy đủ nhưng là **REAL (UCI-697) + SIMULATED**, không tuyên bố hiệu quả NTU. Mọi bảng/hồ sơ CTĐT tự dựng ghi **SIMULATED**; kết quả lấy từ UCI ghi **REAL (UCI-697)**; tham số chưa kiểm chứng ghi **GIẢ ĐỊNH**. Bản Word cũ cần cập nhật theo báo cáo này, đặc biệt con số **11 tiêu chí** thay vì 14.
+
+## 13. Phụ lục bảo vệ: hướng dẫn demo Streamlit và giải thích thuật toán
+
+### 13.1. Chuẩn bị trước khi lên bảo vệ
+
+```bash
+cd HHTQD_DoAn
+python3 -m venv .venv && source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements-stage1.txt
+python -m pip install -r requirements-app.txt
+streamlit run app/streamlit_app.py        # mở http://localhost:8501
+```
+
+Lần đầu chạy, app load artifact `artifacts/risk_bundle.joblib` mất vài giây; demo **không cần internet**. Kiểm tra trước giờ bảo vệ: `python -m unittest discover -s tests -v` (25 test OK) và thử đủ 3 kịch bản dưới đây. Nếu máy chiếu màn hình hẹp, bật full-screen trình duyệt; font tiếng Việt hiển thị tốt ở mặc định.
+
+### 13.2. Kịch bản demo 4 tab (kèm gợi ý lỗi thoại)
+
+**Kịch bản A — S003, sinh viên rủi ro cao (kịch bản chính, ~5 phút):**
+
+1. **Tab Nhập hồ sơ:** chọn *Persona mẫu* → persona **S003** → bấm **Đánh giá**.
+   *Lỗi thoại:* “Đây là sinh viên năm nhất yếu, điểm HK1 rất thấp; hệ thống dự báo rủi ro ngay trước kỳ đăng ký tiếp theo.”
+2. **Tab Đánh giá:** P(Dropout) chuẩn hóa **1,000**, tầng **Cao**, cảnh báo `FAILED_COURSES` (1 môn chưa đạt), tiến độ 61/128 tín chỉ, 9 môn đủ điều kiện; bảng **Học phần bị chặn bởi tiên quyết** và **SHAP top-10** (điểm HK1 approved/enrolled thấp kéo xác suất Dropout lên).
+   *Lỗi thoại:* “SHAP cho biết *vì sao* mô hình cảnh báo — lưu ý SHAP là attribution tương quan, không phải quan hệ nhân quả.”
+3. **Tab Lộ trình:** bấm **Lập & so sánh lộ trình**. Cả ba ngân sách 12/15/18 đều trả **best_effort**: 2,98 môn trượt kỳ vọng > Fmax=2 → khung đỏ **“KHÔNG phải phương án an toàn”** + khuyến nghị trao đổi cố vấn.
+   *Lỗi thoại:* “Đây là điểm khác biệt quan trọng: hệ thống **không chặn** sinh viên, mà trả phương án tốt nhất có thể kèm cờ cảnh báo. Giảng viên/cố vấn quyết định cuối.” Sau đó chỉnh what-if **Fmax** hoặc **λ** để cho thấy kế hoạch và cảnh báo thay đổi theo tham số.
+4. **Tab Mô phỏng:** bảng ILP/B1/B2/B3 với 95% CI, biểu đồ rates và Pareto.
+   *Lỗi thoại:* “Mô phỏng 28.000 đường học kỳ; ILP giảm môn trượt kỳ vọng so với mọi baseline nhưng không vượt B1 về đúng hạn — chúng em báo cáo trung thực cả hai mặt.”
+
+**Kịch bản B — S001, sinh viên an toàn (~1 phút):** persona S001 → P(Dropout) 0,045, tầng **Thấp** → lộ trình `optimal`, 12 tín chỉ, không vượt Fmax. *Mục đích:* cho thấy hệ thống không “gào” cảnh báo vô cớ.
+
+**Kịch bản C — S008, hoàn tất chương trình (~1 phút):** persona S008 → 128/128 tín chỉ, banner **“Không có học phần đủ điều kiện trong kỳ tới”**, trạng thái tốt nghiệp mô phỏng. *Mục đích:* cho thấy rule engine xử lý được biên tốt nghiệp, không ép đăng ký môn thừa.
+
+**Phụ (nếu bị hỏi nhập liệu thật):** chế độ *Nhập tay* hoặc *CSV* — hệ thống từ chối hồ sơ/tiến độ không cùng một sinh viên (`InputError`), dùng đúng bộ rule engine + pass-rate M3′.
+
+### 13.3. Giải thích thuật toán trong 2 phút (sơ đồ 5 khối)
+
+```mermaid
+flowchart LR
+A[Hồ sơ UCI-697 REAL, mốc T1] --> B[ML: LR 3 lớp + calibration + SHAP]
+B --> C[Rule engine: điều kiện đăng ký]
+C --> D[ILP PuLP/HiGHS: chọn môn 12/15/18]
+D --> E[Monte Carlo 1.000 lượt so baseline]
+E --> F[Streamlit 4 tab]
+```
+
+1. **Dữ liệu và nhãn (REAL):** UCI-697, dự báo tại mốc T1 (cuối HK1, trước đăng ký HK2). Cổng leakage chỉ cho phép feature có sẵn tại T1 — không dùng dữ liệu HK2 hay trường hậu nghiệm.
+2. **ML:** ba học máy LR/RF/LightGBM, cả 3 lớp Dropout/Enrolled/Graduate và bản nhị phân. Chia train/validation/test 60/20/20, 5-fold CV trên train; **isotonic calibration và ngưỡng chọn trên validation**, test chỉ chấm một lần. **LR được chọn phục vụ** vì macro-F1 0,6437, PR-AUC 0,7743, Brier 0,1317 — tốt nhất nhóm 3 lớp — và hệ số tuyến tính giải thích được bằng SHAP.
+3. **Rule engine:** eligibility tính bằng **điểm bất động lớn nhất**: quét lặp cho tới khi không còn môn nào đổi trạng thái. Quy tắc: tiên quyết cứng, học trước, **song hành** (đã sửa lỗi A song hành B, B bị chặn thì A không được xét), tối đa 3 lần học, môn mở theo kỳ lẻ/chẵn. P(Dropout) **không** khóa đăng ký — chỉ hiển thị và khuyến nghị cố vấn.
+4. **ILP:** hàm mục tiêu `max Σ [cᵢ·pᵢ − γ·cᵢ·(1−pᵢ) + β·uᵢ]·xᵢ − M·s` — chọn môn để tối đa tín chỉ đạt kỳ vọng trừ chi phí học lại cộng giá trị “mở khóa” môn hậu kỳ (uᵢ chiết khấu 0,5^mỗi khoảng cách kỳ), trừ phạt M nếu vượt Fmax mềm. Ràng buộc tải 12/15/18 với Cmin=12 (giãn 6), hệ số suy giảm khi quá tải `exp(−λ·max(0, units−6))`, β=1/8, γ=1. Nếu không khả thi, chuỗi dự phòng `normal → relaxed_minimum → minimum_zero → no_forced_retakes → at_least_one_course` và trả **best_effort có cờ** — không bao giờ trả kế hoạch rỗng im lặng.
+5. **Monte Carlo (đối chứng):** 7 persona × 4 chiến lược × 1.000 lượt, **common random numbers** (cùng ma trận ngẫu nhiên cho mọi chiến lược nên so sánh paired là công bằng), CI 95% bootstrap. Kết quả: ILP giảm **0,40** môn trượt kỳ vọng so với B1 [−0,455; −0,340] và khả thi hơn (0,525 vs 0,390), nhưng **thua B1 về đúng hạn** (0,042 vs 0,066) — ILP và B1 cùng nằm trên biên Pareto.
+
+### 13.4. Câu hỏi hội đồng thường gặp — trả lời mẫu
+
+| Câu hỏi | Trả lời mẫu |
+|---|---|
+| Vì sao recall lớp Enrolled thấp? | Enrolled là *trạng thái quan sát giữa kỳ*, không phải kết cục cuối, nằm giữa hai cực nên mô hình dễ kéo về Dropout/Graduate. Recall tăng từ 28,9% (báo cáo cũ, không có validation) lên 0,547 nhờ calibration + ngưỡng chọn đúng trên validation. Hệ thống **không dùng** recall Enrolled làm chỉ số an toàn — cảnh báo chỉ dựa trên lớp Dropout và luôn kèm cố vấn. |
+| ILP có tốt hơn baseline không? | Trung thực: ILP **thắng về môn trượt kỳ vọng** (−0,40 so với B1, CI không chứa 0) và **khả thi hơn** (0,525 vs 0,390), nhưng **không thắng đúng hạn** vì B1 học đúng kỳ dự kiến. ILP và B1 cùng trên biên Pareto; B2/B3 bị chi phối. |
+| Kết quả áp dụng được cho NTU chưa? | Chưa. Số liệu REAL chỉ từ UCI-697; CTĐT, persona, λ/β/γ, độ khó là SIMULATED/GIẢ ĐỊNH. Cần CTĐT và quy chế chính thức NTU + dữ liệu được duyệt để đánh giá domain shift. |
+| P(Dropout) cao có bị cấm đăng ký không? | Không. P(Dropout) chỉ là cảnh báo mềm; mọi trần Fmax/tín chỉ mặc định `enforce_cap=false`. Chế độ hard cap tồn tại nhưng phải được duyệt mới bật. |
+| Vì sao chọn LR, không phải LightGBM/RF? | Trong nhóm 3 lớp, LR có macro-F1 0,6437, PR-AUC 0,7743, Brier 0,1317 tốt nhất và giải thích được bằng SHAP tuyến tính. LightGBM có precision Dropout cao nhất (0,771) nhưng recall chỉ 0,511 — không hợp mục tiêu cảnh báo ưu tiên recall. |
+| SHAP có chứng minh nhân quả không? | Không. SHAP là attribution dựa tương quan; báo cáo ghi caveat rõ ràng và không dùng SHAP để khuyến nghị can thiệp. |
+| Validator có 11 hay 14 tiêu chí? | **11**, đúng với số dòng PASS trong `curriculum_validation.txt`. Con số 14 trong bản Word cũ không tái lập được và cần sửa lại. |
+| λ, β, γ lấy từ đâu? | Là **GIẢ ĐỊNH cấu hình kịch bản**, không phải ước lượng thống kê. Đã chạy độ nhạy β ∈ {0; 0,125; 0,25; 0,5}, γ ∈ {0,5; 1; 2}, λ ∈ {0; 0,1; 0,3} và báo cáo kết quả thay đổi. |
+| Hệ thống có chạy được thật không? | Có, 4 tab chạy được ngay: `streamlit run app/streamlit_app.py`, 25 test pass, hướng dẫn môi trường sạch ở §12.1. Đây là prototype nghiên cứu, chưa phải production (chưa xác thực, audit log). |
 
 ## Phụ lục A. Bảng kết quả sinh tự động
 

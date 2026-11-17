@@ -182,6 +182,19 @@ def evaluate_student(
     student_id = str(student_profile.get("student_id", ""))
     if not student_id:
         raise ValueError("student_profile must include student_id")
+    # Reject progress rows that belong to a different student; blank student_id is allowed
+    # (CSV uploads and legacy data may omit it).
+    foreign_ids = sorted({
+        str(row.get("student_id", "")).strip()
+        for row in student_progress
+        if str(row.get("student_id", "")).strip() not in {"", student_id}
+    })
+    if foreign_ids:
+        raise ValueError(
+            f"Tiến độ chứa sinh viên '{', '.join(foreign_ids)}' "
+            f"không khớp với hồ sơ '{student_id}'. "
+            "Kiểm tra lại dữ liệu nguồn trước khi gọi evaluate_student."
+        )
     tier = risk_tier(float(p_dropout), active_rules)
     if p_dropout_calibrated is not None and not 0 <= p_dropout_calibrated <= 1:
         raise ValueError("p_dropout_calibrated must be in [0, 1]")
