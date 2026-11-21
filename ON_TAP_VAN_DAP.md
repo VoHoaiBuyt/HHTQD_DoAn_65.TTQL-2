@@ -75,75 +75,71 @@ streamlit run app/streamlit_app.py      # mở http://localhost:8501
 ```
 (Nếu chưa có file mô hình `artifacts/risk_bundle.joblib`, chạy trước: `python scripts/train_and_save_models.py`.)
 
-**Bố cục:** thanh bên trái (sidebar) chọn **nguồn dữ liệu** và hiện ghi chú nguồn dữ liệu. Khu vực chính có **4 tab** đi theo đúng quy trình ra quyết định:
+**Bố cục "kết quả trước, chi tiết sau"** — giáo viên mở lên là thấy kết luận ngay:
 
 ```
-📋 Nhập hồ sơ  →  📊 Đánh giá  →  🗺️ Lộ trình  →  🎲 Mô phỏng
- (Dữ liệu)        (Intelligence)    (Design/Choice)   (Đánh giá chiến lược)
+Thanh bên: ① chọn nguồn dữ liệu  ② chọn sinh viên  [🔍 Phân tích & Đánh giá rủi ro]
+──────────────────────────────────────────────────────────────────────────────
+BẢNG TỔNG QUAN (luôn trên cùng): 4 thẻ KPI + 📌 Kết luận nhanh
+──────────────────────────────────────────────────────────────────────────────
+📋 Dữ liệu đầu vào  →  🗺️ Lộ trình đề xuất  →  🎲 Mô phỏng chiến lược  →  ⚠️ Rủi ro & Học phần
 ```
 
-## 2.1. Sidebar: chọn nguồn dữ liệu
+Dải chip ngay dưới tiêu đề nhắc 5 khối của hệ thống: *Dữ liệu hồ sơ → Học máy dự báo rủi ro → Luật quy chế lọc môn → Tối ưu ILP chọn môn → Mô phỏng Monte Carlo*.
 
-Radio **"Nguồn dữ liệu"** có 3 lựa chọn:
+## 2.1. Thanh bên: chọn nguồn dữ liệu
+
+Radio **"① Nguồn dữ liệu"** có 3 lựa chọn:
 
 | Chế độ | Người dùng làm gì | Có dự báo ML không? |
 |---|---|---|
-| **Hồ sơ mẫu (Có sẵn)** | Chọn 1 trong 8 sinh viên mẫu S001–S008 ở ô *"Chọn hồ sơ sinh viên mẫu"*. | ✅ **Có**: hồ sơ mẫu có đủ 24 đặc trưng mà mô hình cần. |
-| **Nhập thủ công** | Gõ mã SV, học kỳ hiện tại, GPA (hệ 4), tín chỉ tích lũy, số môn chưa đạt, số môn HK1 đăng ký/đạt, điểm TB HK1 (thang 20). Sửa trực tiếp bảng tiến độ (trạng thái, điểm, số lần học). | ❌ Không: thiếu 24 đặc trưng. Hệ thống dùng **tỷ lệ nền theo nhóm năng lực HK1 (M3′)**. |
-| **Tải lên file CSV** | Tải 2 file `profile.csv` (1 dòng) và `progress.csv`. Có nút **"Tải mẫu profile.csv / progress.csv"** để lấy file mẫu. | ❌ Không (như trên). |
+| **Hồ sơ mẫu (Có sẵn)** | Chọn 1 trong 8 sinh viên S001–S008 ở ô *"② Chọn sinh viên"*. Hệ thống **tự phân tích và lập lộ trình ngay**, không cần bấm nút. | ✅ **Có**: hồ sơ mẫu có đủ 24 đặc trưng mà mô hình cần. |
+| **Nhập dữ liệu thủ công** | Vào tab 📋, gõ mã SV, học kỳ hiện tại, GPA (hệ 4), tín chỉ tích lũy, số môn chưa đạt, số môn HK1 đăng ký/đạt, điểm TB HK1 (thang 20); sửa bảng tiến độ (trạng thái, điểm, số lần học). Bấm **🔍 Phân tích**. | ❌ Không: thiếu 24 đặc trưng → thẻ rủi ro hiện **"Chưa ước lượng"**; lộ trình dùng **tỷ lệ đạt nền theo năng lực HK1 (M3′)**. |
+| **Tải lên file CSV** | Vào tab 📋, tải 2 file `profile.csv` (1 dòng) và `progress.csv` (có nút tải file mẫu). Bấm **🔍 Phân tích**. | ❌ Không (như trên). |
 
 8 hồ sơ mẫu: S001 *Giỏi, đúng tiến độ* · S002 *Trung bình* · S003 *Yếu, chậm tiến độ* · S004 *Nhiều môn nợ* · S005 *Nợ môn chặn chuỗi tiên quyết* · S006 *Gần tốt nghiệp, còn 1 môn nợ* · S007 *Trượt môn nền tảng* · S008 *Giỏi, gần hoàn tất*.
 
-## 2.2. Tab 📋 "Nhập hồ sơ"
+Mục **ℹ️ Nguồn dữ liệu & giới hạn** ở thanh bên ghi rõ: dữ liệu thật UCI-697 dùng huấn luyện, CTĐT/hồ sơ là mô phỏng, tham số là giả định, hệ thống chỉ khuyến nghị.
 
-- **Hiển thị:** bảng tiến độ học tập (mã học phần, trạng thái *Đã hoàn thành / Chưa đạt / Đang học / Chưa học*, điểm hệ 10, số lần học, học kỳ).
-- **Bấm nút:** **"Phân tích & Đánh giá rủi ro"** (nút xanh).
-- **Hệ thống làm:** kiểm tra dữ liệu đầu vào (`input_validation.py`: điểm 0–10, mã môn phải có trong CTĐT, không trùng, tiến độ phải đúng mã SV) rồi gọi `assess_student()`, tức chạy ML + Rule Engine.
-- **Kết quả:** thông báo *"Đã phân tích hồ sơ… chuyển sang tab Đánh giá"*. Nếu dữ liệu sai sẽ báo lỗi đỏ, ghi rõ dòng nào sai.
-
-## 2.3. Tab 📊 "Đánh giá": kết quả đánh giá rủi ro & điều kiện đăng ký
+## 2.2. Bảng tổng quan (luôn ở trên cùng)
 
 | Thành phần | Ý nghĩa |
 |---|---|
-| **4 thẻ số liệu** | *Mức cảnh báo rủi ro* (Thấp/Trung bình/Cao/Chưa ước lượng) · *Xác suất rủi ro bỏ học* (đã hiệu chuẩn isotonic) · *Nhóm năng lực HK1* (Thấp/TB/Cao) · *Số học phần đủ điều kiện đăng ký*. |
-| **Huy hiệu màu** | ✅ xanh = Thấp · ⚠️ vàng = Trung bình · 🔴 đỏ = Cao. |
-| **Dòng phụ** | *Dự báo tỷ lệ đạt môn (Random Forest)* và *Tỷ lệ nền theo nhóm năng lực (M3′)*. |
-| **Bảng "Cảnh báo học vụ"** | Cờ từ bộ luật: `LOW_GPA` (GPA < 2,0), `FAILED_COURSES` (còn môn nợ), `CREDITS_BEHIND` (chậm ≥ 12 tín chỉ so với tiến độ chuẩn). |
-| **Bảng "Lưu ý đặc biệt"** | `GRADUATION_CREDITS_MET` (đủ tín chỉ tốt nghiệp), `NO_ELIGIBLE_COURSES`, `REQUIRED_COURSE_NOT_OFFERED` (môn bắt buộc kỳ tới không mở), `REQUIRED_COURSE_BLOCKED` (môn bắt buộc bị chặn bởi tiên quyết). |
-| **Tổng quan tiến độ tín chỉ** | Tín chỉ đã tích lũy · còn lại · chậm so với tiến độ · số học kỳ tối thiểu còn lại · chuỗi tiên quyết dài nhất. |
-| **Học phần đủ điều kiện đăng ký** | Danh sách môn được phép học kỳ tới (môn nợ được xếp lên đầu). |
-| **Học phần cần học lại** | Các môn trượt. |
-| **Học phần chưa đủ điều kiện tiên quyết** | Môn bị chặn và môn tiên quyết nào chưa đạt. |
-| **Biểu đồ SHAP** | Top 10 yếu tố ảnh hưởng đến dự báo bỏ học (chỉ có ở chế độ hồ sơ mẫu). |
+| **Thẻ "Mức cảnh báo rủi ro"** | 🟢 Thấp / 🟡 Trung bình / 🔴 Cao (nền màu tương ứng), hoặc ⚪ Chưa ước lượng khi nhập tay/CSV. |
+| **Thẻ "Xác suất bỏ học"** | P(Dropout) **đã hiệu chuẩn Isotonic**, kèm thanh màu. |
+| **Thẻ "Tiến độ tín chỉ"** | Ví dụ 64/128, kèm thanh tiến độ và *"Còn ≥ n học kỳ"* (số kỳ tối thiểu do chuỗi tiên quyết). |
+| **Thẻ "Học phần kỳ tới"** | Số môn được đăng ký · số môn cần học lại. |
+| **📌 Kết luận nhanh** | 3 câu tự sinh: ① nguy cơ + **yếu tố SHAP ảnh hưởng lớn nhất**; ② cảnh báo học vụ (hoặc ✅ không có); ③ **phương án gợi ý** (số tín chỉ, tín chỉ đạt kỳ vọng, số môn trượt kỳ vọng). Nếu mọi phương án vượt ngưỡng → khuyến nghị **gặp cố vấn học tập**. |
 
-## 2.4. Tab 🗺️ "Lộ trình": so sánh các phương án tín chỉ (ILP)
+## 2.3. Tab 📋 "Dữ liệu đầu vào"
 
-**Người dùng chỉnh 4 tham số:**
-1. **"Mức tín chỉ cần so sánh"**: chọn nhiều mức trong 12 / 15 / 18.
-2. **"Hệ số tải học tập λ"**: thanh trượt 0 → 0,5, mặc định 0,1. Đây là giả định "học càng nhiều thì xác suất qua môn càng giảm".
-3. **"Ngưỡng môn không đạt cho phép" (Fmax)**: mặc định theo mức rủi ro (Thấp 2,0 · TB 1,5 · Cao 1,0).
-4. **Checkbox "Áp giới hạn tín chỉ khuyến nghị"**: mặc định **TẮT**. Khi tắt, hệ thống chỉ cảnh báo chứ không giới hạn cứng.
+- **Hồ sơ mẫu:** bảng tiến độ từng môn (mã SV, mã học phần, trạng thái *✅ Đã đạt / ❌ Chưa đạt / ⏳ Đang học / ⬜ Chưa học*, điểm hệ 10, số lần học, học kỳ) + tình huống minh họa của hồ sơ.
+- **Nhập thủ công / CSV:** form nhập và bảng tiến độ sửa được. Dữ liệu được kiểm tra (`input_validation.py`: điểm 0–10, mã môn phải có trong CTĐT, không trùng, tiến độ phải đúng mã SV); sai sẽ báo lỗi ghi rõ dòng nào.
 
-**Bấm nút "Lập & so sánh lộ trình"**: hệ thống gọi `build_plans()` và giải bài toán ILP cho từng mức tín chỉ.
+## 2.4. Tab 🗺️ "Lộ trình đề xuất" (ILP)
 
-**Kết quả nhận được:**
-- **Biểu đồ cột nhóm**: tín chỉ đăng ký so với tín chỉ dự báo đạt cho từng mức.
-- **Bảng "So sánh các phương án"**: kết quả (*Tối ưu ✅ / Nỗ lực tối đa ⚠️ / Không khả thi ❌ / Đủ ĐK tốt nghiệp 🎓*), tín chỉ đăng ký, tín chỉ dự báo đạt, số môn không đạt dự báo, ngưỡng trượt, có vượt ngưỡng không, chế độ dự phòng.
-- **"Xem chi tiết phương án"**: chọn 1 mức để xem 4 thẻ số liệu, thông báo (xanh = ổn, vàng = nên giảm tải, đỏ = cần gặp cố vấn) và **bảng môn đề xuất kèm thanh "Xác suất đạt (%)"**.
-- **Nút "Tải xuống kế hoạch học tập (CSV)"**.
-- Nếu đổi tham số mà chưa bấm lại nút, hệ thống báo *"kết quả hiển thị là từ lần chạy trước"*.
+- **Chạy sẵn với tham số mặc định** ngay khi phân tích hồ sơ.
+- **Biểu đồ "So sánh nhanh các mức tín chỉ"** + **Bảng so sánh** 12/15/18 TC: kết quả (*Tối ưu ✅ / Nỗ lực tối đa ⚠️ / Không khả thi ❌ / Đủ ĐK tốt nghiệp 🎓*), tín chỉ đăng ký, tín chỉ đạt kỳ vọng, số môn trượt kỳ vọng. **⭐ = gợi ý tham khảo**: phương án *Tối ưu* có nhiều tín chỉ đạt nhất (nếu không có thì chọn phương án ít trượt nhất). Dưới bảng ghi ngưỡng môn trượt cho phép và chế độ dự phòng.
+- **Chi tiết phương án:** chọn 12/15/18 → thông báo (xanh = ổn, vàng = nên giảm tải, **đỏ "KHÔNG phải phương án an toàn"** = cần gặp cố vấn), 4 thẻ số liệu, **bảng môn đề xuất kèm thanh "Xác suất đạt"**, nút **⬇️ Tải kế hoạch học tập (CSV)**.
+- **⚙️ Tùy chỉnh tham số (What-if)** (thu gọn): mức tín chỉ so sánh, **hệ số tải λ** (0 → 0,5, mặc định 0,1), **ngưỡng môn trượt cho phép Fmax** (mặc định theo tầng rủi ro: Thấp 2,0 · TB 1,5 · Cao 1,0), checkbox **áp trần tín chỉ khuyến nghị** (mặc định TẮT — chỉ cảnh báo, không giới hạn cứng). Bấm **🔄 Lập & so sánh lộ trình**; nếu đổi tham số mà chưa bấm, hệ thống nhắc "Tham số đã đổi".
+- **🧮 Mô hình tối ưu hoạt động thế nào?** (thu gọn): biến, hàm mục tiêu, ràng buộc của ILP.
 
-## 2.5. Tab 🎲 "Mô phỏng": Monte Carlo so sánh chiến lược
+## 2.5. Tab 🎲 "Mô phỏng chiến lược" (Monte Carlo)
 
-(Không cần đánh giá hồ sơ trước. Tab này đọc kết quả có sẵn trong `reports/generated/`.)
-- **Bảng tổng hợp 7 hồ sơ × 1.000 lượt**: tỷ lệ tốt nghiệp, tỷ lệ đúng hạn (kèm KTC 95%), tỷ lệ khả thi, số môn trượt trung bình, tín chỉ trung bình, số học kỳ trung bình, có nằm trên biên **Pareto** không.
-- **2 hình**: biểu đồ Pareto và biểu đồ tỷ lệ tốt nghiệp (giải thích ở Phần 4).
-- **Bộ lọc** theo sinh viên và theo chiến lược, kèm bảng chi tiết từng sinh viên.
-- **Bảng "So sánh hiệu quả với ILP"**: chênh lệch ghép cặp ILP − B1/B2/B3, KTC 95%, có khác biệt rõ rệt không (✅ nếu khoảng tin cậy không chứa 0).
+(Đọc kết quả có sẵn trong `reports/generated/`.)
+- **3 thẻ kết luận:** *Ít trượt môn nhất* (ILP) · *Đúng hạn cao nhất* (B1) · *Khả thi cao nhất* (ILP), kèm câu chốt **"không có chiến lược tốt nhất mọi mặt — biên Pareto gồm ILP, B1"**.
+- **Biểu đồ Pareto** (có KTC 95%) và **biểu đồ tỷ lệ tốt nghiệp** — tương tác, rê chuột xem số (giải thích ở Phần 4).
+- Thu gọn: **bảng tổng hợp đầy đủ (KTC 95%)**, **"ILP khác các chiến lược khác có ý nghĩa thống kê không?"** (chênh lệch ghép cặp, ✅ khi KTC không chứa 0), **kết quả theo từng sinh viên** (có bộ lọc).
 
-Cuối trang có ô **"ℹ️ Lưu ý về phạm vi & nguồn gốc dữ liệu"**.
+## 2.6. Tab ⚠️ "Rủi ro & Học phần"
 
-🎯 **Câu chốt:** *"Giao diện đi theo đúng 4 bước: nhập dữ liệu → đánh giá rủi ro → lập phương án → mô phỏng chiến lược. Người dùng không cần biết thuật toán, chỉ cần chọn hồ sơ, bấm 2 nút và đọc bảng so sánh."*
+| Thành phần | Ý nghĩa |
+|---|---|
+| **Biểu đồ SHAP** | Top 8 yếu tố (tên tiếng Việt) ảnh hưởng đến dự báo bỏ học; cam = tăng rủi ro, xanh = giảm (chỉ có ở chế độ hồ sơ mẫu). Dưới biểu đồ: tỷ lệ đạt môn dự báo (Random Forest) và tỷ lệ đạt nền theo nhóm năng lực HK1 (M3′). |
+| **Kiểm tra theo quy chế** | Cảnh báo học vụ: GPA < 2,0 (`LOW_GPA`), còn môn nợ (`FAILED_COURSES`), chậm ≥ 12 TC (`CREDITS_BEHIND`); lưu ý: đủ tín chỉ tốt nghiệp, môn bắt buộc không mở / bị chặn. 3 thẻ: TC còn lại · chậm tiến độ · chuỗi tiên quyết dài nhất. |
+| **Học phần kỳ tới** | Chọn xem: ✅ **Được đăng ký** · ❌ **Cần học lại** · 🔒 **Bị chặn** (kèm môn tiên quyết còn thiếu). |
+
+🎯 **Câu chốt:** *"Mở app là thấy ngay kết luận ở bảng tổng quan; các tab đi theo thứ tự dữ liệu → lộ trình → mô phỏng → giải thích rủi ro. Người dùng không cần biết thuật toán: chọn hồ sơ là có kết quả, muốn thử kịch bản khác thì chỉnh tham số What-if."*
 
 ---
 
@@ -366,26 +362,26 @@ $$\max \sum_i x_i\Big[\underbrace{c_i p_i}_{\text{TC đạt kỳ vọng}} + \und
 
 ## 4.2. Biểu đồ trên App và trong báo cáo
 
-### 📊 Biểu đồ 4: "Các yếu tố ảnh hưởng đến dự báo rủi ro bỏ học (SHAP)" (tab Đánh giá)
-- **Loại:** cột ngang, top 10. **Trục X:** giá trị SHAP (mức độ ảnh hưởng). **Trục Y:** tên đặc trưng. Có đường dọc tại 0.
-- **Màu:** 🔴 **đỏ = làm tăng rủi ro** (SHAP > 0) · 🟢 **xanh = làm giảm rủi ro** (SHAP < 0). Thanh càng dài thì ảnh hưởng càng lớn.
-- **Insight:** cho **từng sinh viên** biết lý do. Ví dụ: "số môn đạt HK1 thấp" là thanh đỏ dài nhất, còn "điểm xét tuyển cao" là thanh xanh.
+### 📊 Biểu đồ 4: "Các yếu tố ảnh hưởng đến dự báo rủi ro bỏ học (SHAP)" (tab Rủi ro & Học phần)
+- **Loại:** cột ngang, top 8. **Trục X:** giá trị SHAP (mức độ ảnh hưởng). **Trục Y:** tên đặc trưng. Có đường dọc tại 0.
+- **Màu:** 🟧 **cam = làm tăng rủi ro** (SHAP > 0) · 🟦 **xanh = làm giảm rủi ro** (SHAP < 0) — cặp màu cam/xanh để người mù màu đỏ–xanh lá vẫn phân biệt được. Thanh càng dài thì ảnh hưởng càng lớn.
+- **Insight:** cho **từng sinh viên** biết lý do. Ví dụ: "số môn đạt HK1 thấp" là thanh cam dài nhất, còn "điểm xét tuyển cao" là thanh xanh.
 - **Giúp quyết định:** cố vấn biết **nên can thiệp vào đâu**, ví dụ hỗ trợ học lại các môn HK1. Một số yếu tố như tuổi, nghề cha mẹ thì không thay đổi được, chỉ dùng để hiểu bối cảnh. Đây là giải thích **mô hình**, không phải nhân quả.
 
-### 📊 Biểu đồ 5: "So sánh phương án tín chỉ" (tab Lộ trình)
+### 📊 Biểu đồ 5: "So sánh nhanh các mức tín chỉ" (tab Lộ trình đề xuất)
 - **Loại:** cột nhóm. **Trục X:** mức tín chỉ (12 TC · 15 TC · 18 TC). **Trục Y:** số tín chỉ. **2 cột mỗi nhóm:** 🔵 *Tín chỉ đăng ký* · 🟢 *Tín chỉ dự báo đạt*.
 - **Insight:** **khoảng cách giữa cột xanh dương và cột xanh lá = số tín chỉ có thể trượt**. Nếu tăng từ 15 lên 18 TC mà cột "dự báo đạt" gần như không tăng thì **học thêm không đáng**, vì chỉ tăng rủi ro (hiệu ứng **lợi ích biên giảm dần** do hệ số tải).
 - **Giúp quyết định:** chọn mức tín chỉ cân bằng giữa tiến độ và rủi ro.
 - *Đi kèm:* cột **"Xác suất đạt (%)"** dạng thanh tiến trình cho từng môn đề xuất.
 
-### 📊 Biểu đồ 6: "Pareto chiến lược đăng ký" (tab Mô phỏng, `monte_carlo_pareto.png`)
-- **Loại:** điểm có thanh sai số (error bar). **Trục X:** số môn trượt kỳ vọng (**càng thấp càng tốt**). **Trục Y:** xác suất tốt nghiệp đúng hạn (**càng cao càng tốt**). Mỗi điểm là 1 chiến lược (ILP, B1, B2, B3). Thanh sai số là **KTC 95%**.
+### 📊 Biểu đồ 6: "Pareto chiến lược đăng ký" (tab Mô phỏng chiến lược)
+- **Loại:** điểm có thanh sai số (error bar), tương tác. **Trục X:** số lượt trượt trung bình (**càng thấp càng tốt**). **Trục Y:** xác suất tốt nghiệp đúng hạn (**càng cao càng tốt**). Mỗi điểm là 1 chiến lược (ILP, B1, B2, B3). Thanh sai số là **KTC 95%**.
 - **Cách đọc:** vùng **lý tưởng là góc trên bên trái** (ít trượt, đúng hạn cao). Nếu 2 thanh sai số **chồng lên nhau** thì khác biệt chưa chắc có thật.
 - **Insight:** **ILP lệch trái nhất** (ít trượt nhất), **B1 cao nhất** (đúng hạn nhiều nhất). Cả hai nằm trên **biên Pareto**, còn B2 và B3 bị lấn át.
 - **Giúp quyết định:** sinh viên **sợ trượt / đang bị cảnh báo** nên theo ILP, sinh viên **ưu tiên tốt nghiệp đúng hạn** có thể cân nhắc B1. Không có chiến lược tối ưu tuyệt đối.
 
-### 📊 Biểu đồ 7: "Tỷ lệ tốt nghiệp theo chiến lược" (tab Mô phỏng, `monte_carlo_rates.png`)
-- **Loại:** cột nhóm. **Trục X:** 4 chiến lược. **Trục Y:** tỷ lệ (0–1). **2 cột:** 🔵 *Tốt nghiệp trong giới hạn 16 kỳ* · 🔴 *Tốt nghiệp đúng hạn (≤ HK8)*.
+### 📊 Biểu đồ 7: "Tỷ lệ tốt nghiệp theo chiến lược" (tab Mô phỏng chiến lược)
+- **Loại:** cột nhóm. **Trục X:** 4 chiến lược (ILP, B1, B2, B3). **Trục Y:** tỷ lệ (0–100%). **2 cột:** 🔵 *Tốt nghiệp (≤ HK16)* · 🟧 *Đúng hạn (≤ HK8)*.
 - **Insight:** tỷ lệ tốt nghiệp trong 16 kỳ của 4 chiến lược **gần bằng nhau** (~43–45%), nhưng tỷ lệ **đúng hạn rất thấp** (0–6%). Lý do là các hồ sơ mẫu cố tình được chọn là ca khó (nợ môn, chậm tiến độ). B3 (15 TC/kỳ) **0% đúng hạn** vì 15 × 8 = 120 < 128 tín chỉ, **về mặt số học không thể** tốt nghiệp đúng hạn.
 - **Giúp quyết định:** cho thấy với sinh viên đã chậm tiến độ, **"đăng ký ít cho an toàn" (B3) gần như chắc chắn trễ hạn**. Cần cân nhắc kỹ khi khuyên giảm tải.
 
@@ -404,7 +400,7 @@ $$\max \sum_i x_i\Big[\underbrace{c_i p_i}_{\text{TC đạt kỳ vọng}} + \und
 **Đáp:** Có, đủ 3 thành phần:
 - **Phân hệ quản lý dữ liệu (Data):** dữ liệu thật UCI-697 (4.424 SV), CTĐT và tiến độ mô phỏng (`data/simulated/`), cấu hình quy chế `credit_rules.yaml`, file mô hình đã huấn luyện `risk_bundle.joblib`. Có tầng **kiểm tra dữ liệu đầu vào** (`input_validation.py`).
 - **Phân hệ quản lý mô hình (Model):** Logistic Regression + Isotonic, Random Forest, M3′, SHAP, Rule Engine, ILP (PuLP/HiGHS), Monte Carlo. Tất cả gom về tầng dịch vụ `src/services/assessment.py`.
-- **Phân hệ giao diện (Dialog/UI):** Streamlit 4 tab, có bảng, biểu đồ, thanh trượt tham số, nút tải CSV.
+- **Phân hệ giao diện (Dialog/UI):** Streamlit: bảng tổng quan (thẻ KPI + kết luận nhanh) và 4 tab, có bảng, biểu đồ tương tác, thanh trượt tham số What-if, nút tải CSV.
 - Ngoài ra còn **người dùng** (cố vấn, sinh viên), là thành phần thứ 4 theo một số giáo trình.
 
 ### Câu 2. Dữ liệu huấn luyện là của Bồ Đào Nha, vậy có áp dụng được cho sinh viên NTU không?
@@ -417,11 +413,12 @@ $$\max \sum_i x_i\Big[\underbrace{c_i p_i}_{\text{TC đạt kỳ vọng}} + \und
 **Đáp:** Đây là nguyên tắc **tách tri thức nghiệp vụ khỏi mã nguồn** trong phân hệ mô hình của DSS. Quy chế đào tạo (min/max tín chỉ, số lần học lại, ngưỡng GPA) có thể thay đổi theo từng năm và từng trường. Với YAML, phòng đào tạo **sửa một con số là hệ thống cập nhật**, không cần lập trình lại. Mỗi tham số trong YAML còn ghi **nguồn gốc và nhãn** (SIMULATED/GIẢ ĐỊNH/TODO xác nhận), giúp minh bạch và dễ kiểm toán.
 
 ### Câu 5. Giao diện của em hỗ trợ người ra quyết định như thế nào, chứ không chỉ hiển thị kết quả?
-**Đáp:** Giao diện hỗ trợ theo 4 cách:
-1. **Phân tích "What-if"**: người dùng tự đổi λ, Fmax, mức tín chỉ, bật/tắt trần tín chỉ rồi xem kết quả thay đổi ra sao.
-2. **So sánh nhiều phương án song song** (12/15/18 TC) thay vì đưa ra một đáp án duy nhất.
-3. **Giải thích** bằng SHAP và lý do bị chặn của từng môn.
-4. **Cảnh báo màu** và thông báo hành động ("Trao đổi với cố vấn học tập").
+**Đáp:** Giao diện hỗ trợ theo 5 cách:
+1. **Bảng tổng quan + Kết luận nhanh**: tóm tắt ngay mức rủi ro, yếu tố chính, cảnh báo và phương án gợi ý — người ra quyết định không phải tự đọc hết các bảng.
+2. **Phân tích "What-if"**: người dùng tự đổi λ, Fmax, mức tín chỉ, bật/tắt trần tín chỉ rồi xem kết quả thay đổi ra sao.
+3. **So sánh nhiều phương án song song** (12/15/18 TC) thay vì đưa ra một đáp án duy nhất.
+4. **Giải thích** bằng SHAP và lý do bị chặn của từng môn.
+5. **Cảnh báo màu** và thông báo hành động ("Trao đổi với cố vấn học tập").
 
 Giao diện cũng đi đúng trình tự ra quyết định Simon (nhận diện → thiết kế → lựa chọn). Hệ thống **không tự động khóa đăng ký**, quyền quyết định thuộc về con người.
 

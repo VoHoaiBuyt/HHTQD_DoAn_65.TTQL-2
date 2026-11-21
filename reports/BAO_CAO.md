@@ -566,7 +566,7 @@ Chạy one-at-a-time trên S001/S003/S005, ngân sách 12 và 18, các giá tr�
 
 ### 7.1. Luồng hệ thống
 
-> Giao diện Streamlit **4 tab** (Nhập hồ sơ / Đánh giá / Lộ trình / Mô phỏng) đã chạy end-to-end, gồm SHAP và kết quả Monte Carlo. Sơ đồ dưới là kiến trúc hiện thực. Dữ liệu chương trình/persona là **SIMULATED**; mô hình học **REAL (UCI-697)**; kết quả mô phỏng là **SIMULATED**, không phải bằng chứng NTU. Đầu ra không được diễn giải nhân quả.
+> Giao diện Streamlit (bảng tổng quan + 4 tab: Dữ liệu đầu vào / Lộ trình đề xuất / Mô phỏng chiến lược / Rủi ro & Học phần) đã chạy end-to-end, gồm SHAP và kết quả Monte Carlo. Sơ đồ dưới là kiến trúc hiện thực. Dữ liệu chương trình/persona là **SIMULATED**; mô hình học **REAL (UCI-697)**; kết quả mô phỏng là **SIMULATED**, không phải bằng chứng NTU. Đầu ra không được diễn giải nhân quả.
 
 ```mermaid
 flowchart LR
@@ -614,40 +614,40 @@ flowchart LR
 | Dữ liệu/ML | Python, pandas, scikit-learn, LightGBM | Tái lập, phù hợp dữ liệu bảng; LightGBM cài qua wheel, không cần XGBoost |
 | Giải thích | SHAP | giải thích toàn cục/cục bộ; tương quan feature làm attribution không nhân quả |
 | Rule/ILP | Python, YAML, PuLP + HiGHS (hoặc OR-Tools) | quy tắc cấu hình, solver mở; infeasible và trọng số cần giải thích |
-| Giao diện | Streamlit | 4 tab đã chạy: nhập/chọn hồ sơ (persona, nhập tay, CSV), đánh giá + SHAP, so sánh 12/15/18 + what-if λ/Fmax, mô phỏng MC có 95% CI và Pareto |
+| Giao diện | Streamlit | Bảng tổng quan + 4 tab đã chạy: dữ liệu đầu vào (persona, nhập tay, CSV), lộ trình 12/15/18 + what-if λ/Fmax, mô phỏng MC có 95% CI và Pareto, rủi ro + SHAP + học phần |
 
-### 7.4. Giao diện 4 tab đã hoàn thiện
+### 7.4. Giao diện: bảng tổng quan + 4 tab
+
+Bố cục "kết quả trước, chi tiết sau". **Thanh bên** chọn nguồn dữ liệu (*Hồ sơ mẫu (Có sẵn)* — tự phân tích ngay khi chọn; *Nhập dữ liệu thủ công*; *Tải lên file CSV*) và nút **🔍 Phân tích & Đánh giá rủi ro**. **Bảng tổng quan** luôn ở trên cùng: 4 thẻ KPI (mức cảnh báo rủi ro có màu, P(Dropout) đã hiệu chuẩn, tiến độ tín chỉ x/128, số môn kỳ tới / cần học lại) và hộp **📌 Kết luận nhanh** tự sinh 3 ý: nguy cơ + yếu tố SHAP lớn nhất, cảnh báo học vụ, phương án gợi ý (khuyến nghị gặp cố vấn khi mọi phương án vượt ngưỡng).
 
 | Tab | Nội dung đã có |
 |---|---|
-| 1. Nhập hồ sơ | 3 nguồn: persona mẫu (S001–S008), nhập tay, CSV; hiển thị tín chỉ tích lũy/còn thiếu và cảnh báo hồ sơ–tiến độ khác sinh viên |
-| 2. Đánh giá | P(Dropout), tầng cảnh báo, cảnh báo học vụ, `progress_stats`; bảng **môn chưa đạt** (số lần học) và **môn bị chặn** kèm prerequisite thiếu; **SHAP top-10** + caveat không nhân quả |
-| 3. Lộ trình | So sánh **12/15/18** tín chỉ; what-if λ, Fmax và checkbox áp trần cứng; bảng trạng thái/tín chỉ chọn/tín chỉ đạt kỳ vọng/môn trượt/Fmax/fallback; **best_effort hiển thị đỏ** “KHÔNG phải phương án an toàn” + khuyến nghị cố vấn; chi tiết từng kế hoạch với P(đạt) từng môn; cảnh báo kết quả cũ khi đổi tham số |
-| 4. Mô phỏng | Bảng ILP/B1/B2/B3 với 95% CI, biểu đồ rates và Pareto, lọc theo sinh viên/chiến lược, bảng paired difference, nguồn tái lập |
+| 1. 📋 Dữ liệu đầu vào | Bảng tiến độ của persona (S001–S008), form nhập tay (8 trường + bảng tiến độ sửa được) hoặc tải CSV kèm file mẫu; kiểm tra hồ sơ–tiến độ khác sinh viên |
+| 2. 🗺️ Lộ trình đề xuất | Biểu đồ + bảng so sánh **12/15/18** tín chỉ (⭐ = gợi ý tham khảo); what-if λ, Fmax và checkbox áp trần cứng trong mục mở rộng (mặc định đã chạy sẵn); **best_effort hiển thị đỏ** “KHÔNG phải phương án an toàn” + khuyến nghị cố vấn; chi tiết từng kế hoạch với P(đạt) từng môn; tải CSV; cảnh báo kết quả cũ khi đổi tham số |
+| 3. 🎲 Mô phỏng chiến lược | 3 thẻ kết luận (ít trượt nhất / đúng hạn cao nhất / khả thi cao nhất), câu chốt Pareto; biểu đồ Pareto có KTC 95% và biểu đồ tỷ lệ tốt nghiệp (Altair, tương tác); bảng tổng hợp CI, paired difference và kết quả từng sinh viên trong mục mở rộng |
+| 4. ⚠️ Rủi ro & Học phần | **SHAP top-8** (cam tăng / xanh giảm rủi ro, tên yếu tố tiếng Việt) + caveat không nhân quả; cảnh báo học vụ và lưu ý quy chế; `progress_stats`; môn được đăng ký / **môn chưa đạt** (số lần học) / **môn bị chặn** kèm tiên quyết thiếu |
 
-Giao diện theo phong cách dashboard light (nền xám nhạt, thẻ KPI trắng bo góc, chip màu REAL/SIMULATED/GIẢ ĐỊNH, bảng viền mảnh) qua `.streamlit/config.toml` và CSS tùy biến trong `app/streamlit_app.py`.
+Giao diện dashboard light (nền xám nhạt, thẻ KPI bo góc, màu rủi ro xanh/vàng/đỏ, bảng viền mảnh) qua `.streamlit/config.toml` và CSS tùy biến trong `app/streamlit_app.py`. Nhãn nguồn **Thực tế (UCI-697) / Mô phỏng / Giả định** nằm trong mục *Nguồn dữ liệu & giới hạn* ở thanh bên và chú thích từng biểu đồ.
 
-Ảnh chụp (headless Chrome, viewport 1440 px, lưu tại `reports/ui/`):
+Ảnh chụp (headless Chrome, rộng 1440 px, chụp toàn trang, lưu tại `reports/ui/`; tái tạo bằng `python scripts/capture_ui_screenshots.py`):
 
 | Tệp | Nội dung |
 |---|---|
-| `01_nhap_ho_so.png` | Chọn persona và tín chỉ tích lũy |
-| `02_danh_gia_tong_quan.png` | P(Dropout), tầng cảnh báo, cảnh báo học vụ |
-| `03_danh_gia_shap.png` | Môn bị chặn + SHAP cục bộ |
-| `04_lo_trinh_so_sanh.png` | Bảng so sánh 12/15/18 |
-| `05_lo_trinh_chi_tiet.png` | Chi tiết kế hoạch và P(đạt) từng môn |
-| `06_mo_phong_tong_quan.png` | Tổng hợp 4 chiến lược + CI |
-| `07_mo_phong_theo_sinh_vien.png` | Lọc theo sinh viên và paired difference |
-| `08_danh_gia_S001.png` | Đánh giá persona S001: rủi ro thấp, 64 tín chỉ tích lũy |
-| `08_danh_gia_S002.png` | Đánh giá persona S002: P(Dropout) 0,305, 64 tín chỉ tích lũy, không có môn chưa đạt |
-| `08_danh_gia_S003.png` | Đánh giá persona S003: P(Dropout) 1,000, cảnh báo cao |
-| `08_danh_gia_S005.png` | Đánh giá persona S005: môn bị chặn tiên quyết + tụt tín chỉ |
-| `08_danh_gia_S008.png` | Đánh giá persona S008: đủ 128 tín chỉ, không còn môn đủ điều kiện |
-| `09_s003_best_effort.png` | S003 lộ trình 12/15/18: `best_effort`, 2,98 môn trượt > Fmax, cảnh báo đỏ |
+| `01_nhap_ho_so.png` | Bảng tổng quan + tab Dữ liệu đầu vào của persona S002 |
+| `02_danh_gia_tong_quan.png` | S002: mức cảnh báo, P(Dropout), kết luận nhanh, SHAP và kiểm tra quy chế |
+| `03_danh_gia_shap.png` | S005: SHAP cục bộ, cảnh báo quy chế, danh sách môn bị chặn kèm tiên quyết thiếu |
+| `04_lo_trinh_so_sanh.png` | S002: biểu đồ và bảng so sánh 12/15/18, chi tiết phương án gợi ý |
+| `05_lo_trinh_chi_tiet.png` | S002: mở tham số what-if và giải thích mô hình ILP, P(đạt) từng môn |
+| `06_mo_phong_tong_quan.png` | Thẻ kết luận, biểu đồ Pareto + KTC 95%, tỷ lệ tốt nghiệp 4 chiến lược |
+| `07_mo_phong_theo_sinh_vien.png` | Paired difference ILP vs B1/B2/B3 và kết quả theo từng sinh viên |
+| `08_danh_gia_S001.png` | Persona S001: rủi ro thấp, 64 tín chỉ tích lũy |
+| `08_danh_gia_S002.png` | Persona S002: P(Dropout) 30,5%, 64 tín chỉ tích lũy, không có môn chưa đạt |
+| `08_danh_gia_S003.png` | Persona S003: P(Dropout) 100%, cảnh báo cao |
+| `08_danh_gia_S005.png` | Persona S005: môn bị chặn tiên quyết + thiếu tiến độ 13 tín chỉ |
+| `08_danh_gia_S008.png` | Persona S008: đủ 128 tín chỉ, không còn môn đủ điều kiện |
+| `09_s003_best_effort.png` | S003 lộ trình 12/15/18: `best_effort`, 2,98 môn trượt > Fmax 1,00, cảnh báo đỏ |
 
-Năm ảnh `08_danh_gia_*.png` là 5 kịch bản sinh viên theo yêu cầu (≥5), chụp sau khi chọn lại persona và xác nhận tiêu đề hiển thị đúng mã trước khi lưu; `09_s003_best_effort.png` ghi lại đúng trường hợp S003 không an toàn.
-
-Ảnh 04 (bảng so sánh) và 05 (chi tiết ngân sách 12: trạng thái, tín chỉ đạt kỳ vọng, P(đạt) từng môn) đã chụp lại bằng hai vị trí cuộn khác nhau. Nhãn **REAL / SIMULATED / GIẢ ĐỊNH** được hiển thị ngay trên tab Mô phỏng.
+Năm ảnh `08_danh_gia_*.png` là 5 kịch bản sinh viên theo yêu cầu (≥5); script chỉ chụp sau khi tiêu đề bảng tổng quan hiển thị đúng mã persona. `09_s003_best_effort.png` chỉ được lưu khi trang có dòng “KHÔNG phải phương án an toàn”.
 
 P(Dropout) chỉ là cảnh báo mềm: UI không khóa đăng ký, không tự giảm tín chỉ; trần Fmax/checkbox chỉ là mô phỏng what-if.
 
@@ -870,26 +870,29 @@ python -m pip install -r requirements-app.txt
 streamlit run app/streamlit_app.py        # mở http://localhost:8501
 ```
 
-Lần đầu chạy, app load artifact `artifacts/risk_bundle.joblib` mất vài giây; demo **không cần internet**. Kiểm tra trước giờ bảo vệ: `python -m unittest discover -s tests -v` (25 test OK) và thử đủ 3 kịch bản dưới đây. Nếu máy chiếu màn hình hẹp, bật full-screen trình duyệt; font tiếng Việt hiển thị tốt ở mặc định.
+Lần đầu chạy, app load artifact `artifacts/risk_bundle.joblib` mất vài giây; demo **không cần internet**. Kiểm tra trước giờ bảo vệ: `pytest tests/ -q` (60 test OK) và thử đủ 3 kịch bản dưới đây. Nếu máy chiếu màn hình hẹp, bật full-screen trình duyệt; font tiếng Việt hiển thị tốt ở mặc định.
 
-### 13.2. Kịch bản demo 4 tab (kèm gợi ý lỗi thoại)
+### 13.2. Kịch bản demo (kèm gợi ý lời thoại)
+
+Mở app → **bảng tổng quan** luôn ở trên cùng, 4 tab theo thứ tự: 📋 Dữ liệu đầu vào → 🗺️ Lộ trình đề xuất → 🎲 Mô phỏng chiến lược → ⚠️ Rủi ro & Học phần.
 
 **Kịch bản A — S003, sinh viên rủi ro cao (kịch bản chính, ~5 phút):**
 
-1. **Tab Nhập hồ sơ:** chọn *Persona mẫu* → persona **S003** → bấm **Đánh giá**.
-   *Lỗi thoại:* “Đây là sinh viên năm nhất yếu, điểm HK1 rất thấp; hệ thống dự báo rủi ro ngay trước kỳ đăng ký tiếp theo.”
-2. **Tab Đánh giá:** P(Dropout) chuẩn hóa **1,000**, tầng **Cao**, cảnh báo `FAILED_COURSES` (1 môn chưa đạt), tiến độ 61/128 tín chỉ, 9 môn đủ điều kiện; bảng **Học phần bị chặn bởi tiên quyết** và **SHAP top-10** (điểm HK1 approved/enrolled thấp kéo xác suất Dropout lên).
-   *Lỗi thoại:* “SHAP cho biết *vì sao* mô hình cảnh báo — lưu ý SHAP là attribution tương quan, không phải quan hệ nhân quả.”
-3. **Tab Lộ trình:** bấm **Lập & so sánh lộ trình**. Cả ba ngân sách 12/15/18 đều trả **best_effort**: 2,98 môn trượt kỳ vọng > Fmax=2 → khung đỏ **“KHÔNG phải phương án an toàn”** + khuyến nghị trao đổi cố vấn.
-   *Lỗi thoại:* “Đây là điểm khác biệt quan trọng: hệ thống **không chặn** sinh viên, mà trả phương án tốt nhất có thể kèm cờ cảnh báo. Giảng viên/cố vấn quyết định cuối.” Sau đó chỉnh what-if **Fmax** hoặc **λ** để cho thấy kế hoạch và cảnh báo thay đổi theo tham số.
-4. **Tab Mô phỏng:** bảng ILP/B1/B2/B3 với 95% CI, biểu đồ rates và Pareto.
-   *Lỗi thoại:* “Mô phỏng 28.000 đường học kỳ; ILP giảm môn trượt kỳ vọng so với mọi baseline nhưng không vượt B1 về đúng hạn — chúng em báo cáo trung thực cả hai mặt.”
+1. **Thanh bên:** *Hồ sơ mẫu (Có sẵn)* → chọn **S003** (tự phân tích, không cần bấm nút). **Bảng tổng quan:** 🔴 **Cao**, P(Dropout) **100%**, tiến độ **61/128** tín chỉ, **9 môn** được đăng ký · 1 môn cần học lại; **Kết luận nhanh** nêu yếu tố lớn nhất (*Số môn ĐẠT ở HK1*), cảnh báo 1 môn chưa đạt và khuyến nghị **gặp cố vấn học tập**.
+   *Lời thoại:* “Mở lên là thấy kết luận ngay: sinh viên năm nhất yếu, điểm HK1 rất thấp; hệ thống cảnh báo trước kỳ đăng ký tiếp theo.”
+2. **Tab Dữ liệu đầu vào:** bảng tiến độ từng môn (trạng thái, điểm, số lần học) — nguồn dữ liệu của mọi phân tích.
+3. **Tab Lộ trình đề xuất:** cả ba mức 12/15/18 đều **Nỗ lực tối đa ⚠️** (`best_effort`): chọn được 12 tín chỉ, **2,98** môn trượt kỳ vọng > Fmax **1,00** → khung đỏ **“KHÔNG phải phương án an toàn”** + khuyến nghị trao đổi cố vấn.
+   *Lời thoại:* “Hệ thống **không chặn** sinh viên, mà trả phương án tốt nhất có thể kèm cờ cảnh báo; cố vấn quyết định cuối.” Mở **⚙️ Tùy chỉnh tham số**, đổi **Fmax** hoặc **λ**, bấm **🔄 Lập & so sánh lộ trình** để cho thấy kết quả thay đổi theo tham số (what-if).
+4. **Tab Mô phỏng chiến lược:** thẻ kết luận *ILP ít trượt nhất · B1 đúng hạn cao nhất · ILP khả thi cao nhất*, biểu đồ Pareto có KTC 95%.
+   *Lời thoại:* “Mô phỏng 28.000 đường học kỳ; ILP giảm môn trượt so với mọi baseline nhưng không vượt B1 về đúng hạn — chúng em báo cáo trung thực cả hai mặt, đây là đánh đổi Pareto.”
+5. **Tab Rủi ro & Học phần:** biểu đồ **SHAP** (cam = tăng rủi ro, xanh = giảm), cảnh báo quy chế, danh sách môn bị chặn kèm tiên quyết thiếu.
+   *Lời thoại:* “SHAP cho biết *vì sao* mô hình cảnh báo — là attribution tương quan, không phải quan hệ nhân quả.”
 
-**Kịch bản B — S001, sinh viên an toàn (~1 phút):** persona S001 → P(Dropout) 0,045, tầng **Thấp** → lộ trình `optimal`, 12 tín chỉ, không vượt Fmax. *Mục đích:* cho thấy hệ thống không “gào” cảnh báo vô cớ.
+**Kịch bản B — S001, sinh viên an toàn (~1 phút):** chọn S001 → 🟢 **Thấp**, P(Dropout) **4,5%**, không có cảnh báo học vụ; ba mức 12/15/18 đều **Tối ưu ✅** (ở 18 tín chỉ: 0,79 môn trượt kỳ vọng < Fmax 2,0). *Mục đích:* hệ thống không cảnh báo vô cớ.
 
-**Kịch bản C — S008, hoàn tất chương trình (~1 phút):** persona S008 → 128/128 tín chỉ, banner **“Không có học phần đủ điều kiện trong kỳ tới”**, trạng thái tốt nghiệp mô phỏng. *Mục đích:* cho thấy rule engine xử lý được biên tốt nghiệp, không ép đăng ký môn thừa.
+**Kịch bản C — S008, hoàn tất chương trình (~1 phút):** chọn S008 → **128/128** tín chỉ, **0 môn** đủ điều kiện, Kết luận nhanh “Đã đủ tín chỉ tốt nghiệp — không cần đăng ký thêm”, lộ trình **Đủ ĐK tốt nghiệp 🎓**. *Mục đích:* rule engine xử lý biên tốt nghiệp, không ép đăng ký môn thừa.
 
-**Phụ (nếu bị hỏi nhập liệu thật):** chế độ *Nhập tay* hoặc *CSV* — hệ thống từ chối hồ sơ/tiến độ không cùng một sinh viên (`InputError`), dùng đúng bộ rule engine + pass-rate M3′.
+**Phụ (nếu bị hỏi nhập liệu thật):** chế độ *Nhập dữ liệu thủ công* hoặc *Tải lên file CSV* (dữ liệu nhập ở tab 📋, rồi bấm **🔍 Phân tích**) — không đủ 24 đặc trưng nên không ước lượng P(Dropout) (thẻ rủi ro hiện “Chưa ước lượng”), lộ trình dùng rule engine + pass-rate M3′; hệ thống từ chối hồ sơ/tiến độ không cùng một sinh viên (`InputError`).
 
 ### 13.3. Giải thích thuật toán trong 2 phút (sơ đồ 5 khối)
 

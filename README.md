@@ -59,9 +59,9 @@ Nhập hồ sơ sinh viên
                                          │
                                          ▼
 ┌───────────────────┐     ┌──────────────────────────┐
-│   ILP Optimizer   │────▶│  3 phương án đăng ký:    │
-│  (PuLP + HiGHS)   │     │  An toàn / Tiến độ /     │
-└───────────────────┘     │  Cân bằng                │
+│   ILP Optimizer   │────▶│  Phương án đăng ký theo  │
+│  (PuLP + HiGHS)   │     │  mức 12 / 15 / 18 tín chỉ│
+└───────────────────┘     │                          │
                           └──────────────┬───────────┘
                                          │
                                          ▼
@@ -107,8 +107,8 @@ Nhập hồ sơ sinh viên
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/vothanhtong/Academic-Advisor-Decision-Support-System.git
-cd Academic-Advisor-Decision-Support-System
+git clone -b v2 --single-branch https://github.com/VoHoaiBuyt/HHTQD_DoAn_65.TTQL-2.git
+cd HHTQD_DoAn_65.TTQL-2
 
 # 2. Tạo virtual environment
 python -m venv .venv
@@ -188,8 +188,8 @@ python scripts/benchmark_risk_models.py
 | `ml_benchmark_summary.csv` | Accuracy, Macro-F1, PR-AUC, Brier, Confusion Matrix |
 | `ml_benchmark_cv_folds.csv` | Kết quả 5-fold CV trên tập Train |
 | `ml_benchmark_calibration.csv` | Calibration curve (validation) |
-| `shap_lgbm_global.csv` / `.png` | Top features theo SHAP (LightGBM) |
-| `shap_lr_global.csv` / `.png` | Top features theo SHAP (LR) |
+| `shap_dropout_importance.csv` / `shap_dropout_top15.png` | Top features theo SHAP (LightGBM) |
+| `shap_dropout_importance_lr.csv` / `shap_dropout_top15_lr.png` | Top features theo SHAP (LR) |
 
 > **Lưu ý:** SHAP chỉ phản ánh mức đóng góp của feature vào **dự đoán của mô hình**, không phải quan hệ nhân quả.
 
@@ -261,20 +261,24 @@ python scripts/monte_carlo_strategies.py --students S001,S003
 
 ### 5. Giao diện Streamlit
 
-Giao diện web tương tác với 4 tab:
-
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
 Mở trình duyệt tại: **http://localhost:8501**
 
+**Thanh bên:** chọn nguồn dữ liệu — *Hồ sơ mẫu (Có sẵn)* (tự phân tích ngay khi chọn), *Nhập dữ liệu thủ công* hoặc *Tải lên file CSV* — rồi bấm **🔍 Phân tích & Đánh giá rủi ro**.
+
+**Bảng tổng quan (luôn ở trên cùng):** mức cảnh báo rủi ro, xác suất bỏ học, tiến độ tín chỉ, số môn kỳ tới và hộp **📌 Kết luận nhanh** (nguy cơ + yếu tố chính, cảnh báo học vụ, phương án gợi ý).
+
 | Tab | Chức năng |
 |-----|-----------|
-| **Nhập hồ sơ** | Upload CSV hoặc nhập tay thông tin sinh viên |
-| **Đánh giá rủi ro** | Xem P(dropout), tier cảnh báo, SHAP top features |
-| **Lộ trình tín chỉ** | So sánh 3 phương án ILP (An toàn / Tiến độ / Cân bằng) |
-| **Mô phỏng** | Kết quả Monte Carlo tổng quan và theo từng sinh viên |
+| **📋 Dữ liệu đầu vào** | Bảng tiến độ của hồ sơ mẫu, form nhập tay hoặc tải CSV |
+| **🗺️ Lộ trình đề xuất** | So sánh phương án ILP ở mức 12 / 15 / 18 tín chỉ (⭐ = gợi ý), xác suất đạt từng môn, tải CSV; tham số What-if (λ, ngưỡng trượt, trần tín chỉ) trong mục mở rộng |
+| **🎲 Mô phỏng chiến lược** | Monte Carlo ILP vs B1/B2/B3: biểu đồ Pareto, tỷ lệ tốt nghiệp, kiểm định ghép cặp |
+| **⚠️ Rủi ro & Học phần** | SHAP giải thích dự báo, cảnh báo theo quy chế, môn được đăng ký / cần học lại / bị chặn |
+
+> Chế độ *Nhập dữ liệu thủ công* / *CSV* không đủ 24 đặc trưng cho mô hình học máy → không ước lượng P(Dropout); lộ trình dùng tỷ lệ đạt nền theo năng lực HK1.
 
 ---
 
@@ -284,7 +288,7 @@ Mở trình duyệt tại: **http://localhost:8501**
 pytest tests/ -v
 ```
 
-**Kết quả mong đợi:** `35 passed` trong vòng < 5 giây.
+**Kết quả mong đợi:** `60 passed` trong vòng < 10 giây (35 test lõi + 15 test rule/ILP giai đoạn 1 + 8 test tầng dịch vụ + 2 test giao diện).
 
 | Nhóm test | Số test | Nội dung |
 |-----------|---------|----------|
@@ -318,8 +322,9 @@ pytest tests/ -v
 │   ├── 02_risk_to_plan_exploration.ipynb
 │   └── 03_ilp_formulation_check.ipynb
 ├── reports/
+│   ├── BAO_CAO.md                    # Báo cáo đồ án
 │   ├── generated/                    # Outputs CSV/PNG/JSON tự sinh
-│   └── diagrams/                     # Sơ đồ kiến trúc & ER
+│   └── ui/                           # Ảnh chụp giao diện
 ├── scripts/
 │   ├── benchmark_risk_models.py      # Benchmark LR/RF/LightGBM
 │   ├── monte_carlo_strategies.py     # Monte Carlo ILP vs B1/B2/B3
@@ -332,9 +337,13 @@ pytest tests/ -v
 │   └── analysis/                     # Risk & plan exploration
 ├── tests/
 │   ├── test_dss_core.py              # 35 unit tests (rule + ILP + MC)
-│   └── test_stage1_rules_and_optimizer.py
+│   ├── test_stage1_rules_and_optimizer.py
+│   ├── test_services_assessment.py
+│   └── test_app_smoke.py             # Kiểm thử giao diện (AppTest)
 ├── conftest.py                        # pytest path setup
+├── generate_data_dict.py              # Sinh từ điển dữ liệu (phân nhóm T0/T1)
 ├── requirements-app.txt
+├── ON_TAP_VAN_DAP.md                  # Tài liệu ôn vấn đáp
 └── README.md
 ```
 

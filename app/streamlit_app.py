@@ -788,20 +788,22 @@ def render_plan_comparison_chart(plans: list[dict]) -> None:
 
 
 def render_plan(assessment: dict) -> None:
-    rule_result = assessment["rule_result"]
     targets, d_lambda, d_fmax, d_enforce = default_plan_params(assessment)
+    # Khóa widget theo mã SV: trình duyệt giữ giá trị widget theo key, nên đổi hồ sơ
+    # phải đổi key để tham số trở về mặc định của hồ sơ mới.
+    sid = str(assessment["profile"].get("student_id"))
 
     with st.expander("⚙️ Tùy chỉnh tham số (What-if) — mặc định đã chạy sẵn", expanded=False):
         col1, col2, col3, col4 = st.columns([1.4, 1.4, 1, 1])
         with col1:
-            budgets = st.multiselect("Mức tín chỉ so sánh", targets, default=targets, key="plan_budgets")
+            budgets = st.multiselect("Mức tín chỉ so sánh", targets, default=targets, key=f"plan_budgets_{sid}")
         with col2:
-            load_lambda = st.slider("Hệ số tải học tập λ (giả định)", 0.0, 0.5, d_lambda, 0.05, key="load_lambda",
+            load_lambda = st.slider("Hệ số tải học tập λ (giả định)", 0.0, 0.5, d_lambda, 0.05, key=f"load_lambda_{sid}",
                                     help="Học càng nhiều tín chỉ thì xác suất qua môn giảm bao nhiêu.")
         with col3:
-            fmax = st.number_input("Ngưỡng môn trượt cho phép", 0.0, 6.0, d_fmax, 0.5, key="plan_fmax")
+            fmax = st.number_input("Ngưỡng môn trượt cho phép", 0.0, 6.0, d_fmax, 0.5, key=f"plan_fmax_{sid}")
         with col4:
-            enforce_cap = st.checkbox("Áp trần tín chỉ khuyến nghị", value=d_enforce, key="plan_enforce_cap",
+            enforce_cap = st.checkbox("Áp trần tín chỉ khuyến nghị", value=d_enforce, key=f"plan_enforce_cap_{sid}",
                                       help="Mặc định TẮT: hệ thống chỉ cảnh báo, không tự giới hạn.")
         clicked = st.button("🔄 Lập & so sánh lộ trình", key="run_plan", type="primary")
 
@@ -919,7 +921,6 @@ def render_plan(assessment: dict) -> None:
             f"tinh chỉnh tải {result.get('load_refinement_iterations', 0)} lần. "
             "Các hệ số là **giả định kịch bản**, chưa phải quy chế chính thức."
         )
-    _ = rule_result  # giữ chữ ký rõ ràng
 
 
 # ── Tab 3: Mô phỏng ───────────────────────────────────────────────────────────
