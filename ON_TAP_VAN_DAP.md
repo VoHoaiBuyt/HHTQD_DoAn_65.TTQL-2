@@ -360,35 +360,108 @@ $$\max \sum_i x_i\Big[\underbrace{c_i p_i}_{\text{TC đạt kỳ vọng}} + \und
 
 ➡ Bắt đúng 204/284 sinh viên bỏ học (≈ 72%). Lớp *Enrolled* khó dự đoán nhất vì nằm "lưng chừng".
 
-## 4.2. Biểu đồ trên App và trong báo cáo
+## 4.2. Biểu đồ trên App (theo từng tab) và trong báo cáo
 
-### 📊 Biểu đồ 4: "Các yếu tố ảnh hưởng đến dự báo rủi ro bỏ học (SHAP)" (tab Rủi ro & Học phần)
-- **Loại:** cột ngang, top 8. **Trục X:** giá trị SHAP (mức độ ảnh hưởng). **Trục Y:** tên đặc trưng. Có đường dọc tại 0.
-- **Màu:** 🟧 **cam = làm tăng rủi ro** (SHAP > 0) · 🟦 **xanh = làm giảm rủi ro** (SHAP < 0) — cặp màu cam/xanh để người mù màu đỏ–xanh lá vẫn phân biệt được. Thanh càng dài thì ảnh hưởng càng lớn.
-- **Insight:** cho **từng sinh viên** biết lý do. Ví dụ: "số môn đạt HK1 thấp" là thanh cam dài nhất, còn "điểm xét tuyển cao" là thanh xanh.
-- **Giúp quyết định:** cố vấn biết **nên can thiệp vào đâu**, ví dụ hỗ trợ học lại các môn HK1. Một số yếu tố như tuổi, nghề cha mẹ thì không thay đổi được, chỉ dùng để hiểu bối cảnh. Đây là giải thích **mô hình**, không phải nhân quả.
+> Mỗi biểu đồ nắm 4 ý: **biểu đồ là gì → trục nào → đọc ra sao → giúp quyết định gì**. Số liệu ví dụ lấy đúng từ ảnh chụp giao diện trong `reports/ui/`.
 
-### 📊 Biểu đồ 5: "So sánh nhanh các mức tín chỉ" (tab Lộ trình đề xuất)
-- **Loại:** cột nhóm. **Trục X:** mức tín chỉ (12 TC · 15 TC · 18 TC). **Trục Y:** số tín chỉ. **2 cột mỗi nhóm:** 🔵 *Tín chỉ đăng ký* · 🟢 *Tín chỉ dự báo đạt*.
-- **Insight:** **khoảng cách giữa cột xanh dương và cột xanh lá = số tín chỉ có thể trượt**. Nếu tăng từ 15 lên 18 TC mà cột "dự báo đạt" gần như không tăng thì **học thêm không đáng**, vì chỉ tăng rủi ro (hiệu ứng **lợi ích biên giảm dần** do hệ số tải).
-- **Giúp quyết định:** chọn mức tín chỉ cân bằng giữa tiến độ và rủi ro.
-- *Đi kèm:* cột **"Xác suất đạt (%)"** dạng thanh tiến trình cho từng môn đề xuất.
+### 🗺️ TAB LỘ TRÌNH ĐỀ XUẤT
 
-### 📊 Biểu đồ 6: "Pareto chiến lược đăng ký" (tab Mô phỏng chiến lược)
-- **Loại:** điểm có thanh sai số (error bar), tương tác. **Trục X:** số lượt trượt trung bình (**càng thấp càng tốt**). **Trục Y:** xác suất tốt nghiệp đúng hạn (**càng cao càng tốt**). Mỗi điểm là 1 chiến lược (ILP, B1, B2, B3). Thanh sai số là **KTC 95%**.
-- **Cách đọc:** vùng **lý tưởng là góc trên bên trái** (ít trượt, đúng hạn cao). Nếu 2 thanh sai số **chồng lên nhau** thì khác biệt chưa chắc có thật.
-- **Insight:** **ILP lệch trái nhất** (ít trượt nhất), **B1 cao nhất** (đúng hạn nhiều nhất). Cả hai nằm trên **biên Pareto**, còn B2 và B3 bị lấn át.
-- **Giúp quyết định:** sinh viên **sợ trượt / đang bị cảnh báo** nên theo ILP, sinh viên **ưu tiên tốt nghiệp đúng hạn** có thể cân nhắc B1. Không có chiến lược tối ưu tuyệt đối.
+#### 📊 Biểu đồ 4: "So sánh nhanh các mức tín chỉ"
+- **Loại:** cột ghép đôi. **Trục ngang:** 3 mức tín chỉ (12 · 15 · 18 TC). **Trục dọc:** số tín chỉ.
+- **Mỗi mức có 2 cột:**
+  - 🔵 **Tín chỉ đăng ký:** số tín chỉ bộ tối ưu ILP thực sự chọn.
+  - 🟢 **Tín chỉ dự báo đạt:** số tín chỉ dự kiến qua môn = tổng (tín chỉ × xác suất qua) của từng môn.
+- **Cách đọc:** **khoảng chênh giữa cột xanh dương và cột xanh lá = số tín chỉ có thể trượt.** Cột xanh lá càng sát cột xanh dương thì phương án càng an toàn.
+- **Ví dụ S002 (sinh viên trung bình):**
 
-### 📊 Biểu đồ 7: "Tỷ lệ tốt nghiệp theo chiến lược" (tab Mô phỏng chiến lược)
-- **Loại:** cột nhóm. **Trục X:** 4 chiến lược (ILP, B1, B2, B3). **Trục Y:** tỷ lệ (0–100%). **2 cột:** 🔵 *Tốt nghiệp (≤ HK16)* · 🟧 *Đúng hạn (≤ HK8)*.
-- **Insight:** tỷ lệ tốt nghiệp trong 16 kỳ của 4 chiến lược **gần bằng nhau** (~43–45%), nhưng tỷ lệ **đúng hạn rất thấp** (0–6%). Lý do là các hồ sơ mẫu cố tình được chọn là ca khó (nợ môn, chậm tiến độ). B3 (15 TC/kỳ) **0% đúng hạn** vì 15 × 8 = 120 < 128 tín chỉ, **về mặt số học không thể** tốt nghiệp đúng hạn.
-- **Giúp quyết định:** cho thấy với sinh viên đã chậm tiến độ, **"đăng ký ít cho an toàn" (B3) gần như chắc chắn trễ hạn**. Cần cân nhắc kỹ khi khuyên giảm tải.
+  | Mức | Đăng ký | Dự báo đạt | Có thể trượt |
+  |---|---|---|---|
+  | 12 TC | 12 | 10,1 | ~1,9 TC |
+  | 15 TC | 14 | 11,7 | ~2,3 TC |
+  | 18 TC | 14 | 11,7 | ~2,3 TC |
 
-### 📊 Biểu đồ 8 (báo cáo): "15 đặc trưng ảnh hưởng mạnh nhất — SHAP toàn cục" (`reports/generated/shap_dropout_top15*.png`)
+  - Lên 18 tín chỉ **không thêm được gì** so với 15: kỳ này chỉ có đủ môn hợp lệ cho 14 tín chỉ, ILP không chọn môn không được phép học.
+  - Từ 12 lên 14 tín chỉ thì đạt thêm 1,6 tín chỉ nhưng số tín chỉ có thể trượt cũng tăng → **lợi ích biên giảm dần** (học càng nhiều, xác suất qua từng môn càng giảm do hệ số tải λ).
+- **Ví dụ S003 (sinh viên yếu):** cả 3 mức đều 12 tín chỉ đăng ký nhưng chỉ dự báo đạt **3,1** → cột xanh lá thấp hẳn, đăng ký bao nhiêu cũng rủi ro → hệ thống hiện khung đỏ *"KHÔNG phải phương án an toàn"*.
+- **Giúp quyết định:** chọn mức tín chỉ cân bằng giữa **tiến độ** (cột xanh dương cao) và **an toàn** (khoảng chênh nhỏ).
+
+#### 📊 Biểu đồ phụ: cột "Xác suất đạt" trong bảng môn đề xuất
+- Mỗi môn có một **thanh ngang 0–100%** là xác suất qua môn đó.
+- **Cách tính:** tỷ lệ đạt nền theo năng lực HK1 × hệ số độ khó của nhóm môn × hệ số tải (học nhiều thì giảm) × hệ số học lại.
+- **Ví dụ:** S002 các môn khoảng 78–86% (thanh gần đầy); S003 chỉ khoảng 24–27% (thanh rất ngắn).
+- **Giúp quyết định:** biết **môn nào rủi ro nhất** trong kế hoạch để cân nhắc bỏ bớt hoặc chuẩn bị kỹ hơn.
+
+### 🎲 TAB MÔ PHỎNG CHIẾN LƯỢC
+
+> **Bối cảnh cần nói trước:** hệ thống giả lập **1.000 lần** cả khóa học (tối đa 16 học kỳ) cho mỗi sinh viên với 4 cách đăng ký: **ILP** (hệ thống tối ưu) · **B1** (đúng lộ trình CTĐT, có học lại) · **B2** (tối đa 18 tín chỉ) · **B3** (cố định 15 tín chỉ/kỳ). Mỗi kỳ, mỗi môn được "tung xúc xắc" theo xác suất qua môn.
+
+#### 📊 Biểu đồ 5: "Đánh đổi: ít trượt ↔ đúng hạn (Pareto)"
+- **Loại:** biểu đồ điểm có thanh sai số, tương tác (rê chuột xem số).
+- **Trục ngang:** số lượt trượt trung bình cả khóa (**càng về trái càng tốt**). **Trục dọc:** tỷ lệ tốt nghiệp đúng hạn trong 8 kỳ (**càng lên cao càng tốt**).
+- **Mỗi điểm** là 1 chiến lược (ILP xanh dương, B1 cam, B2 vàng, B3 xanh lá). **Thanh ngang/dọc quanh điểm = khoảng tin cậy 95%**: giá trị thật nhiều khả năng nằm trong khoảng đó.
+- **Cách đọc:** **góc trên bên trái là lý tưởng** (ít trượt, đúng hạn cao). Hai thanh sai số **chồng nhau** thì khác biệt có thể chỉ do ngẫu nhiên.
+- **Số liệu:**
+
+  | Chiến lược | Trượt TB | Đúng hạn |
+  |---|---|---|
+  | **ILP** | **12,01** (trái nhất) | 4,0% |
+  | **B1** | 12,44 | **6,1%** (cao nhất) |
+  | B2 | 12,83 | 4,4% |
+  | B3 | 12,29 | 0,0% |
+
+- **Insight:** **ILP lệch trái nhất** (ít trượt nhất), **B1 cao nhất** (đúng hạn nhiều nhất). Không ai thắng cả hai mặt → ILP và B1 cùng nằm trên **biên Pareto**. B2 bị lấn át: vừa trượt nhiều nhất, vừa không đúng hạn hơn.
+- **Giúp quyết định:** sinh viên **đang bị cảnh báo, sợ trượt** → nên theo **ILP**; sinh viên **ưu tiên ra trường đúng hạn** → có thể cân nhắc **B1**. Hệ thống **lượng hóa sự đánh đổi** để con người chọn, không áp đặt.
+
+#### 📊 Biểu đồ 6: "Tỷ lệ tốt nghiệp theo chiến lược"
+- **Loại:** cột ghép đôi. **Trục ngang:** 4 chiến lược (ILP, B1, B2, B3). **Trục dọc:** tỷ lệ (0–100%).
+- **2 cột:** 🔵 **Tốt nghiệp (≤ HK16)** = tốt nghiệp được trong thời gian tối đa · 🟧 **Đúng hạn (≤ HK8)** = tốt nghiệp đúng 4 năm.
+- **Insight:**
+  - **Cột xanh của 4 chiến lược gần bằng nhau (~43–45%)** → chiến lược đăng ký ảnh hưởng ít đến việc *có tốt nghiệp được hay không*.
+  - **Cột cam rất thấp (0–6%)** → các hồ sơ mẫu cố tình là ca khó (nợ môn, chậm tiến độ), rất khó ra trường đúng 4 năm.
+  - **B3 có 0% đúng hạn** vì 15 tín chỉ × 8 kỳ = 120 < 128 tín chỉ cần để tốt nghiệp → **về mặt số học không thể** đúng hạn.
+- **Giúp quyết định:** với sinh viên đã chậm tiến độ, lời khuyên *"cứ học ít cho an toàn"* (B3) gần như chắc chắn dẫn tới **trễ hạn** → cố vấn cần cân nhắc kỹ khi khuyên giảm tải.
+
+#### Ba thẻ kết luận phía trên biểu đồ
+**Ít trượt nhất: ILP** · **Đúng hạn cao nhất: B1** · **Khả thi cao nhất: ILP (51,6%)**. "Khả thi" = tỷ lệ lượt mô phỏng mà kỳ nào cũng có môn hợp lệ để học. Ba thẻ này là bản tóm tắt bằng chữ của 2 biểu đồ trên.
+
+### ⚠️ TAB RỦI RO & HỌC PHẦN (dự đoán rủi ro)
+
+#### 📊 Biểu đồ 7: "Vì sao mô hình đánh giá như vậy? (SHAP)"
+- **Loại:** cột ngang, 8 yếu tố ảnh hưởng mạnh nhất **đối với riêng sinh viên đang xem**.
+- **Trục ngang:** giá trị SHAP (mức ảnh hưởng tới xác suất bỏ học); đường dọc ở giữa là mốc 0. **Trục dọc:** tên yếu tố (đã dịch sang tiếng Việt).
+- **Màu:** 🟧 **cam (lệch phải) = đẩy rủi ro bỏ học LÊN** · 🟦 **xanh (lệch trái) = kéo rủi ro XUỐNG**. Thanh càng dài thì ảnh hưởng càng mạnh. (Dùng cặp cam/xanh để người mù màu đỏ–xanh lá vẫn phân biệt được.)
+- **Ví dụ S003 (rủi ro Cao, xác suất bỏ học 100%):**
+  - Thanh cam dài nhất là **"Số môn ĐẠT ở HK1"**: qua rất ít môn ở HK1 → lý do chính khiến mô hình cảnh báo.
+  - Các thanh cam khác: *Điểm TB HK1*, *Ngành*, *Trình độ/nghề của cha mẹ*.
+  - Thanh xanh: *Số môn ĐĂNG KÝ ở HK1*, *Trình độ của cha = 19* — kéo rủi ro xuống một chút nhưng không bù được.
+- **Ví dụ S008 (rủi ro Thấp):** ngược lại, **"Số môn ĐẠT ở HK1"** là thanh **xanh dài nhất** — qua gần hết môn HK1 nên rủi ro thấp.
+- **Giúp quyết định:** cố vấn biết **nên can thiệp vào đâu** (ví dụ S003 cần hỗ trợ học lại, củng cố các môn HK1). Yếu tố **không thay đổi được** (tuổi, nghề cha mẹ, ngành) chỉ dùng để hiểu bối cảnh.
+- **⚠️ Câu phải nói:** *"SHAP giải thích **mô hình đã dựa vào đâu để dự đoán**, không chứng minh **nguyên nhân thật**. Tương quan không phải nhân quả."*
+- **Lưu ý:** biểu đồ SHAP **chỉ có ở chế độ Hồ sơ mẫu**; nhập tay/CSV không đủ 24 đặc trưng nên không chạy mô hình học máy.
+
+#### Thanh màu trong thẻ "Xác suất bỏ học" (bảng tổng quan)
+- **Thanh ngang 0–100%**, màu theo mức rủi ro: xanh lá = Thấp, vàng = Trung bình, đỏ = Cao. Ví dụ S002 **30,5%** (thanh đỏ ngắn), S003 **100%** (thanh đỏ đầy).
+- Đây là **xác suất đã hiệu chuẩn (Isotonic)**: nói 30% thì trong 100 sinh viên tương tự, thực tế khoảng 30 người bỏ học.
+- **Vì sao 30,5% đã là "Cao":** ngưỡng chia tầng được chọn để **không bỏ sót** sinh viên sắp bỏ học. Tầng Cao bắt đầu từ khoảng 13,9%, và tầng này bắt được ≥ 90% số sinh viên thật sự bỏ học.
+
+### 📄 TRONG BÁO CÁO
+
+#### 📊 Biểu đồ 8: "15 đặc trưng ảnh hưởng mạnh nhất — SHAP toàn cục" (`reports/generated/shap_dropout_top15*.png`)
 - **Trục X:** mean(|SHAP|) cho lớp Dropout (độ lớn ảnh hưởng trung bình trên toàn bộ dữ liệu). **Trục Y:** đặc trưng.
+- **Khác Biểu đồ 7:** Biểu đồ 7 giải thích **một sinh viên**, Biểu đồ 8 tổng hợp **toàn bộ dữ liệu**.
 - **Insight:** **số môn đạt HK1** áp đảo (≈ 1,33, gấp gần 3 lần yếu tố thứ hai). Tiếp theo là số môn đăng ký HK1, tuổi, điểm HK1.
 - **Giúp quyết định:** khẳng định chính sách "**theo dõi sát kết quả học kỳ 1**" là đòn bẩy cảnh báo sớm quan trọng nhất.
+
+### 🎯 Tóm tắt 1 câu cho từng biểu đồ (học thuộc)
+
+| Biểu đồ | Câu chốt |
+|---|---|
+| So sánh mức tín chỉ | *"Khoảng chênh giữa 2 cột là số tín chỉ có thể trượt; học thêm mà cột xanh lá không tăng thì không đáng."* |
+| Xác suất đạt từng môn | *"Cho biết môn nào rủi ro nhất trong kế hoạch."* |
+| Pareto | *"Góc trên-trái là tốt nhất; ILP ít trượt nhất, B1 đúng hạn nhất — đánh đổi, không có chiến lược tốt tuyệt đối."* |
+| Tỷ lệ tốt nghiệp | *"Chiến lược ảnh hưởng ít tới việc tốt nghiệp được không, nhưng nhiều tới đúng hạn; B3 không thể đúng hạn vì 15 × 8 < 128."* |
+| SHAP cá nhân | *"Cam đẩy rủi ro lên, xanh kéo xuống; số môn đạt HK1 là yếu tố quan trọng nhất; SHAP giải thích mô hình, không phải nhân quả."* |
+| SHAP toàn cục | *"Trên toàn bộ dữ liệu, kết quả HK1 là tín hiệu cảnh báo mạnh nhất."* |
 
 ---
 
